@@ -1,4 +1,4 @@
-ContactConversionV1 ReadMe File.
+DLConversionV2 ReadMe File.
 
 *Sample DL Migrations
 
@@ -24,7 +24,7 @@ $cloudCred = get-credential
 start-distributionListMigration -groupSMTPAddress test@domain.com -globalCatalogServer gc.domain.com -activeDirectoryCredential $onPremCred -asdConnectServer adconnect.domain.com -aadConnectCredential $onPremCred -exchangeServer exchange.domain.com -exchangeCredential $onPremCred -exchangeOnlineCredential $cloudCred -logFolderPath c:\temp -dnNoSyncOU "OU=something,dc=domain,dc=com" -triggerUpgradeToOffice365Group:$TRUE
 
 
-*Information regarding the usage of the ContactConversionV1 module can be found in the following blog posts.
+*Information regarding the usage of the DLConversionV2 module can be found in the following blog posts.
 
 *Introduction to the Distribution List Migration Module v2
 https://timmcmic.wordpress.com/2021/04/25/4116/

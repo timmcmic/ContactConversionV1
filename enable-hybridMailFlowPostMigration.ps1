@@ -65,7 +65,7 @@
         [string]$exchangeOnPremisesPowershellSessionName="ExchangeOnPremises" #Defines universal name for on premises Exchange Powershell session.
         [string]$exchangeOnlinePowershellModuleName="ExchangeOnlineManagement" #Defines the exchage management shell name to test for.
         [string]$activeDirectoryPowershellModuleName="ActiveDirectory" #Defines the active directory shell name to test for.
-        [string]$dlConversionPowershellModule="ContactConversionV1"
+        [string]$dlConversionPowershellModule="DLConversionV2"
         [string]$globalCatalogPort=":3268"
         [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
 

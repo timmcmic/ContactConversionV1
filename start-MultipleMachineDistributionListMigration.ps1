@@ -231,7 +231,7 @@ Function Start-MultipleMachineDistributionListMigration
     [int]$totalAddressCount = 0
     [int]$maxThreadCount = 5
 
-    [string]$ContactConversionV1ModuleName = "ContactConversionV1"
+    [string]$dlConversionV2ModuleName = "DLConversionV2"
 
     [string]$localHostName=$NULL
 
@@ -658,7 +658,7 @@ Function Start-MultipleMachineDistributionListMigration
         }
     }
 
-    #For each machine in the server name array - we need to validate that the ContactConversionV1 commands are available.
+    #For each machine in the server name array - we need to validate that the DLConversionV2 commands are available.
 
     [array]$invalidServers=@()
 
@@ -676,11 +676,11 @@ Function Start-MultipleMachineDistributionListMigration
         {
             try
             {
-                $commands = invoke-command -scriptBlock {get-command -module $ContactConversionV1ModuleName -errorAction STOP} -computerName $server -credential $activeDirectoryCredential[0] -errorAction STOP
+                $commands = invoke-command -scriptBlock {get-command -module $dlConversionV2ModuleName -errorAction STOP} -computerName $server -credential $activeDirectoryCredential[0] -errorAction STOP
                 
                 if ($commands.count -eq 0)
                 {
-                    out-logfile -string ("Server "+$server+" does not have the ContactConversionV1 module installed.")
+                    out-logfile -string ("Server "+$server+" does not have the DLConversionV2 module installed.")
                     $invalidServers+=$server
                 }
                 else {
@@ -688,7 +688,7 @@ Function Start-MultipleMachineDistributionListMigration
                 }
             }    
             catch{
-                out-logfile -string "Unable to obtain ContactConversionV1 commands." 
+                out-logfile -string "Unable to obtain DLConversionV2 commands." 
                 out-logfile -string $_ -isError:$TRUE
             }
         }
@@ -698,7 +698,7 @@ Function Start-MultipleMachineDistributionListMigration
     {
         foreach ($server in $invalidServers)
         {
-            out-logfile -string ("Server does not have ContactConversionV1 installed: "+$server)
+            out-logfile -string ("Server does not have DLConversionV2 installed: "+$server)
         }
         out-logfile -string "Correct servers with missing modules." -isError:$TRUE
     }
@@ -711,29 +711,29 @@ Function Start-MultipleMachineDistributionListMigration
 
     $account = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 
-    if (get-SMBShare -name $ContactConversionV1ModuleName -errorAction SilentlyContinue)
+    if (get-SMBShare -name $dlConversionV2ModuleName -errorAction SilentlyContinue)
     {
-        out-logfile -string "The ContactConversionV1 share was found."
+        out-logfile -string "The DLConversionV2 share was found."
 
-        if ((get-smbShare -name $ContactConversionV1ModuleName).path -eq $logFolderPath)
+        if ((get-smbShare -name $dlConversionV2ModuleName).path -eq $logFolderPath)
         {
-            out-logfile -string "The ContactConversionV1 share was found and the path matches the logging path."
+            out-logfile -string "The DLConversionV2 share was found and the path matches the logging path."
         }
         else 
         {
-            out-logfile -string "The ContactConversionV1 share was found but the path does not match the logging path."
-            out-logfile -string ((get-smbShare -name $ContactConversionV1ModuleName).path) -isError:$TRUE
+            out-logfile -string "The DLConversionV2 share was found but the path does not match the logging path."
+            out-logfile -string ((get-smbShare -name $dlConversionV2ModuleName).path) -isError:$TRUE
         }
     }
     else 
     {
         try{
-            out-logfile -string "Creating ContactConversionV1 to share to support centralized logging."
+            out-logfile -string "Creating DLConversionV2 to share to support centralized logging."
 
-            new-SMBShare -name $ContactConversionV1ModuleName -path $logFolderPath -fullAccess $account -errorAction STOP
+            new-SMBShare -name $dlConversionV2ModuleName -path $logFolderPath -fullAccess $account -errorAction STOP
         }
         catch{
-            out-logfile -string "Uanble to create the ContactConversionV1 share."
+            out-logfile -string "Uanble to create the DLConversionV2 share."
             out-logfile $_ -isError:$TRUE
         }
     }
@@ -803,9 +803,9 @@ Function Start-MultipleMachineDistributionListMigration
 
         foreach ($credential in $activeDirectoryCredential)
         {
-            Grant-SmbShareAccess -Name $ContactConversionV1ModuleName -AccountName $credential.UserName -AccessRight Full -errorACTION STOP -force
+            Grant-SmbShareAccess -Name $dlConversionV2ModuleName -AccountName $credential.UserName -AccessRight Full -errorACTION STOP -force
 
-            $shareAccess = get-SMBShareAccess -name $ContactConversionV1ModuleName
+            $shareAccess = get-SMBShareAccess -name $dlConversionV2ModuleName
 
             out-logfile -string $shareAccess
         }
@@ -815,9 +815,9 @@ Function Start-MultipleMachineDistributionListMigration
             $forServerName = $server.split(".")
             $forSamAccountName = get-adComputer -identity $forServerName[0] -server $globalCatalogServer -Credential $activeDirectoryCredential[0]
 
-            Grant-SmbShareAccess -Name $ContactConversionV1ModuleName -AccountName $forSAMAccountName.SAMAccountName -AccessRight Full -errorACTION STOP -force
+            Grant-SmbShareAccess -Name $dlConversionV2ModuleName -AccountName $forSAMAccountName.SAMAccountName -AccessRight Full -errorACTION STOP -force
 
-            $shareAccess = get-SMBShareAccess -name $ContactConversionV1ModuleName
+            $shareAccess = get-SMBShareAccess -name $dlConversionV2ModuleName
 
             out-logfile -string $shareAccess
         }
@@ -838,7 +838,7 @@ Function Start-MultipleMachineDistributionListMigration
         $forServerName=$server.split(".")
         $forPath = "\\"+$localHostName+"\"
         out-logfile -string $forPath
-        $forPath=$forPath+$ContactConversionV1ModuleName+"\"
+        $forPath=$forPath+$dlConversionV2ModuleName+"\"
         $forPath = $forPath+$forServerName[0]
         out-logfile -string $forPath
         $networkLoggingDirectory+=$forPath
@@ -1062,7 +1062,7 @@ Function Start-MultipleMachineDistributionListMigration
         {
             out-logfile -string "THe controller is also a migration host.  Use local job."
 
-            Start-Job -name "ControllerJob" -InitializationScript {Import-Module ContactConversionV1} -ScriptBlock { start-MultipleDistributionListMigration -groupSMTPAddresses $args[0] -globalCatalogServer $args[1] -activeDirectoryCredential $args[2] -logFolderPath $args[3] -aadConnectServer $args[4] -aadConnectCredential $args[5] -exchangeServer $args[6] -exchangeCredential $args[7] -exchangeOnlineCredential $args[8] -exchangeOnlineCertificateThumbPrint $args[9] -exchangeOnlineOrganizationName $args[10] -exchangeOnlineEnvironmentName $args[11] -exchangeOnlineAppID $args[12] -exchangeAuthenticationMethod $args[13] -dnNoSyncOU $args[15] -retainOriginalGroup $args[16] -enableHybridMailflow $args[17] -groupTypeOverride $args[18] -triggerUpgradeToOffice365Group $args[19] -useCollectedFullMailboxAccessOnPrem $args[26] -useCollectedFullMailboxAccessOffice365 $args[27] -useCollectedSendAsOnPrem $args[28] -useCollectedFolderPermissionsOnPrem $args[29] -useCollectedFolderPermissionsOffice365 $args[30] -isMultiMachine $args[31] -remoteDriveLetter $args[32]} -ArgumentList $groupSMTPAddressArray[$serverCounter],$globalCatalogServer,$activeDirectoryCredential[$serverCounter],$networkLoggingDirectory[$serverCounter],$aadConnectServer,$aadConnectCredential[$serverCounter],$exchangeServer,$exchangecredential[$serverCounter],$exchangeOnlineCredential[$serverCounter],$exchangeOnlineCertificateThumbPrint,$exchangeOnlineOrganizationName,$exchangeOnlineEnvironmentName,$exchangeOnlineAppID,$exchangeAuthenticationMethod,$retainOffice365Settings,$dnNoSyncOU,$retainOriginalGroup,$enableHybridMailflow,$groupTypeOverride,$triggerUpgradeToOffice365Group,$retainFullMailboxAccessOnPrem,$retainSendAsOnPrem,$retainMailboxFolderPermsOnPrem,$retainFullMailboxAccessOffice365,$retainSendAsOffice365,$retainMailboxFolderPermsOffice365,$useCollectedFolderPermissionsOnPrem,$useCollectedFullMailboxAccessOffice365,$useCollectedSendAsOnPrem,$useCollectedFolderPermissionsOnPrem,$useCollectedFolderPermissionsOffice365,$TRUE,$remoteDriveLetter 
+            Start-Job -name "ControllerJob" -InitializationScript {Import-Module DLConversionV2} -ScriptBlock { start-MultipleDistributionListMigration -groupSMTPAddresses $args[0] -globalCatalogServer $args[1] -activeDirectoryCredential $args[2] -logFolderPath $args[3] -aadConnectServer $args[4] -aadConnectCredential $args[5] -exchangeServer $args[6] -exchangeCredential $args[7] -exchangeOnlineCredential $args[8] -exchangeOnlineCertificateThumbPrint $args[9] -exchangeOnlineOrganizationName $args[10] -exchangeOnlineEnvironmentName $args[11] -exchangeOnlineAppID $args[12] -exchangeAuthenticationMethod $args[13] -dnNoSyncOU $args[15] -retainOriginalGroup $args[16] -enableHybridMailflow $args[17] -groupTypeOverride $args[18] -triggerUpgradeToOffice365Group $args[19] -useCollectedFullMailboxAccessOnPrem $args[26] -useCollectedFullMailboxAccessOffice365 $args[27] -useCollectedSendAsOnPrem $args[28] -useCollectedFolderPermissionsOnPrem $args[29] -useCollectedFolderPermissionsOffice365 $args[30] -isMultiMachine $args[31] -remoteDriveLetter $args[32]} -ArgumentList $groupSMTPAddressArray[$serverCounter],$globalCatalogServer,$activeDirectoryCredential[$serverCounter],$networkLoggingDirectory[$serverCounter],$aadConnectServer,$aadConnectCredential[$serverCounter],$exchangeServer,$exchangecredential[$serverCounter],$exchangeOnlineCredential[$serverCounter],$exchangeOnlineCertificateThumbPrint,$exchangeOnlineOrganizationName,$exchangeOnlineEnvironmentName,$exchangeOnlineAppID,$exchangeAuthenticationMethod,$retainOffice365Settings,$dnNoSyncOU,$retainOriginalGroup,$enableHybridMailflow,$groupTypeOverride,$triggerUpgradeToOffice365Group,$retainFullMailboxAccessOnPrem,$retainSendAsOnPrem,$retainMailboxFolderPermsOnPrem,$retainFullMailboxAccessOffice365,$retainSendAsOffice365,$retainMailboxFolderPermsOffice365,$useCollectedFolderPermissionsOnPrem,$useCollectedFullMailboxAccessOffice365,$useCollectedSendAsOnPrem,$useCollectedFolderPermissionsOnPrem,$useCollectedFolderPermissionsOffice365,$TRUE,$remoteDriveLetter 
         }
         else 
         {
