@@ -11,7 +11,7 @@
 
     The path of the log file.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The SMTP address of the group being migrated - this will be parsed for the log file name.
 
@@ -22,7 +22,7 @@
 
     .EXAMPLE
 
-    new-logfile -groupSMTPAddress ADDRESS -logFolderPath LOGFOLDERPATH
+    new-logfile -contactSMTPAddress ADDRESS -logFolderPath LOGFOLDERPATH
 
     #>
     Function new-LogFile
@@ -32,16 +32,16 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress,
+            [string]$contactSMTPAddress,
             [Parameter(Mandatory = $true)]
             [string]$logFolderPath
         )
 
         #Define the string separator and then separate the string.
         
-        $groupsSMTPAddress = $groupSMTPAddress.trim()
+        $groupsSMTPAddress = $contactSMTPAddress.trim()
         [string]$separator="@"
-        [array]$fileNameSplit = $groupSMTPAddress.Split($separator)
+        [array]$fileNameSplit = $contactSMTPAddress.Split($separator)
 
         #First entry in split array is the prefix of the group - use that for log file name.
         #The SMTP address may contain letters that are not permitted in a file name - for example ?.

@@ -29,7 +29,7 @@
 
     .EXAMPLE
 
-    Get-ADObjectConfiguration -powershellsessionname NAME -groupSMTPAddress Address
+    Get-ADObjectConfiguration -powershellsessionname NAME -contactSMTPAddress Address
 
     #>
     Function new-routingContact

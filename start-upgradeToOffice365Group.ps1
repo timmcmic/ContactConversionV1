@@ -7,7 +7,7 @@
 
     This function triggers the upgrade of the group to an Office 365 Modern / Unified Group
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     .OUTPUTS
 
@@ -15,7 +15,7 @@
 
     .EXAMPLE
 
-    start-upgradeToOffice365Group -groupSMTPAddress address
+    start-upgradeToOffice365Group -contactSMTPAddress address
 
     #>
     Function start-upgradeToOffice365Group
@@ -25,7 +25,7 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"
@@ -40,7 +40,7 @@
 
         #Log the parameters and variables for the function.
 
-        out-logfile -string ("Group SMTP Address = "+$groupSMTPAddress)
+        out-logfile -string ("Group SMTP Address = "+$contactSMTPAddress)
 
         #Call the command to begin the upgrade process.
 
@@ -49,7 +49,7 @@
         out-logfile -string "Administrators MUST validate the upgrade as successful manually."
 
         try{
-            $attempt=upgrade-o365DistributionGroup -DlIdentities $groupSMTPAddress
+            $attempt=upgrade-o365DistributionGroup -DlIdentities $contactSMTPAddress
         }
         catch{
             out-logFile -string $_

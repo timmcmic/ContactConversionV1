@@ -7,7 +7,7 @@
 
     This function uses the exchange online powershell session to gather the office 365 distribution list configuration.
 
-    .PARAMETER GroupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The mail attribute of the group to search.
 
@@ -17,7 +17,7 @@
 
     .EXAMPLE
 
-    Get-O365DLFullMaiboxAccess -groupSMTPAddress Address
+    Get-O365DLFullMaiboxAccess -contactSMTPAddress Address
 
     #>
     Function Get-O365DLMailboxFolderPermissions
@@ -27,7 +27,7 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress,
+            [string]$contactSMTPAddress,
             [Parameter(Mandatory = $false)]
             $collectedData=$NULL
         )
@@ -44,7 +44,7 @@
 
         #Log the parameters and variables for the function.
 
-        Out-LogFile -string ("GroupSMTPAddress = "+$groupSMTPAddress)
+        Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
 
         #Get the recipient using the exchange online powershell session.
 
@@ -67,7 +67,7 @@
 
                 $PercentComplete += $ProgressDelta
 
-                if ($folder.user.tostring() -eq $groupSMTPAddress )
+                if ($folder.user.tostring() -eq $contactSMTPAddress )
                 {
                     $functionFolderAccess+=$folder
                 }
@@ -82,7 +82,7 @@
 
             out-logfile -string ("Post count: "+$collectedData.count)
 
-            $functionFolderAccess = $collectedData | where {$_.user.tostring() -eq $groupSMTPAddress}
+            $functionFolderAccess = $collectedData | where {$_.user.tostring() -eq $contactSMTPAddress}
         }
 
         write-progress -activity "Processing Recipient" -completed

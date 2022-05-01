@@ -11,7 +11,7 @@
 
     These are the parameters that the GET will gather from AD for the DL.  This should be the full map.
 
-    .PARAMETER GroupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The mail attribute of the group to search.
 
@@ -25,7 +25,7 @@
 
     .EXAMPLE
 
-    Get-ADObjectConfiguration -powershellsessionname NAME -groupSMTPAddress Address
+    Get-ADObjectConfiguration -powershellsessionname NAME -contactSMTPAddress Address
 
     #>
     Function Get-ADObjectConfiguration
@@ -35,7 +35,7 @@
         Param
         (
             [Parameter(Mandatory = $true,ParameterSetName = "BySMTPAddress")]
-            [string]$groupSMTPAddress="None",
+            [string]$contactSMTPAddress="None",
             [Parameter(Mandatory = $true,ParameterSetName = "ByDN")]
             [string]$dn="None",
             [Parameter(Mandatory = $true,ParameterSetName = "BySMTPAddress")]
@@ -61,7 +61,7 @@
 
         #Log the parameters and variables for the function.
 
-        Out-LogFile -string ("GroupSMTPAddress = "+$groupSMTPAddress)
+        Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
         OUt-LogFile -string ("Parameter Set:")
         
@@ -78,16 +78,16 @@
         {
             Out-LogFile -string "Using AD / LDAP provider to get original DL configuration"
 
-            if ($groupSMTPAddress -ne "None")
+            if ($contactSMTPAddress -ne "None")
             {
-                out-logfile -string ("Searching by mail address "+$groupSMTPAddress)
-                out-logfile -string ("Imported Address Length: "+$groupsmtpAddress.length.toString())
+                out-logfile -string ("Searching by mail address "+$contactSMTPAddress)
+                out-logfile -string ("Imported Address Length: "+$contactSMTPAddress.length.toString())
 
                 #Ensure that there are no spaces contained in the string (account for import errors.)
 
-                out-logfile -string ("Spaces Removed Address Length: "+$groupsmtpAddress.length.toString())
+                out-logfile -string ("Spaces Removed Address Length: "+$contactSMTPAddress.length.toString())
 
-                $functionDLConfiguration=Get-ADObject -filter "mail -eq '$groupSMTPAddress'" -properties $parameterSet -server $globalCatalogServer -credential $adCredential -errorAction STOP
+                $functionDLConfiguration=Get-ADObject -filter "mail -eq '$contactSMTPAddress'" -properties $parameterSet -server $globalCatalogServer -credential $adCredential -errorAction STOP
             }
             elseif ($DN -ne "None")
             {

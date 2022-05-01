@@ -96,7 +96,7 @@ function start-collectOnPremMailboxFolders
     [string]$exchangeServerURI = "https://"+$exchangeServer+"/powershell" #Full URL to the on premises powershell instance based off name specified parameter.
     [string]$exchangeOnPremisesPowershellSessionName="ExchangeOnPremises" #Defines universal name for on premises Exchange Powershell session.
 
-    new-LogFile -groupSMTPAddress OnPremMailboxFolderPermissions -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress OnPremMailboxFolderPermissions -logFolderPath $logFolderPath
 
     if (($bringMyOwnMailboxes -ne $NULL )-and ($retryCollection -eq $TRUE))
     {

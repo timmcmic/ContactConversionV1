@@ -15,7 +15,7 @@
 
     The member that is being added.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The member that is being added.
 
@@ -25,7 +25,7 @@
 
     .EXAMPLE
 
-    sstart-ReplaceOffice365Dynamic -office365Attribute Attribute -office365Member groupMember -groupSMTPAddress smtpAddess
+    sstart-ReplaceOffice365Dynamic -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-ReplaceOffice365Dynamic
@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $true)]
             [string]$office365Member,
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"
@@ -65,7 +65,7 @@
         {
             out-logfile -string "Attribute is managedBy - this is single value on Dynamic DLs"
 
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$groupSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
 
             $scriptBlock = [scriptBlock]::create($functionCommand)
 
@@ -81,7 +81,7 @@
         }
         else 
         {
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
 
             $scriptBlock = [scriptBlock]::create($functionCommand)

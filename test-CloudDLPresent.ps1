@@ -7,7 +7,7 @@
 
     This function loops until we detect that the cloud DL is no longer present.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The SMTP Address of the group.
 
@@ -17,7 +17,7 @@
 
     .EXAMPLE
 
-    test-CloudDLPresent -groupSMTPAddress SMTPAddress
+    test-CloudDLPresent -contactSMTPAddress SMTPAddress
 
     #>
     Function test-CloudDLPresent
@@ -27,7 +27,7 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         #Declare function variables.
@@ -42,7 +42,7 @@
 
         #Log the parameters and variables for the function.
 
-        out-Logfile -string ("Group SMTP Address = "+$groupSMTPAddress)
+        out-Logfile -string ("Group SMTP Address = "+$contactSMTPAddress)
 
         do 
         {
@@ -56,7 +56,7 @@
                 start-sleepProgress -sleepString "Group found in Office 365 - sleep for 30 seconds - try again." -sleepSeconds 30
             }
 
-        } while (get-exoRecipient -identity $groupSMTPAddress)
+        } while (get-exoRecipient -identity $contactSMTPAddress)
 
         Out-LogFile -string "END TEST-CLOUDDLPRESENT"
         Out-LogFile -string "********************************************************************************"

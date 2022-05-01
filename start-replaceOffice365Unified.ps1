@@ -15,7 +15,7 @@
 
     The member that is being added.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The member that is being added.
 
@@ -25,7 +25,7 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -groupSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-replaceOffice365Unified
@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $true)]
             [string]$office365Member,
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"
@@ -61,7 +61,7 @@
 
         out-Logfile -string "Processing operation..."
 
-        $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+        $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
         out-logfile -string ("The command to execute:  "+$functionCommand)
 
         $scriptBlock = [scriptBlock]::create($functionCommand)

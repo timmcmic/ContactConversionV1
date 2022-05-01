@@ -41,7 +41,7 @@
             [AllowEmptyCollection()]
             [array]$allOnPremFolderPermissions=$NULL,
             [Parameter(Mandatory = $TRUE)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"

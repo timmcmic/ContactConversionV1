@@ -81,7 +81,7 @@ function start-collectOffice365MailboxFolders
     [string]$office365MailboxProcessed="office365MailboxProcessed.xml"
     [int]$auditPermissionsFound=0
 
-    new-LogFile -groupSMTPAddress Office365MailboxFolderPermissions -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress Office365MailboxFolderPermissions -logFolderPath $logFolderPath
 
     #Validate that only one method of engaging exchange online was specified.
 

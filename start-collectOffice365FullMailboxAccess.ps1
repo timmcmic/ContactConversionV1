@@ -93,7 +93,7 @@ function start-collectOffice365FullMailboxAccess
     [string]$office365MailboxList="office365MailboxList.xml"
     [string]$office365RecipientProcessed="office365RecipientProcessed.xml"
 
-    new-LogFile -groupSMTPAddress Office365FullMailboxAccessPermissions -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress Office365FullMailboxAccessPermissions -logFolderPath $logFolderPath
 
     #Validate that only one method of engaging exchange online was specified.
 

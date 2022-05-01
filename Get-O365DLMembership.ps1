@@ -7,7 +7,7 @@
 
     This function obtains the DL membership of the Office 365 distribution group.
 
-    .PARAMETER GroupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The mail attribute of the group to search.
 
@@ -17,7 +17,7 @@
 
     .EXAMPLE
 
-    get-o365dlMembership -groupSMTPAddress Address
+    get-o365dlMembership -contactSMTPAddress Address
 
     #>
     Function Get-o365DLMembership
@@ -27,7 +27,7 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         #Declare function variables.
@@ -42,7 +42,7 @@
 
         #Log the parameters and variables for the function.
 
-        Out-LogFile -string ("GroupSMTPAddress = "+$groupSMTPAddress)
+        Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
 
         #Get the recipient using the exchange online powershell session.
         
@@ -50,7 +50,7 @@
         {
             Out-LogFile -string "Using Exchange Online to obtain the group membership."
 
-            $functionDLMembership=get-O365DistributionGroupMember -identity $groupSMTPAddress -errorAction STOP
+            $functionDLMembership=get-O365DistributionGroupMember -identity $contactSMTPAddress -errorAction STOP
             
             Out-LogFile -string "Distribution group membership recorded."
         }

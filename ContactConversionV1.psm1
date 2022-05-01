@@ -16,7 +16,7 @@
 #############################################################################################
 
 
-Function Start-DistributionListMigration 
+Function Start-ContactMigration
 {
     <#
     .SYNOPSIS
@@ -28,7 +28,7 @@ Function Start-DistributionListMigration
 
     Trigger function.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     *REQUIRED*
     The SMTP address of the distribution list to be migrated.
@@ -64,19 +64,6 @@ Function Start-DistributionListMigration
     *OPTIONAL*
     The credential specified to perform remote powershell / winrm sessions to the AADConnect server.
 
-    .PARAMETER exchangeServer
-
-    *REQUIRED IF HYBRID MAIL FLOW ENALBED*
-    This is the on-premises Exchange server that is required for enabling hybrid mail flow if the option is specified.
-    If using a load balanced namespace - basic authentication on powershell must be enabled on all powersell virtual directories.
-    If using a single server (direct connection) then kerberos authentication may be utilized.
-    
-    .PARAMETER exchangeCredential
-
-    *REQUIRED IF HYBRID MAIL FLOW ENABLED*
-    This is the credential utilized to establish remote powershell sessions to Exchange on-premises.
-    This acccount requires Exchange Organization Management rights in order to enable hybrid mail flow.
-
     .PARAMETER exchangeOnlineCredential
 
     *REQUIRED IF NO OTHER CREDENTIALS SPECIFIED*
@@ -92,19 +79,6 @@ Function Start-DistributionListMigration
     This requires all the pre-requists be established and configured prior to access.
     A certificate thumbprint cannot be specified with exchange online credentials.
 
-    .PARAMETER exchangeAuthenticationMethod
-
-    *OPTIONAL*
-    This allows the administrator to specify either Kerberos or Basic authentication for on premises Exchange Powershell.
-    Basic is the assumed default and requires basic authentication be enabled on the powershell virtual directory of the specified exchange server.
-
-    .PARAMETER retainOffice365Settings
-
-    *OPTIONAL*
-    It is possible over the course of migrations that cloud only resources could have dependencies on objects that still remain on premises.
-    The administrator can choose to scan office 365 to capture any cloud only dependencies that may exist.
-    The default is true.
-
     .PARAMETER doNoSyncOU
 
     *REQUIRED IF RETAIN GROUP FALSE*
@@ -112,7 +86,7 @@ Function Start-DistributionListMigration
     When the administrator specifies to NOT retain the group the group is moved to this OU to allow for deletion from Office 365.
     A doNOSyncOU must be specified if the administrator specifies to NOT retain the group.
 
-    .PARAMETER retainOriginalGroup
+    .PARAMETER retainOriginalContact
 
     *OPTIONAL*
     Allows the administrator to retain the group - for example if the group also has on premises security dependencies.
@@ -149,7 +123,7 @@ Function Start-DistributionListMigration
     Param
     (
         [Parameter(Mandatory = $true)]
-        [string]$groupSMTPAddress,
+        [string]$contactSMTPAddress,
         [Parameter(Mandatory = $true)]
         [string]$globalCatalogServer,
         [Parameter(Mandatory = $true)]
@@ -161,10 +135,6 @@ Function Start-DistributionListMigration
         [Parameter(Mandatory = $false)]
         [pscredential]$aadConnectCredential=$NULL,
         [Parameter(Mandatory = $false)]
-        [string]$exchangeServer=$NULL,
-        [Parameter(Mandatory = $false)]
-        [pscredential]$exchangeCredential=$NULL,
-        [Parameter(Mandatory = $false)]
         [pscredential]$exchangeOnlineCredential=$NULL,
         [Parameter(Mandatory = $false)]
         [string]$exchangeOnlineCertificateThumbPrint="",
@@ -175,40 +145,10 @@ Function Start-DistributionListMigration
         [string]$exchangeOnlineEnvironmentName="O365Default",
         [Parameter(Mandatory = $false)]
         [string]$exchangeOnlineAppID="",
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("Basic","Kerberos")]
-        [string]$exchangeAuthenticationMethod="Basic",
-        [Parameter(Mandatory = $false)]
-        [boolean]$retainOffice365Settings=$true,
         [Parameter(Mandatory = $true)]
         [string]$dnNoSyncOU = "NotSet",
         [Parameter(Mandatory = $false)]
         [boolean]$retainOriginalGroup = $TRUE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$enableHybridMailflow = $FALSE,
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("Security","Distribution","None")]
-        [string]$groupTypeOverride="None",
-        [Parameter(Mandatory = $false)]
-        [boolean]$triggerUpgradeToOffice365Group=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$retainFullMailboxAccessOnPrem=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$retainSendAsOnPrem=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$retainFullMailboxAccessOffice365=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$retainSendAsOffice365=$TRUE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$useCollectedFullMailboxAccessOnPrem=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$useCollectedFullMailboxAccessOffice365=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$useCollectedSendAsOnPrem=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$useCollectedFolderPermissionsOnPrem=$FALSE,
-        [Parameter(Mandatory = $false)]
-        [boolean]$useCollectedFolderPermissionsOffice365=$FALSE,
         [Parameter(Mandatory = $false)]
         [int]$threadNumberAssigned=0,
         [Parameter(Mandatory = $false)]
@@ -218,20 +158,11 @@ Function Start-DistributionListMigration
         [Parameter(Mandatory = $FALSE)]
         [string]$remoteDriveLetter=$NULL,
         [Parameter(Mandatory=$false)]
-        [boolean]$overrideCentralizedMailTransportEnabled=$FALSE,
-        [Parameter(Mandatory=$false)]
         [boolean]$allowNonSyncedGroup=$FALSE
     )
 
-    $windowTitle = ("Start-DistributionListMigration "+$groupSMTPAddress)
+    $windowTitle = ("Start-ContactMigration"+$contactSMTPAddress)
     $host.ui.RawUI.WindowTitle = $windowTitle
-
-    #For mailbox folder permissions set these to false.
-    #Supported methods for gathering folder permissions require use of the pre-collection.
-    #Precolletion automatically sets these to true.  These were origianlly added to support doing it at runtime - but its too slow.
-    
-    [boolean]$retainMailboxFolderPermsOnPrem=$FALSE
-    [boolean]$retainMailboxFolderPermsOffice365=$FALSE
 
     if ($isMultiMachine -eq $TRUE)
     {
@@ -241,16 +172,7 @@ Function Start-DistributionListMigration
             #Therefore we override the original log folder path passed in and just use Z.
 
             [string]$networkName=$remoteDriveLetter
-            #[string]$networkRootPath=$logFolderPath
             $logFolderPath = $networkName+":"
-            #[string]$networkDescription = "This is the centralized logging folder for DLMigrations on this machine."
-            #[string]$networkPSProvider = "FileSystem"
-
-            #New-SmbMapping -LocalPath $logFolderPath -remotePath $networkRootPath -userName $activeDirectoryCredential.userName -password $activeDirectoryCredential.password
-
-            #new-psDrive -name $networkName -root $networkRootPath -description $networkDescription -PSProvider $networkPSProvider -errorAction STOP -credential $activeDirectoryCredential
-
-            #$logFolderPath = $networkName+":"
         }
         catch{
             exit
@@ -528,7 +450,7 @@ Function Start-DistributionListMigration
 
     #Log start of DL migration to the log file.
 
-    new-LogFile -groupSMTPAddress $groupSMTPAddress.trim() -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress $contactSMTPAddress.trim() -logFolderPath $logFolderPath
 
     Out-LogFile -string "================================================================================"
     Out-LogFile -string "BEGIN START-DISTRIBUTIONLISTMIGRATION"
@@ -551,7 +473,7 @@ Function Start-DistributionListMigration
 
     #Perform cleanup of any strings so that no spaces existin trailing or leading.
 
-    $groupSMTPAddress = remove-stringSpace -stringToFix $groupSMTPAddress
+    $contactSMTPAddress = remove-stringSpace -stringToFix $contactSMTPAddress
     $globalCatalogServer = remove-stringSpace -stringToFix $globalCatalogServer
     $logFolderPath = remove-stringSpace -stringToFix $logFolderPath 
 
@@ -594,10 +516,10 @@ Function Start-DistributionListMigration
     Out-LogFile -string "********************************************************************************"
     Out-LogFile -string "PARAMETERS"
     Out-LogFile -string "********************************************************************************"
-    Out-LogFile -string ("GroupSMTPAddress = "+$groupSMTPAddress)
-    out-logfile -string ("Group SMTP Address Length = "+$groupSMTPAddress.length.tostring())
-    out-logfile -string ("Spaces Removed Group SMTP Address: "+$groupSMTPAddress)
-    out-logfile -string ("Group SMTP Address Length = "+$groupSMTPAddress.length.toString())
+    Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
+    out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.tostring())
+    out-logfile -string ("Spaces Removed Group SMTP Address: "+$contactSMTPAddress)
+    out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.toString())
     Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
     Out-LogFile -string ("ActiveDirectoryUserName = "+$activeDirectoryCredential.UserName.tostring())
     Out-LogFile -string ("LogFolderPath = "+$logFolderPath)
@@ -636,7 +558,7 @@ Function Start-DistributionListMigration
     Out-LogFile -string ("ExchangeAuthenticationMethod = "+$exchangeAuthenticationMethod)
     out-logfile -string ("Retain Office 365 Settings = "+$retainOffice365Settings)
     out-logfile -string ("OU that does not sync to Office 365 = "+$dnNoSyncOU)
-    out-logfile -string ("Will the original group be retained as part of migration = "+$retainOriginalGroup)
+    out-logfile -string ("Will the original group be retained as part of migration = "+$retainOriginalContact)
     out-logfile -string ("Enable hybrid mail flow = "+$enableHybridMailflow)
     out-logfile -string ("Group type override = "+$groupTypeOverride)
     Out-LogFile -string "********************************************************************************"
@@ -821,7 +743,7 @@ Function Start-DistributionListMigration
 
     Out-LogFile -string "Validating that if retain original group is false a non-sync OU is specified."
 
-    if (($retainOriginalGroup -eq $FALSE) -and ($dnNoSyncOU -eq "NotSet"))
+    if (($retainOriginalContact -eq $FALSE) -and ($dnNoSyncOU -eq "NotSet"))
     {
         out-LogFile -string "A no SYNC OU is required if retain original group is false." -isError:$TRUE
     }
@@ -1068,7 +990,7 @@ Function Start-DistributionListMigration
 
     try
     {
-        $originalDLConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential
+        $originalDLConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential
     }
     catch
     {
@@ -1231,7 +1153,7 @@ Function Start-DistributionListMigration
     if (($allObjectSendAsAccess -ne 0) -or ($allObjectsFullMailboxAccess -ne 0) -or ($allMailboxesFolderPermissions -ne 0))
     {
         out-logfile -string "Overriding any administrator action to delete the group as dependencies exist."
-        $retainOriginalGroup = $TRUE
+        $retainOriginalContact = $TRUE
     }
     else 
     {
@@ -1246,7 +1168,7 @@ Function Start-DistributionListMigration
     {
         try 
         {
-            $office365DLConfiguration=Get-O365DLConfiguration -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            $office365DLConfiguration=Get-O365DLConfiguration -contactSMTPAddress $contactSMTPAddress -errorAction STOP
         }
         catch 
         {
@@ -3237,7 +3159,7 @@ Function Start-DistributionListMigration
                 out-logfile -string "Group is type security on premises - therefore it may have send as rights."
 
                 try{
-                    $allOffice365SendAsAccess = Get-O365DLSendAs -groupSMTPAddress $groupSMTPAddress -isTrustee:$TRUE -errorAction STOP
+                    $allOffice365SendAsAccess = Get-O365DLSendAs -contactSMTPAddress $contactSMTPAddress -isTrustee:$TRUE -errorAction STOP
                 }
                 catch{
                     out-logfile -string $_ -isError:$TRUE
@@ -3252,7 +3174,7 @@ Function Start-DistributionListMigration
         out-logfile -string ("The number of groups in Office 365 cloud only that the DL has send as rights on = "+$allOffice365SendAsAccess.count)
 
         try {
-            $allOffice365SendAsAccessOnGroup = get-o365DLSendAs -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            $allOffice365SendAsAccessOnGroup = get-o365DLSendAs -contactSMTPAddress $contactSMTPAddress -errorAction STOP
         }
         catch {
             out-logFile -string $_ -isError:$TRUE
@@ -3263,7 +3185,7 @@ Function Start-DistributionListMigration
             if ($useCollectedFullMailboxAccessOffice365 -eq $FALSE)
             {
                 try {
-                    $allOffice365FullMailboxAccess = Get-O365DLFullMaiboxAccess -groupSMTPAddress $groupSMTPAddress
+                    $allOffice365FullMailboxAccess = Get-O365DLFullMaiboxAccess -contactSMTPAddress $contactSMTPAddress
                 }
                 catch {
                     out-logfile -string $_ -isError:$TRUE
@@ -3282,7 +3204,7 @@ Function Start-DistributionListMigration
                 }
 
                 try {
-                    $allOffice365FullMailboxAccess = Get-O365DLFullMaiboxAccess -groupSMTPAddress $groupSMTPAddress -collectedData $importData
+                    $allOffice365FullMailboxAccess = Get-O365DLFullMaiboxAccess -contactSMTPAddress $contactSMTPAddress -collectedData $importData
                 }
                 catch {
                     out-logfile -string $_ -isError:$TRUE
@@ -3308,7 +3230,7 @@ Function Start-DistributionListMigration
             }
 
             try {
-                $allOffice365MailboxFolderPermissions = Get-O365DLMailboxFolderPermissions -groupSMTPAddress $groupSMTPAddress -collectedData $importData
+                $allOffice365MailboxFolderPermissions = Get-O365DLMailboxFolderPermissions -contactSMTPAddress $contactSMTPAddress -collectedData $importData
             }
             catch {
                 out-logfile -string $_ -isError:$TRUE
@@ -3637,7 +3559,7 @@ Function Start-DistributionListMigration
     #$Capture the moved DL configuration (since attibutes change upon move.)
 
     try {
-        $originalDLConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+        $originalDLConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
     }
     catch {
         out-logFile -string $_ -isError:$TRUE
@@ -3777,7 +3699,7 @@ Function Start-DistributionListMigration
     out-logfile -string "Monitoring Exchange Online for distribution list deletion."
 
     try {
-        test-CloudDLPresent -groupSMTPAddress $groupSMTPAddress -errorAction SilentlyContinue
+        test-CloudDLPresent -contactSMTPAddress $contactSMTPAddress -errorAction SilentlyContinue
     }
     catch {
         out-logfile -string $_ -isError:$TRUE
@@ -3894,7 +3816,7 @@ Function Start-DistributionListMigration
 
     do {
         try {
-            $office365DLConfigurationPostMigration = Get-O365DLConfiguration -groupSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
+            $office365DLConfigurationPostMigration = Get-O365DLConfiguration -contactSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
 
             #If we made it this far we were successful - output the information to XML.
 
@@ -3962,7 +3884,7 @@ Function Start-DistributionListMigration
 
     do {
         try {
-            $office365DLConfigurationPostMigration = Get-O365DLConfiguration -groupSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
+            $office365DLConfigurationPostMigration = Get-O365DLConfiguration -contactSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
 
             #If we made it this far we successfully got the DL.  Write it.
 
@@ -3997,7 +3919,7 @@ Function Start-DistributionListMigration
 
     do {
         try{
-            $office365DLMembershipPostMigration = get-O365DLMembership -groupSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
+            $office365DLMembershipPostMigration = get-O365DLMembership -contactSMTPAddress $office365DLConfigurationPostMigration.externalDirectoryObjectID -errorAction STOP
 
             #Membership obtained - export.
 
@@ -4033,7 +3955,7 @@ Function Start-DistributionListMigration
     ###Rename the group by adding a ! to the name - this ensures that if the group is every accidentally mail enabled it will not soft match the migrated group.
     ###We'll stamp custom attribute flags on it to ensure that we know the group has been mirgated - in case it's a member of another group to be migrated.
 
-    if ($retainOriginalGroup -eq $TRUE)
+    if ($retainOriginalContact -eq $TRUE)
     {
         Out-LogFile -string "Administrator has choosen to retain the original group."
         out-logfile -string "Rename the group by adding the fixed character !"
@@ -4065,7 +3987,7 @@ Function Start-DistributionListMigration
 
         do {
             try {
-                $originalDLConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalDLConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop=$TRUE
             }
@@ -4267,7 +4189,7 @@ Function Start-DistributionListMigration
 
             out-logfile -string ("Temp routing contact address: "+$tempMailAddress)
 
-            $routingContactConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+            $routingContactConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
             $stopLoop=$TRUE
         }
@@ -4772,9 +4694,9 @@ Function Start-DistributionListMigration
                     out-logfile -string "Other objects than groups have this group as a manager.  Not processing the routing contact change as manager."
                     out-logfile -string "Automatically setting preserve group as to not break permissions on objects."    
 
-                    $retainOriginalGroup = $TRUE
+                    $retainOriginalContact = $TRUE
 
-                    out-logfile -string ("Retain Original Group: "+$retainOriginalGroup)
+                    out-logfile -string ("Retain Original Group: "+$retainOriginalContact)
                 }
             }
             else 
@@ -4870,7 +4792,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -4926,7 +4848,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -4982,7 +4904,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5038,7 +4960,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5094,7 +5016,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365ManagedBy -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365ManagedBy -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5154,7 +5076,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365AcceptMessagesFrom -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365AcceptMessagesFrom -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5209,7 +5131,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365RejectMessagesFrom -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365RejectMessagesFrom -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5265,7 +5187,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365BypassModerationusers -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365BypassModerationusers -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5321,7 +5243,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5377,7 +5299,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365ManagedBy -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Dynamic -office365Attribute $office365ManagedBy -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5435,7 +5357,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365UnifiedAccept -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365UnifiedAccept -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5491,7 +5413,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365UnifiedReject -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365UnifiedReject -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5547,7 +5469,7 @@ Function Start-DistributionListMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -5606,7 +5528,7 @@ Function Start-DistributionListMigration
 
             out-logfile -string ("Processing group = "+$member.primarySMTPAddress)
             try {
-                $isTestError=start-replaceOffice365Members -office365Group $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-replaceOffice365Members -office365Group $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch {
                 out-logfile -string $_
@@ -5645,7 +5567,7 @@ Function Start-DistributionListMigration
 
         try 
         {
-            set-Office365DLPermissions -allSendAs $allOffice365SendAsAccess -allFullMailboxAccess $allOffice365FullMailboxAccess -allFolderPermissions $allOffice365MailboxFolderPermissions -allOnPremSendAs $allObjectsSendAsAccessNormalized -originalGroupPrimarySMTPAddress $groupSMTPAddress -errorAction STOP
+            set-Office365DLPermissions -allSendAs $allOffice365SendAsAccess -allFullMailboxAccess $allOffice365FullMailboxAccess -allFolderPermissions $allOffice365MailboxFolderPermissions -allOnPremSendAs $allObjectsSendAsAccessNormalized -originalGroupPrimarySMTPAddress $contactSMTPAddress -errorAction STOP
         }
         catch 
         {
@@ -5755,7 +5677,7 @@ Function Start-DistributionListMigration
 
         do {
             try{
-                $routingDynamicGroupConfig = $originalDLConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential
+                $routingDynamicGroupConfig = $originalDLConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential
 
                 $stopLoop = $TRUE
             }
@@ -5804,7 +5726,7 @@ Function Start-DistributionListMigration
         try{
             $isTestError="No"
 
-            $isTestError=start-upgradeToOffice365Group -groupSMTPAddress $groupSMTPAddress
+            $isTestError=start-upgradeToOffice365Group -contactSMTPAddress $contactSMTPAddress
         }
         catch{
             out-logfile -string $_
@@ -5831,7 +5753,7 @@ Function Start-DistributionListMigration
 
     #If the administrator has selected to not retain the group - remove it.
 
-    if ($retainOriginalGroup -eq $FALSE)
+    if ($retainOriginalContact -eq $FALSE)
     {
         $isTestError="No"
 

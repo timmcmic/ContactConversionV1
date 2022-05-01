@@ -7,7 +7,7 @@
 
     This function enables the administrator to create the hybrid mail flow objects post migration.
 
-    .PARAMETER GroupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The mail attribute of the group to search.
 
@@ -17,7 +17,7 @@
 
     .EXAMPLE
 
-    enable-HybridMailFlow -groupSMTPAddress SMTPAddress -globalCatalogServer GC.domain.com -activeDirectoryCredential $cred -exchangeServer server.domain.com -exchangeServerCredential $cred -exchangeOnlineCredential $cred
+    enable-HybridMailFlow -contactSMTPAddress SMTPAddress -globalCatalogServer GC.domain.com -activeDirectoryCredential $cred -exchangeServer server.domain.com -exchangeServerCredential $cred -exchangeOnlineCredential $cred
 
     #>
     Function enable-hybridMailFlowPostMigration
@@ -27,7 +27,7 @@
         Param
         (
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress,
+            [string]$contactSMTPAddress,
             [Parameter(Mandatory = $true)]
             [string]$globalCatalogServer,
             [Parameter(Mandatory = $true)]
@@ -86,7 +86,7 @@
 
         #Create the log file.
 
-        new-LogFile -groupSMTPAddress $groupSMTPAddress.trim() -logFolderPath $logFolderPath
+        new-LogFile -contactSMTPAddress $contactSMTPAddress.trim() -logFolderPath $logFolderPath
 
         #Start function processing.
 
@@ -109,7 +109,7 @@
 
         out-logfile -string "Ensure that all strings specified have no leading or trailing spaces."
 
-        $groupSMTPAddress = remove-stringSpace -stringToFix $groupSMTPAddress
+        $contactSMTPAddress = remove-stringSpace -stringToFix $contactSMTPAddress
         $globalCatalogServer = remove-stringSpace -stringToFix $globalCatalogServer
         $logFolderPath = remove-stringSpace -stringToFix $logFolderPath 
 
@@ -140,10 +140,10 @@
         Out-LogFile -string "********************************************************************************"
         Out-LogFile -string "PARAMETERS"
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string ("GroupSMTPAddress = "+$groupSMTPAddress)
-        out-logfile -string ("Group SMTP Address Length = "+$groupSMTPAddress.length.tostring())
-        out-logfile -string ("Spaces Removed Group SMTP Address: "+$groupSMTPAddress)
-        out-logfile -string ("Group SMTP Address Length = "+$groupSMTPAddress.length.toString())
+        Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
+        out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.tostring())
+        out-logfile -string ("Spaces Removed Group SMTP Address: "+$contactSMTPAddress)
+        out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.toString())
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
         Out-LogFile -string ("ActiveDirectoryUserName = "+$activeDirectoryCredential.UserName.tostring())
         Out-LogFile -string ("LogFolderPath = "+$logFolderPath)
@@ -361,7 +361,7 @@
         try {
             out-logfile -string "Obtaining Office 365 Distribution List Configuration"
 
-            $office365DLConfiguration = get-o365dlconfiguration -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            $office365DLConfiguration = get-o365dlconfiguration -contactSMTPAddress $contactSMTPAddress -errorAction STOP
         }
         catch {
             out-logfile -string "Unable to obtain the distribution list information from Office 365."
@@ -403,7 +403,7 @@
         out-logfile -string ("Temp routing contact address: "+$tempMailAddress)
 
         try {
-            $routingContactConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
+            $routingContactConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
 
             out-logfile -string "Overriding OU selection by adminsitrator - contact already exists.  Must be the same as contact."
 
@@ -437,7 +437,7 @@
             try {
                 out-logfile -string "Re-obtaining the routing contact configuration."
     
-                $routingContactConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
+                $routingContactConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop = $TRUE
             }
@@ -475,7 +475,7 @@
         try{
             out-logfile -string "Re-obtaining the routing contact configuration."
 
-            $routingContactConfiguration = Get-ADObjectConfiguration -groupSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
+            $routingContactConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet "*" -errorAction STOP -adCredential $activeDirectoryCredential 
         }
         catch{
             out-logfile -string $_

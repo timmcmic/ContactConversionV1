@@ -93,7 +93,7 @@ function start-collectOnPremFullMailboxAccess
     [string]$exchangeServerURI = "https://"+$exchangeServer+"/powershell" #Full URL to the on premises powershell instance based off name specified parameter.
     [string]$exchangeOnPremisesPowershellSessionName="ExchangeOnPremises" #Defines universal name for on premises Exchange Powershell session.
 
-    new-LogFile -groupSMTPAddress OnPremFullMailboxAccessPermissions -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress OnPremFullMailboxAccessPermissions -logFolderPath $logFolderPath
 
     if (($bringMyOwnMailboxes -ne $NULL )-and ($retryCollection -eq $TRUE))
     {

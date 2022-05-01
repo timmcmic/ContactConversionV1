@@ -15,7 +15,7 @@
 
     The member that is being added.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The member that is being added.
 
@@ -25,7 +25,7 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -groupSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-ReplaceOffice365
@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $true)]
             $office365Member,
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"
@@ -76,49 +76,49 @@
         {
             out-logfile -string "Recipient is a mailbox with forwarding rights."
 
-            $functionCommand="set-o365Mailbox -identity $office365Member -$office365Attribute '$groupSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365Mailbox -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif (($office365Member.recipientType -eq $functionDistributionGroupRecipientType) -and ($office365Member.recipientTypeDetails -eq $functionUniveralRecipientDisplayType))
         {
             out-logfile -string "Recipient is a unified group."
 
-            $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif (($office365Member.recipientType -eq $functionDistributionGroupRecipientType) -or ($office365Member.recipientType -eq $functionSecurityGroupRecipientType))
         {
             out-logfile -string "Recipient is a mail enabled distribution group or mail enabled security group."
 
-            $functionCommand="set-o365DistributionGroup -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP -bypassSecurityGroupManagerCheck"
+            $functionCommand="set-o365DistributionGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP -bypassSecurityGroupManagerCheck"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionDynamicDistributionGroupRecipientType)
         {
             out-logfile -string "Recipient is a dynamic distribution group."
 
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$groupSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365member.recipientType -eq $functionMailboxRecipientType)
         {
             out-logfile -string "Recipient is a mailbox."
 
-            $functionCommand="set-o365Mailbox -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365Mailbox -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionMailUserRecipientType)
         {
             out-logfile -string "Recipient is a mail user."
 
-            $functionCommand="set-o365MailUser -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365MailUser -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionMailContactRecipientType)
         {
             out-logfile -string "Recipient is a mail user."
 
-            $functionCommand="set-o365MailContact -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365MailContact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         else 

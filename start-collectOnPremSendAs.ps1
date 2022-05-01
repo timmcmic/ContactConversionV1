@@ -99,7 +99,7 @@ function start-collectOnPremSendAs
         out-logfile -string "If mailboxes were previously provided - rerun command with just retry collection." -iserror:$TRUE -isAudit:$TRUE
     }
 
-    new-LogFile -groupSMTPAddress OnPremSendAsPermissions -logFolderPath $logFolderPath
+    new-LogFile -contactSMTPAddress OnPremSendAsPermissions -logFolderPath $logFolderPath
 
     try 
     {

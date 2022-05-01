@@ -11,7 +11,7 @@
 
     The member that is being added.
 
-    .PARAMETER groupSMTPAddress
+    .PARAMETER contactSMTPAddress
 
     The member that is being added.
 
@@ -21,7 +21,7 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -groupSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-replaceOffice365Members
@@ -33,7 +33,7 @@
             [Parameter(Mandatory = $true)]
             $office365Group,
             [Parameter(Mandatory = $true)]
-            [string]$groupSMTPAddress
+            [string]$contactSMTPAddress
         )
 
         [string]$isTestError="No"
@@ -49,14 +49,14 @@
         $functionCommand=$NULL
 
         Out-LogFile -string ("Office 365 Attribute = "+$office365Group)
-        out-logfile -string ("Office 365 Member = "+$groupSMTPAddress)
+        out-logfile -string ("Office 365 Member = "+$contactSMTPAddress)
 
         #Declare function variables.
 
         out-Logfile -string "Processing operation..."
 
         try{
-            add-o365DistributionGroupMember -identity $office365Group.primarySMTPAddress -member $groupSMTPAddress -errorAction STOP -BypassSecurityGroupManagerCheck
+            add-o365DistributionGroupMember -identity $office365Group.primarySMTPAddress -member $contactSMTPAddress -errorAction STOP -BypassSecurityGroupManagerCheck
         }
         catch{
             out-logfile -string $_
