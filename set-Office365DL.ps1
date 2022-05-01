@@ -325,7 +325,7 @@
 
         try 
         {
-            out-logfile -string "Setting core single values for the distribution group."
+            out-logfile -string "Setting core single values for the group."
 
             Set-O365DistributionGroup -Identity $functionExternalDirectoryObjectID -name $originalDLConfiguration.cn -Alias $functionMailNickName -DisplayName $functionDisplayName -HiddenFromAddressListsEnabled $functionHiddenFromAddressList -RequireSenderAuthenticationEnabled $functionRequireAuthToSendTo -SimpleDisplayName $functionSimpleDisplayName -WindowsEmailAddress $originalDLConfiguration.mail -MailTipTranslations $originalDLConfiguration.msExchSenderHintTranslations -BypassSecurityGroupManagerCheck -errorAction STOP
         }
@@ -340,8 +340,8 @@
                 ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalDLConfiguration.name
-                Attribute = "Cloud distribution list:  Alias / DisplayName / HiddenFromAddressList / RequireSenderAuthenticaiton / SimpleDisplayName / WindowsEmailAddress / MailTipTranslations / Name"
-                ErrorMessage = "Error setting single valued attribute of the migrated distribution list."
+                Attribute = "Cloud list:  Alias / DisplayName / HiddenFromAddressList / RequireSenderAuthenticaiton / SimpleDisplayName / WindowsEmailAddress / MailTipTranslations / Name"
+                ErrorMessage = "Error setting single valued attribute of the migrated list."
                 ErrorMessageDetail = $_
             }
 
@@ -365,8 +365,8 @@
                 ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalDLConfiguration.name
-                Attribute = "Cloud distribution list:  BypassNedstedModerationEnabled / ModerationEnabled / SendModerationNotifications"
-                ErrorMessage = "Error setting additional single valued attribute of the migrated distribution group."
+                Attribute = "Cloud list:  BypassNedstedModerationEnabled / ModerationEnabled / SendModerationNotifications"
+                ErrorMessage = "Error setting additional single valued attribute of the migrated group."
                 ErrorMessageDetail = $_
             }
 
@@ -390,7 +390,7 @@
                 ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalDLConfiguration.name
-                Attribute = "Cloud distribution list:  MemberJoinRestriction / MemberDepartRestriction"
+                Attribute = "Cloud list:  MemberJoinRestriction / MemberDepartRestriction"
                 ErrorMessage = "Error setting join or depart restrictions."
                 ErrorMessageDetail = $_
             }
@@ -415,7 +415,7 @@
                 ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalDLConfiguration.name
-                Attribute = "Cloud distribution list:  ReportToManagerEnabled / ReportToOriginatorEnabled / SendOOFMessageToOriginatorEnabled"
+                Attribute = "Cloud list:  ReportToManagerEnabled / ReportToOriginatorEnabled / SendOOFMessageToOriginatorEnabled"
                 ErrorMessage = "Error setting report to attributes."
                 ErrorMessageDetail = $_
             }
@@ -440,7 +440,7 @@
                 ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalDLConfiguration.name
-                Attribute = "Cloud distribution list:  CustomAttributeX / ExtensionAttributeX"
+                Attribute = "Cloud list:  CustomAttributeX / ExtensionAttributeX"
                 ErrorMessage = "Error setting custom or extension attributes."
                 ErrorMessageDetail = $_
             }

@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function confirms that the distribution list specified and found in Office 365 is DirSynced=TRUE
+    This function confirms that the list specified and found in Office 365 is DirSynced=TRUE
     
     .DESCRIPTION
 
-    This function confirms that the distribution list specified and found in Office 365 is DirSynced=TRUE
+    This function confirms that the list specified and found in Office 365 is DirSynced=TRUE
 
     .PARAMETER O365DLConfiguration
 
@@ -38,15 +38,15 @@
         
         try 
         {
-            Out-LogFile -string ("Distribution list isDirSynced = "+$o365dlconfiguration.isDirSynced)
+            Out-LogFile -string ("list isDirSynced = "+$o365dlconfiguration.isDirSynced)
 
             if ($o365dlconfiguration.isDirSynced -eq $FALSE)
             {
-                Out-LogFile -string "The distribution list requested is not directory synced and cannot be migrated." -isError:$TRUE
+                Out-LogFile -string "The list requested is not directory synced and cannot be migrated." -isError:$TRUE
             }
             else 
             {
-                Out-LogFile -string "The distribution list requested is directory synced."
+                Out-LogFile -string "The list requested is directory synced."
             }
         }
         catch 

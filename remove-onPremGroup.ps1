@@ -36,7 +36,7 @@
         Out-LogFile -string "BEGIN remove-onPremGroup"
         Out-LogFile -string "********************************************************************************"
 
-        out-logFile -string "Remove on premises distribution group."
+        out-logFile -string "Remove on premises group."
 
         try
         {

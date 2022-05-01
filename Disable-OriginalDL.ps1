@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function disabled the on premies distribution list - removing it from azure ad and exchange online.
+    This function disabled the on premies list - removing it from azure ad and exchange online.
 
     .DESCRIPTION
 
-    This function disabled the on premies distribution list - removing it from azure ad and exchange online.
+    This function disabled the on premies list - removing it from azure ad and exchange online.
 
     .PARAMETER parameterSet
 

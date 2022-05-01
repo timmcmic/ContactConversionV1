@@ -355,16 +355,16 @@
         Out-LogFile -string "END ESTABLISH POWERSHELL SESSIONS"
         Out-LogFile -string "********************************************************************************"
 
-        #First step - gather the Office 365 DL Information.
+        #First step - gather the office 365 contact Information.
         #The DL should be present in the service and previously migrated.
 
         try {
-            out-logfile -string "Obtaining Office 365 Distribution List Configuration"
+            out-logfile -string "Obtaining Office 365 List Configuration"
 
             $office365DLConfiguration = get-o365dlconfiguration -groupSMTPAddress $groupSMTPAddress -errorAction STOP
         }
         catch {
-            out-logfile -string "Unable to obtain the distribution list information from Office 365."
+            out-logfile -string "Unable to obtain the list information from Office 365."
             out-logfile -string $_ -isError:$TRUE
         }
 
@@ -372,17 +372,17 @@
 
         #Now that we have the configuration - we need to ensure dir sync is set to false.
 
-        out-logfile -string "Testing to ensure that the distribution list is directory synchornized."
+        out-logfile -string "Testing to ensure that the list is directory synchornized."
 
         out-logfile -string ("IsDirSynced: "+$office365DLConfiguration.isDirSynced)
 
         if ($office365DLConfiguration.isDirSynced -eq $FALSE)
         {
-            out-logfile -string "The distribution list is cloud only - proceed."
+            out-logfile -string "The list is cloud only - proceed."
         }
         else 
         {
-            out-logfile -string "The distribution list is directory synchronized - this function may only run on cloud only groups." -isError:$TRUE    
+            out-logfile -string "The list is directory synchronized - this function may only run on cloud only groups." -isError:$TRUE    
         }
 
         #At this time test to ensure the routing contact is present.
@@ -484,15 +484,15 @@
 
         out-xmlFile -itemToExport $routingContactConfiguration -itemNameToExport $routingContactXML+2
 
-        #The routing contact is now mail enabled.  Create the dynamic distribution group.
+        #The routing contact is now mail enabled.  Create the dynamic group.
 
         try {
-            out-logfile -string "Creating the dynamic distribution group for mail routing."
+            out-logfile -string "Creating the dynamic group for mail routing."
 
             Enable-MailDyamicGroup -globalCatalogServer $globalCatalogServer -originalDLConfiguration $office365DLConfiguration -routingContactConfig $routingContactConfiguration -isRetry:$TRUE -errorAction STOP
         }
         catch {
-            out-logfile -string "Unable to create the dynamic distribution group."
+            out-logfile -string "Unable to create the dynamic group."
             out-logfile -string $_ -isError:$TRUE
         }
 

@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function updates the membership of any cloud only distribution lists for the migrated distribution group.
+    This function updates the membership of any cloud only lists for the migrated group.
 
     .DESCRIPTION
 
-    This function updates the membership of any cloud only distribution lists for the migrated distribution group.
+    This function updates the membership of any cloud only lists for the migrated group.
 
     .PARAMETER office365Group
 

@@ -58,7 +58,7 @@
 
         #Log the parameters and variables for the function.
 
-        #Create the dynamic distribution group.
+        #Create the dynamic group.
         #This is very import - the group is scoped to the OU where it was created and uses the two custom attributes.
         #If the mail contact is ever moved from the OU that the DL originally existed in - hybrid mail flow breaks.
 

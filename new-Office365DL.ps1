@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function creates the new distribution group in office 365.
+    This function creates the new group in office 365.
 
     .DESCRIPTION
 
-    This function creates the new distribution group in office 365.
+    This function creates the new group in office 365.
 
     .PARAMETER originalDLConfiguration
 
@@ -104,11 +104,11 @@
 
         out-logfile -string ("Random DL name: "+$functionName)
 
-        #Create the distribution group in office 365.
+        #Create the group in office 365.
         
         try 
         {
-            out-logfile -string "Creating the distribution group in Office 365."
+            out-logfile -string "Creating the group in Office 365."
 
             $functionDL = new-o365distributionGroup -name $functionName -type $functionGroupType -ignoreNamingPolicy:$TRUE -errorAction STOP 
 

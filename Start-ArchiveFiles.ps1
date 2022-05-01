@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function archives the files associated with the distribution list migration.
+    This function archives the files associated with the list migration.
 
     .DESCRIPTION
 
-    his function archives the files associated with the distribution list migration.
+    his function archives the files associated with the list migration.
 
     .PARAMETER isSuccess
 

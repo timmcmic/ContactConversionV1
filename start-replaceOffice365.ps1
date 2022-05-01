@@ -88,14 +88,14 @@
         }
         elseif (($office365Member.recipientType -eq $functionDistributionGroupRecipientType) -or ($office365Member.recipientType -eq $functionSecurityGroupRecipientType))
         {
-            out-logfile -string "Recipient is a mail enabled distribution group or mail enabled security group."
+            out-logfile -string "Recipient is a mail enabled group or mail enabled security group."
 
             $functionCommand="set-o365DistributionGroup -identity $office365Member -$office365Attribute @{add='$groupSMTPAddress'} -errorAction STOP -bypassSecurityGroupManagerCheck"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionDynamicDistributionGroupRecipientType)
         {
-            out-logfile -string "Recipient is a dynamic distribution group."
+            out-logfile -string "Recipient is a dynamic group."
 
             $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$groupSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)

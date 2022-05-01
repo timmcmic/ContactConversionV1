@@ -94,7 +94,7 @@
 
                 out-logfile "Managed by is only relevant to groups - performing query on only groups."
 
-                out-logfile -string "Starting collection of distribution groups."
+                out-logfile -string "Starting collection of groups."
 
                 $functionCommand = "Get-o365DistributionGroup -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
@@ -104,7 +104,7 @@
                 
                 out-logfile -string ("The function command executed = "+$functionCommand)
 
-                out-logfile -string "Starting collection of dynamic distribution groups."
+                out-logfile -string "Starting collection of dynamic groups."
 
                 $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
@@ -124,7 +124,7 @@
 
                 if ($groupType -eq "Standard")
                 {
-                    out-logfile -string "The group type is standard - querying distribution groups."
+                    out-logfile -string "The group type is standard - querying groups."
                     
                     $functionCommand = "Get-o365DistributionGroup -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
@@ -136,7 +136,7 @@
                 }
                 elseif ($groupType -eq "Unified")
                 {
-                    out-logfile -string "The group type is unified - querying distribution groups."
+                    out-logfile -string "The group type is unified - querying groups."
                     
                     $functionCommand = "Get-o365UnifiedGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
@@ -148,7 +148,7 @@
                 }
                 elseif ($groupType -eq "Dynamic")
                 {
-                    out-logfile -string "The group type is dynamic - querying distribution groups."
+                    out-logfile -string "The group type is dynamic - querying groups."
                     
                     $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
@@ -166,7 +166,7 @@
                 #>
 
                 out-logfile -string "Starting to gather attribute for all recipient types."
-                out-logfile -string "Starting collection of distribution groups."
+                out-logfile -string "Starting collection of groups."
 
                 $functionCommand = "Get-o365DistributionGroup -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
@@ -176,7 +176,7 @@
                 
                 out-logfile -string ("The function command executed = "+$functionCommand)
 
-                out-logfile -string "Starting collection of dynamic distribution groups."
+                out-logfile -string "Starting collection of dynamic groups."
 
                 $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
@@ -186,7 +186,7 @@
                 
                 out-logfile -string ("The function command executed = "+$functionCommand)
 
-                out-logfile -string "Starting collection of universal distribution groups."
+                out-logfile -string "Starting collection of universal groups."
 
                 $functionCommand = "Get-o365UnifiedGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 

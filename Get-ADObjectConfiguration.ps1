@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function gets the original DL configuration for the on premises group using AD providers.
+    This function gets the original contact configuration for the on premises group using AD providers.
 
     .DESCRIPTION
 
-    This function gets the original DL configuration for the on premises group using AD providers.
+    This function gets the original contact configuration for the on premises group using AD providers.
 
     .PARAMETER parameterSet
 
@@ -76,7 +76,7 @@
         
         try 
         {
-            Out-LogFile -string "Using AD / LDAP provider to get original DL configuration"
+            Out-LogFile -string "Using AD / LDAP provider to get original contact configuration"
 
             if ($groupSMTPAddress -ne "None")
             {
@@ -108,7 +108,7 @@
                 throw "The group cannot be found in Active Directory by email address."
             }
 
-            Out-LogFile -string "Original DL configuration found and recorded."
+            Out-LogFile -string "original contact configuration found and recorded."
         }
         catch 
         {

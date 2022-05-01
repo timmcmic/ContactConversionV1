@@ -84,7 +84,7 @@
                 $isErrorObject = new-Object psObject -property @{
                     permissionIdentity = $permission.Identity
                     attribute = "Send As Permission"
-                    errorMessage = "Unable to add the migrated distribution list mail contact with send as permissions to groups sourced on onPremRecipientSendAs."
+                    errorMessage = "Unable to add the migrated list mail contact with send as permissions to groups sourced on onPremRecipientSendAs."
                     errorMessageDetail = $errorMessageDetail
                 }
     
@@ -132,7 +132,7 @@
                 $isErrorObject = new-Object psObject -property @{
                     permissionIdentity = $permission.Identity
                     attribute = "Mailbox Folder Permission"
-                    errorMessage = "Unable to add the migrated distribution list with full mailbox access permissions to resource.  Manaul add required."
+                    errorMessage = "Unable to add the migrated list with full mailbox access permissions to resource.  Manaul add required."
                     errorMessageDetail = $errorMessageDetail
                 }
 
@@ -181,7 +181,7 @@
                 $isErrorObject = new-Object psObject -property @{
                     permissionIdentity = $permission.Identity
                     attribute = "Mailbox Folder Permission"
-                    errorMessage = "Unable to add the migrated distribution list with mailbox folder permissions to resource.  Manaul add required."
+                    errorMessage = "Unable to add the migrated list with mailbox folder permissions to resource.  Manaul add required."
                     errorMessageDetail = $errorMessageDetail
                 }
 
