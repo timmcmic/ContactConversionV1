@@ -62,7 +62,7 @@
         if ($allOnPremSendAs.count -gt 0)
         {
             out-logfile -string "The migrated group has send as rights on premises for groups that are directory synced."
-            out-logfile -string "Adding the send as right to the cloud for the migrated group."
+            out-logfile -string "Adding the send as right to the cloud for the migrated distribution group."
 
             foreach ($permission in $allOnPremSendAs)
             {
@@ -86,7 +86,7 @@
 
                 if ($isTestError -eq "Yes")
                 {
-                    out-logfile -string "Error adding mirgated list to send as permission of cloud only group.."
+                    out-logfile -string "Error adding mirgated distribution list to send as permission of cloud only group.."
     
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.primarySMTPAddressorUPN
@@ -138,7 +138,7 @@
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.Identity
                         attribute = "SendAs Permission"
-                        errorMessage = "Unable to add the migrated list with send as permissions to resource.  Manaul add required."
+                        errorMessage = "Unable to add the migrated distribution list with send as permissions to resource.  Manaul add required."
                         errorMessageDetail = $errorMessageDetail
                     }
     
@@ -187,7 +187,7 @@
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.Identity
                         attribute = "FullMailboxAccess Permission"
-                        errorMessage = "Unable to add the migrated list with full mailbox access permissions to resource.  Manaul add required."
+                        errorMessage = "Unable to add the migrated distribution list with full mailbox access permissions to resource.  Manaul add required."
                         errorMessageDetail = $errorMessageDetail
                     }
     
@@ -234,7 +234,7 @@
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.Identity
                         attribute = "Mailbox Folder Permission"
-                        errorMessage = "Unable to remove the migrated list with mailbox folder permissions to resource.  Manaul add required."
+                        errorMessage = "Unable to remove the migrated distribution list with mailbox folder permissions to resource.  Manaul add required."
                         errorMessageDetail = $errorMessageDetail
                     }
     
@@ -271,7 +271,7 @@
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.Identity
                         attribute = "Mailbox Folder Permission"
-                        errorMessage = "Unable to add the migrated list with mailbox folder permissions to resource.  Manaul add required."
+                        errorMessage = "Unable to add the migrated distribution list with mailbox folder permissions to resource.  Manaul add required."
                         errorMessageDetail = $errorMessageDetail
                     }
     

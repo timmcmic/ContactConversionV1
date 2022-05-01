@@ -36,7 +36,7 @@ function start-collectOnPremFullMailboxAccess
     .OUTPUTS
 
     Logs all activities and backs up all original data to the log folder directory.
-    Moves the group from on premieses source of authority to office 365 source of authority.
+    Moves the distribution group from on premieses source of authority to office 365 source of authority.
 
     .EXAMPLE
 

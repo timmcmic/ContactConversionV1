@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function uses the exchange online powershell session to gather the office 365 list configuration.
+    This function uses the exchange online powershell session to gather the office 365 distribution list configuration.
 
     .DESCRIPTION
 
-    This function uses the exchange online powershell session to gather the office 365 list configuration.
+    This function uses the exchange online powershell session to gather the office 365 distribution list configuration.
 
     .PARAMETER GroupSMTPAddress
 

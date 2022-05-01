@@ -9,7 +9,7 @@
     
     .PARAMETER originalDLConfiguration
 
-    This is the original contact configuration from on premises.
+    This is the original DL configuration from on premises.
 
     .PARAMETER office365DLConfiguration
 
@@ -60,8 +60,8 @@
 
         #write out parameters utilized to log file.
         
-        out-logfile -string ("original contact Configuration = "+$originalDLConfiguration)
-        out-logfile -string ("office 365 contact Configuration = "+$office365DLConfiguration)
+        out-logfile -string ("Original DL Configuration = "+$originalDLConfiguration)
+        out-logfile -string ("Office 365 DL Configuration = "+$office365DLConfiguration)
         out-logfile -string ("Global catalog server = "+$globalCatalogServer)
         out-logfile -string ("AD User Name = "+$adCredential.UserName)
 

@@ -21,16 +21,16 @@ Function Start-MultipleDistributionListMigration
     <#
     .SYNOPSIS
 
-    This is the wrapper function that provisions jobs for multiple list migrations.
+    This is the wrapper function that provisions jobs for multiple distribution list migrations.
 
     .DESCRIPTION
 
-    This is the wrapper function that provisions jobs for multiple list migrations.
+    This is the wrapper function that provisions jobs for multiple distribution list migrations.
 
     .PARAMETER groupSMTPAddresses
 
     *REQUIRED*
-    This is the array of lists to be migrated 
+    This is the array of distribution lists to be migrated 
 
     .PARAMETER globalCatalogServer
 
@@ -122,8 +122,8 @@ Function Start-MultipleDistributionListMigration
 
     *OPTIONAL*
     Allows the administrator to decide that they want mail flow from on premises to cloud to work for the migrated DL.
-    This involves provisioning a mail contact and a dynamic group.
-    The dynamic group is intentionally choosen to prevent soft matching of a group and an undo of the migration.
+    This involves provisioning a mail contact and a dynamic distribution group.
+    The dynamic distribution group is intentionally choosen to prevent soft matching of a group and an undo of the migration.
     This option requires on premises Exchange be specified and configured.
 
     .PARAMETER groupTypeOverride
@@ -136,7 +136,7 @@ Function Start-MultipleDistributionListMigration
 	.OUTPUTS
 
     Logs all activities and backs up all original data to the log folder directory.
-    Moves the group from on premieses source of authority to office 365 source of authority.
+    Moves the distribution group from on premieses source of authority to office 365 source of authority.
 
     .EXAMPLE
 
@@ -519,12 +519,12 @@ Function Start-MultipleDistributionListMigration
 
     if (($retainMailboxFolderPermsOffice365 -eq $TRUE) -and ($useCollectedFolderPermissionsOffice365 -eq $FALSE))
     {
-        out-logfile -string "In order to retain folder permissions of migrated lists the collection functions / files must first exist and be utilized." -isError:$TRUE
+        out-logfile -string "In order to retain folder permissions of migrated distribution lists the collection functions / files must first exist and be utilized." -isError:$TRUE
     }
 
     if (($retainOnPremMailboxFolderPermissions -eq $TRUE) -and ($useCollectedFolderPermissionsOnPrem -eq $FALSE))
     {
-        out-logfile -string "In order to retain folder permissions of migrated lists the collection functions / files must first exist and be utilized." -isError:$TRUE
+        out-logfile -string "In order to retain folder permissions of migrated distribution lists the collection functions / files must first exist and be utilized." -isError:$TRUE
     }
 
     Out-LogFile -string "END PARAMETER VALIDATION"

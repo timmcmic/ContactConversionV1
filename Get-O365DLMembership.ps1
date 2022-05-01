@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function obtains the DL membership of the Office 365 group.
+    This function obtains the DL membership of the Office 365 distribution group.
 
     .DESCRIPTION
 
-    This function obtains the DL membership of the Office 365 group.
+    This function obtains the DL membership of the Office 365 distribution group.
 
     .PARAMETER GroupSMTPAddress
 
@@ -52,7 +52,7 @@
 
             $functionDLMembership=get-O365DistributionGroupMember -identity $groupSMTPAddress -errorAction STOP
             
-            Out-LogFile -string "group membership recorded."
+            Out-LogFile -string "Distribution group membership recorded."
         }
         catch 
         {

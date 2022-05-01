@@ -134,10 +134,10 @@
         Out-LogFile -string ("OriginalDLConfiguration = ")
         out-logfile -string $originalDLConfiguration
 
-        out-logfile -string ("office 365 contact Configuration:")
+        out-logfile -string ("Office 365 DL Configuration:")
         out-logfile -string $office365DLConfiguration
 
-        out-logfile -string ("office 365 contact Configuration Post Migration")
+        out-logfile -string ("Office 365 DL Configuration Post Migration")
         out-logfile -string $office365DLConfigurationPostMigration
 
         out-logfile -string "Resetting all SMTP addresses on the object to match on premises."
@@ -214,7 +214,7 @@
                 $maxRetries = 10 #The previous set was successful - so immediately bail.
             }
             catch {
-                out-logfile -string "Error bulk updating email addresses on group."
+                out-logfile -string "Error bulk updating email addresses on distribution group."
                 out-logfile -string $_
                 $isTestError=$TRUE
                 out-logfile -string "Starting 10 second sleep before trying bulk update."
@@ -244,7 +244,7 @@
                     Alias = $functionMailNickName
                     Name = $originalDLConfiguration.name
                     Attribute = "Cloud Proxy Addresses"
-                    ErrorMessage = ("Unable to set cloud group primary SMTP address to match on-premsies mail address.")
+                    ErrorMessage = ("Unable to set cloud distribution group primary SMTP address to match on-premsies mail address.")
                     ErrorMessageDetail = $_
                 }
 
@@ -271,7 +271,7 @@
                         Alias = $functionMailNickName
                         Name = $originalDLConfiguration.name
                         Attribute = "Cloud Proxy Addresses"
-                        ErrorMessage = ("Address "+$address+" could not be added to new cloud group.  Manual addition required.")
+                        ErrorMessage = ("Address "+$address+" could not be added to new cloud distribution group.  Manual addition required.")
                         ErrorMessageDetail = $_
                     }
 
@@ -309,7 +309,7 @@
                     Alias = $functionMailNickName
                     Name = $originalDLConfiguration.name
                     Attribute = "Cloud Proxy Addresses"
-                    ErrorMessage = ("Address "+$functionEmailAddress+" could not be added to new cloud group.  Manual addition required.")
+                    ErrorMessage = ("Address "+$functionEmailAddress+" could not be added to new cloud distribution group.  Manual addition required.")
                     ErrorMessageDetail = $_
                 }
 
@@ -342,7 +342,7 @@
                     Alias = $functionMailNickName
                     Name = $originalDLConfiguration.name
                     Attribute = "Cloud Proxy Addresses"
-                    ErrorMessage = ("Address "+$functionEmailAddress+" could not be added to new cloud group.  Manual addition required.")
+                    ErrorMessage = ("Address "+$functionEmailAddress+" could not be added to new cloud distribution group.  Manual addition required.")
                     ErrorMessageDetail = $_
                 }
 
@@ -373,7 +373,7 @@
                     Alias = $functionMailNickName
                     Name = $originalDLConfiguration.name
                     Attribute = "Cloud Proxy Addresses"
-                    ErrorMessage = ("Address "+$hybridRemoteRoutingAddress+" could not be added to new cloud group.  Manual addition required.")
+                    ErrorMessage = ("Address "+$hybridRemoteRoutingAddress+" could not be added to new cloud distribution group.  Manual addition required.")
                     ErrorMessageDetail = $_
                 }
 
@@ -422,7 +422,7 @@
                 update-o365DistributionGroupMember -identity $functionExternalDirectoryObjectID -members $functionRecipients -BypassSecurityGroupManagerCheck -confirm:$FALSE -errorAction Stop
             }
             catch {
-                out-logfile -string "Unable to bulk update group membership."
+                out-logfile -string "Unable to bulk update distribution group membership."
 
                 out-logfile -string $_
 
@@ -451,8 +451,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $originalDLConfiguration.mailNickName
                             Name = $functionMailNickName
-                            Attribute = "Cloud Group Member"
-                            ErrorMessage = ("Member "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group Member"
+                            ErrorMessage = ("Member "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -540,8 +540,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group RejectMessagesFromSendersOrMembers"
-                            ErrorMessage = ("Member of RejectMessagesFromSendersOrMembers "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group RejectMessagesFromSendersOrMembers"
+                            ErrorMessage = ("Member of RejectMessagesFromSendersOrMembers "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -631,8 +631,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group AcceptMessagesOnlyFromSendersOrMembers"
-                            ErrorMessage = ("Member of AcceptMessagesOnlyFromSendersOrMembers "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group AcceptMessagesOnlyFromSendersOrMembers"
+                            ErrorMessage = ("Member of AcceptMessagesOnlyFromSendersOrMembers "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -720,8 +720,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group ManagedBy"
-                            ErrorMessage = ("Member of ManagedBy "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group ManagedBy"
+                            ErrorMessage = ("Member of ManagedBy "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -809,8 +809,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group ModeratedBy"
-                            ErrorMessage = ("Member of ModeratedBy "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group ModeratedBy"
+                            ErrorMessage = ("Member of ModeratedBy "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -898,8 +898,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group BypassModerationFromSendersOrMembers"
-                            ErrorMessage = ("Member of BypassModerationFromSendersOrMembers "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group BypassModerationFromSendersOrMembers"
+                            ErrorMessage = ("Member of BypassModerationFromSendersOrMembers "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -987,8 +987,8 @@
                             ExternalDirectoryObjectID = $originalDLConfiguration.'msDS-ExternalDirectoryObjectId'
                             Alias = $functionMailNickName
                             Name = $originalDLConfiguration.name
-                            Attribute = "Cloud Group GrantSendOnBehalfTo"
-                            ErrorMessage = ("Member of GrantSendOnBehalfTo "+$recipient+" unable to add to cloud group.  Manual addition required.")
+                            Attribute = "Cloud Distribution Group GrantSendOnBehalfTo"
+                            ErrorMessage = ("Member of GrantSendOnBehalfTo "+$recipient+" unable to add to cloud distribution group.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -1033,8 +1033,8 @@
                             ExternalDirectoryObjectID = $NULL
                             Alias = $NULL
                             Name = $NULL
-                            Attribute = "Cloud Group SendAs"
-                            ErrorMessage = ("Unable to add migrated group with send as to "+$member.externalDirectoryObjectID+".  Manual addition required.")
+                            Attribute = "Cloud Distribution Group SendAs"
+                            ErrorMessage = ("Unable to add migrated distribution group with send as to "+$member.externalDirectoryObjectID+".  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -1059,8 +1059,8 @@
                             ExternalDirectoryObjectID = $NULL
                             Alias = $NULL
                             Name = $NULL
-                            Attribute = "Cloud Group SendAs"
-                            ErrorMessage = ("Unable to add migrated group with send as to "+$member.primarySMTPAddressOrUPN+".  Manual addition required.")
+                            Attribute = "Cloud Distribution Group SendAs"
+                            ErrorMessage = ("Unable to add migrated distribution group with send as to "+$member.primarySMTPAddressOrUPN+".  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -1104,7 +1104,7 @@
                         Alias = $functionMailNickName
                         Name = $originalDLConfiguration.name
                         Attribute = "Send As On Migrated Group"
-                        ErrorMessage = ("Unable to add "+$member.trustee+" to migrated group with send as rights.  Manual addition required.")
+                        ErrorMessage = ("Unable to add "+$member.trustee+" to migrated distribution group with send as rights.  Manual addition required.")
                         ErrorMessageDetail = $_
                     }
 

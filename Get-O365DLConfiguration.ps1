@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function uses the exchange online powershell session to gather the office 365 list configuration.
+    This function uses the exchange online powershell session to gather the office 365 distribution list configuration.
 
     .DESCRIPTION
 
-    This function uses the exchange online powershell session to gather the office 365 list configuration.
+    This function uses the exchange online powershell session to gather the office 365 distribution list configuration.
 
     .PARAMETER GroupSMTPAddress
 
@@ -54,27 +54,27 @@
         {
             if ($groupTypeOverride -eq "")
             {
-                Out-LogFile -string "Using Exchange Online to capture the group."
+                Out-LogFile -string "Using Exchange Online to capture the distribution group."
 
                 $functionDLConfiguration=get-O365DistributionGroup -identity $groupSMTPAddress -errorAction STOP
             
-                Out-LogFile -string "original contact configuration found and recorded."
+                Out-LogFile -string "Original DL configuration found and recorded."
             }
             elseif ($groupTypeOverride -eq "Security")
             {
-                Out-logfile -string "Using Exchange Online to capture group with filter security"
+                Out-logfile -string "Using Exchange Online to capture distribution group with filter security"
 
                 $functionDLConfiguration=get-o365DistributionGroup -identity $groupSMTPAddress -RecipientTypeDetails $functionMailSecurity -errorAction STOP
 
-                out-logfile -string "original contact configuration found and recorded by filter security."
+                out-logfile -string "Original DL configuration found and recorded by filter security."
             }
             elseif ($groupTypeOverride -eq "Distribution")
             {
-                out-logfile -string "Using Exchange Online to capture group with filter distribution."
+                out-logfile -string "Using Exchange Online to capture distribution group with filter distribution."
 
                 $functionDLConfiguration=get-o365DistributionGroup -identity $groupSMTPAddress -RecipientTypeDetails $functionMailDistribution
 
-                out-logfile -string "original contact configuration found and recorded by filter distribution."
+                out-logfile -string "Original DL configuration found and recorded by filter distribution."
             }
             
         }

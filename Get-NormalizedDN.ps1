@@ -167,7 +167,7 @@
 
             if ($functiontest.msExchRecipientDisplayType -eq "3")
             {
-                out-logfile -string "A dynamic group was found."
+                out-logfile -string "A dynamic distribution group was found."
                 out-logfile -string "This could be either member or permission."
                 out-logfile -string "It will be included as an object but failure will occur if not already provisioned in Office 365."
 
