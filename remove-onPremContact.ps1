@@ -16,7 +16,7 @@
     disable-allPowerShellSessions
 
     #>
-    Function remove-onPremcontact
+    Function remove-onPremContact
      {
         [cmdletbinding()]
 
