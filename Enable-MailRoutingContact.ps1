@@ -26,7 +26,7 @@
     #>
     Function Enable-MailRoutingContact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

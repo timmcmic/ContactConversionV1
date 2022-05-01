@@ -34,7 +34,7 @@
     #>
     Function get-contactSendAsPermissions
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

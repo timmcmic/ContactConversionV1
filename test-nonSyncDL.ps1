@@ -22,7 +22,7 @@
     #>
     Function test-nonSynccontact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

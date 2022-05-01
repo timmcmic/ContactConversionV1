@@ -22,7 +22,7 @@
     #>
     Function Get-onPremSendAs
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

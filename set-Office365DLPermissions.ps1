@@ -27,7 +27,7 @@
     #>
     Function set-Office365contactPermissions
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

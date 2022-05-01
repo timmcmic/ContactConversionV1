@@ -22,7 +22,7 @@
     #>
     Function get-MigrationSummary
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

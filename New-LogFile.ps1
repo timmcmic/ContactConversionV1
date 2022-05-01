@@ -27,7 +27,7 @@
     #>
     Function new-LogFile
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

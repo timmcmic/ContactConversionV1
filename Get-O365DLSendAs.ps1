@@ -22,7 +22,7 @@
     #>
     Function Get-O365contactSendAs
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

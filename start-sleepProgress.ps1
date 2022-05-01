@@ -26,7 +26,7 @@
     #>
     Function  start-sleepProgress
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

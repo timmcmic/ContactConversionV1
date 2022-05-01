@@ -26,7 +26,7 @@
     #>
     Function Get-O365contactDependency
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

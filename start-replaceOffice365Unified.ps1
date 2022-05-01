@@ -30,7 +30,7 @@
     #>
     Function start-replaceOffice365Unified
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

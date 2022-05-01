@@ -118,7 +118,7 @@ Function Start-ContactMigration
     Start-DistributionListMigration
 
     #>
-    [cmcontactetbinding()]
+    [cmdletbinding()]
 
     Param
     (

@@ -20,7 +20,7 @@
     #>
     Function start-upgradeToOffice365contact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

@@ -23,7 +23,7 @@
 
     Function Get-OULocation
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

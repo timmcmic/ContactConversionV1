@@ -20,7 +20,7 @@
     #>
     Function Start-ArchiveFiles
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

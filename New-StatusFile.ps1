@@ -23,7 +23,7 @@
     #>
     Function new-statusFile
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

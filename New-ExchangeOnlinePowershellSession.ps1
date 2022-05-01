@@ -27,7 +27,7 @@
     #>
     Function New-ExchangeOnlinePowershellSession
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

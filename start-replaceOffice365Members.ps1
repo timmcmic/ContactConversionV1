@@ -26,7 +26,7 @@
     #>
     Function start-replaceOffice365Members
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

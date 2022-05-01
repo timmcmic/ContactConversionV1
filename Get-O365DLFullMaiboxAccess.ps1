@@ -22,7 +22,7 @@
     #>
     Function Get-O365contactFullMaiboxAccess
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

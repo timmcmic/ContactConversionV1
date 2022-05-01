@@ -14,7 +14,7 @@
     #>
     Function Test-OutboundConnector
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

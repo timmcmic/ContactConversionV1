@@ -30,7 +30,7 @@
     #>
     Function start-ReplaceOffice365Dynamic
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

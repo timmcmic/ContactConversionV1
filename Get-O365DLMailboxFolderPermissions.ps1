@@ -22,7 +22,7 @@
     #>
     Function Get-O365contactMailboxFolderPermissions
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

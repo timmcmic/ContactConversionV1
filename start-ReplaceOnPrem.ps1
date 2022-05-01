@@ -34,7 +34,7 @@
     #>
     Function start-ReplaceOnPrem
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

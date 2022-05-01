@@ -27,7 +27,7 @@
     #>
     Function set-OnPremcontactPermissions
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

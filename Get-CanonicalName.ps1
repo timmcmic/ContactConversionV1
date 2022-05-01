@@ -26,7 +26,7 @@
     #>
     Function get-canonicalName
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

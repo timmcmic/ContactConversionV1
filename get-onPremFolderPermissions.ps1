@@ -22,7 +22,7 @@
     #>
     Function get-onPremFolderPermissions
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

@@ -18,7 +18,7 @@
     #>
     Function remove-onPremcontact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

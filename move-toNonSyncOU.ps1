@@ -30,7 +30,7 @@
     #>
     Function move-toNonSyncOU
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

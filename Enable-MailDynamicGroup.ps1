@@ -30,7 +30,7 @@
     #>
     Function Enable-MailDyamiccontact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

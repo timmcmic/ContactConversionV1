@@ -34,7 +34,7 @@
     #>
     Function set-newcontactName
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

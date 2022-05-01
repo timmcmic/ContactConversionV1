@@ -22,7 +22,7 @@
     #>
     Function Out-StatusFile
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

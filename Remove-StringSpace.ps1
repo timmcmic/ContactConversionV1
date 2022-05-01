@@ -18,7 +18,7 @@
     #>
     Function remove-StringSpace
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

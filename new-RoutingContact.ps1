@@ -34,7 +34,7 @@
     #>
     Function new-routingContact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

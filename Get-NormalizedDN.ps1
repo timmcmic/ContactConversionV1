@@ -26,7 +26,7 @@
     #>
     Function Get-NormalizedDN
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

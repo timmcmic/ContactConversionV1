@@ -22,7 +22,7 @@
     #>
     Function Invoke-Office365SafetyCheck
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

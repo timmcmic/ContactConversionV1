@@ -27,7 +27,7 @@
     #>
     Function get-activeDirectoryDomainName
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

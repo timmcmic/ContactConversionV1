@@ -30,7 +30,7 @@
     #>
     Function Get-ADObjectConfiguration
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

@@ -143,7 +143,7 @@ Function Start-MultipleMachineDistributionListMigration
     Start-DistributionListMigration
 
     #>
-    [cmcontactetbinding()]
+    [cmdletbinding()]
 
     Param
     (

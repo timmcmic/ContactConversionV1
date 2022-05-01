@@ -22,7 +22,7 @@
     #>
     Function test-CloudcontactPresent
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

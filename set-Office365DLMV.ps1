@@ -61,7 +61,7 @@
     #>
     Function set-Office365contactMV
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

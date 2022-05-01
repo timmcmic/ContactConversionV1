@@ -22,7 +22,7 @@
     #>
     Function Invoke-ADConnect
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

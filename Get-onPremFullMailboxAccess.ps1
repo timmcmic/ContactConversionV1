@@ -22,7 +22,7 @@
     #>
     Function Get-onPremFullMailboxAccess
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

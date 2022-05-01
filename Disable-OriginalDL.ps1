@@ -34,7 +34,7 @@
     #>
     Function Disable-Originalcontact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

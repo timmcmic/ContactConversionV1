@@ -22,7 +22,7 @@
     #>
     Function enable-hybridMailFlowPostMigration
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

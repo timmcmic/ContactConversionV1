@@ -14,7 +14,7 @@
     #>
     Function Test-AcceptedDomain
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

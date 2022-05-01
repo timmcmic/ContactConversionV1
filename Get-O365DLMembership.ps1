@@ -22,7 +22,7 @@
     #>
     Function Get-o365contactMembership
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

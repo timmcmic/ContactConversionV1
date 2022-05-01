@@ -35,7 +35,7 @@ function start-collectOffice365MailboxFolders
     #https://github.com/12Knocksinna/Office365itpros/blob/master/ReportPermissionsFolderLevel.PS1
     #Don't tell him - he can get grumpy at times.
 
-    [cmcontactetbinding()]
+    [cmdletbinding()]
 
     Param
     (

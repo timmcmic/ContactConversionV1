@@ -26,7 +26,7 @@
     #>
     Function set-Office365contact
      {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

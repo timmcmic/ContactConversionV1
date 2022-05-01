@@ -30,7 +30,7 @@
     #>
     Function start-ReplaceOffice365
     {
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (

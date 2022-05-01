@@ -19,7 +19,7 @@
     Function get-ExchangeSchemaVersion
      {
 
-        [cmcontactetbinding()]
+        [cmdletbinding()]
 
         Param
         (
