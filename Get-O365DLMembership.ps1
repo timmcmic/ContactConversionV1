@@ -50,7 +50,7 @@
         {
             Out-LogFile -string "Using Exchange Online to obtain the contact membership."
 
-            $functioncontactMembership=get-O365DistributioncontactMember -identity $contactSMTPAddress -errorAction STOP
+            $functioncontactMembership=get-o365MailContactMember -identity $contactSMTPAddress -errorAction STOP
             
             Out-LogFile -string "Distribution contact membership recorded."
         }

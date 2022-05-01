@@ -96,7 +96,7 @@
 
                 out-logfile -string "Starting collection of distribution contacts."
 
-                $functionCommand = "Get-o365Distributioncontact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
+                $functionCommand = "get-o365MailContact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 
@@ -126,7 +126,7 @@
                 {
                     out-logfile -string "The contact type is standard - querying distribution contacts."
                     
-                    $functionCommand = "Get-o365Distributioncontact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
+                    $functionCommand = "get-o365MailContact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
                     $scriptBlock=[scriptBlock]::create($functionCommand)
 
@@ -168,7 +168,7 @@
                 out-logfile -string "Starting to gather attribute for all recipient types."
                 out-logfile -string "Starting collection of distribution contacts."
 
-                $functionCommand = "Get-o365Distributioncontact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
+                $functionCommand = "get-o365MailContact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 

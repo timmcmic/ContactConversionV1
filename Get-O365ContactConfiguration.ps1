@@ -56,7 +56,7 @@
             {
                 Out-LogFile -string "Using Exchange Online to capture the distribution contact."
 
-                $functioncontactConfiguration=get-O365Distributioncontact -identity $contactSMTPAddress -errorAction STOP
+                $functioncontactConfiguration=get-o365MailContact -identity $contactSMTPAddress -errorAction STOP
             
                 Out-LogFile -string "Original contact configuration found and recorded."
             }
@@ -64,7 +64,7 @@
             {
                 Out-logfile -string "Using Exchange Online to capture distribution contact with filter security"
 
-                $functioncontactConfiguration=get-o365Distributioncontact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailSecurity -errorAction STOP
+                $functioncontactConfiguration=get-o365MailContact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailSecurity -errorAction STOP
 
                 out-logfile -string "Original contact configuration found and recorded by filter security."
             }
@@ -72,7 +72,7 @@
             {
                 out-logfile -string "Using Exchange Online to capture distribution contact with filter distribution."
 
-                $functioncontactConfiguration=get-o365Distributioncontact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailDistribution
+                $functioncontactConfiguration=get-o365MailContact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailDistribution
 
                 out-logfile -string "Original contact configuration found and recorded by filter distribution."
             }
