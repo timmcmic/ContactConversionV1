@@ -204,8 +204,8 @@ Function Start-ContactMigration
     #The variables below are utilized to define working parameter sets.
     #Some variables are assigned to single values - since these will be utilized with functions that query or set information.
     
-    [string]$acceptMessagesFromcontactMembers="contactMemSubmitPerms" #Attribute for the allow email members.
-    [string]$rejectMessagesFromcontactMembers="contactMemRejectPerms"
+    [string]$acceptMessagesFromcontactMembers="dlMemSubmitPerms" #Attribute for the allow email members.
+    [string]$rejectMessagesFromcontactMembers="dlMemRejectPerms"
     [string]$bypassModerationFromcontact="msExchBypassModerationFromcontactMembersLink"
     [string]$forwardingAddressForcontact="altRecipient"
     [string]$grantSendOnBehalfTocontact="publicDelegates"
@@ -746,7 +746,7 @@ Function Start-ContactMigration
     Out-LogFile -string "END ESTABLISH POWERSHELL SESSIONS"
     Out-LogFile -string "********************************************************************************"
 
-    EXIT #Debug Exit
+    #EXIT #Debug Exit
 
     Out-LogFile -string "********************************************************************************"
     Out-LogFile -string "BEGIN GET ORIGINAL contact CONFIGURATION LOCAL AND CLOUD"
@@ -772,162 +772,6 @@ Function Start-ContactMigration
 
     Out-XMLFile -itemToExport $originalContactConfiguration -itemNameToExport $originalContactConfigurationADXML
 
-    Out-LogFile -string "Determine if administrator desires to audit send as."
-
-    if ($retainSendAsOnPrem -eq $TRUE)
-    {
-        out-logfile -string "Administrator has choosen to audit on premsies send as."
-        out-logfile -string "NOTE:  THIS IS A LONG RUNNING OPERATION."
-
-        if ($useCollectedSendAsOnPrem -eq $TRUE)
-        {
-            out-logfile -string "Administrator has selected to import previously gathered permissions."
-
-            
-            $importFilePath=Join-path $importFile $retainOnPremRecipientSendAsXML
-
-            try {
-                $importData = import-CLIXML -path $importFilePath
-            }
-            catch {
-                out-logfile -string "Error importing the send as permissions from collect function."
-                out-logfile -string $_ -isError:$TRUE
-            }
-
-            try {
-                $allObjectSendAsAccess = get-onPremSendAs -originalContactConfiguration $originalContactConfiguration -collectedData $importData
-            }
-            catch {
-                out-logfile -string "Unable to process send as rights on premises."
-                out-logfile -string $_ -isError:$TRUE
-            }  
-        }
-        else 
-        {
-            try {
-                $allObjectSendAsAccess = Get-onPremSendAs -originalContactConfiguration $originalContactConfiguration
-            }
-            catch {
-                out-logfile -string "Unable to process send as rights on premsies."
-                out-logfile -string $_ -isError:$TRUE
-            }
-        }
-    }
-    else
-    {
-        out-logfile -string "Administrator has choosen to not audit on premises send as."
-    }
-
-    #Record what was returned.
-
-    if ($allObjectSendAsAccess.count -ne 0)
-    {
-        out-logfile -string $allObjectSendAsAccess
-
-        out-xmlFile -itemToExport $allObjectSendAsAccess -itemNameToExport $allcontactsSendAsXML
-    }
-
-    Out-LogFile -string "Determine if administrator desires to audit full mailbox access."
-
-    if ($retainFullMailboxAccessOnPrem -eq $TRUE)
-    {
-        out-logfile -string "Administrator has choosen to audit on premsies full mailbox access."
-        out-logfile -string "NOTE:  THIS IS A LONG RUNNING OPERATION."
-
-        if ($useCollectedFullMailboxAccessOnPrem -eq $TRUE)
-        {
-            out-logfile -string "Administrator has selected to import previously gathered permissions."
-
-            $importFilePath=Join-path $importFile $retainOnPremRecipientFullMailboxAccessXML
-
-            try {
-                $importData = import-CLIXML -path $importFilePath
-            }
-            catch {
-                out-logfile -string "Error importing the send as permissions from collect function."
-                out-logfile -string $_ -isError:$TRUE
-            }
-
-            $allObjectsFullMailboxAccess = Get-onPremFullMailboxAccess -originalContactConfiguration $originalContactConfiguration -collectedData $importData
-        }
-        else 
-        {
-            $allObjectsFullMailboxAccess = Get-onPremFullMailboxAccess -originalContactConfiguration $originalContactConfiguration
-        }
-    }
-    else
-    {
-        out-logfile -string "Administrator has choosen to not audit on premises full mailbox access."
-    }
-
-    #Record what was returned.
-
-    if ($allObjectsFullMailboxAccess.count -ne 0)
-    {
-        out-logfile -string $allObjectsFullMailboxAccess
-
-        out-xmlFile -itemToExport $allObjectsFullMailboxAccess -itemNameToExport $allcontactsFullMailboxAccessXML
-    }
-
-    out-logfile -string "Determine if the administrator has choosen to audit folder permissions on premsies."
-
-    if ($retainMailboxFolderPermsOnPrem -eq $TRUE)
-    {
-        out-logfile -string "Administrator has choosen to retain mailbox folder permissions.."
-        out-logfile -string "NOTE:  THIS IS A LONG RUNNING OPERATION."
-
-        if ($useCollectedFolderPermissionsOnPrem -eq $TRUE)
-        {
-            out-logfile -string "Administrator has selected to import previously gathered permissions."
-
-            $importFilePath=Join-path $importFile $retainOnPremMailboxFolderPermissionsXML
-
-            try {
-                $importData = import-CLIXML -path $importFilePath
-            }
-            catch {
-                out-logfile -string "Error importing the send as permissions from collect function."
-                out-logfile -string $_ -isError:$TRUE
-            }
-
-            try {
-                $allMailboxesFolderPermissions = get-onPremFolderPermissions -originalContactConfiguration $originalContactConfiguration -collectedData $importData
-            }
-            catch {
-                out-logfile -string "Unable to process on prem folder permissions."
-                out-logfile -string $_ -isError:$TRUE
-            }  
-        }
-    }
-    else
-    {
-        out-logfile -string "Administrator has choosen to not audit on premises send as."
-    }
-
-    #Record what was returned.
-
-    if ($allMailboxesFolderPermissions.count -ne 0)
-    {
-        out-logfile -string $allMailboxesFolderPermissions
-
-        out-xmlFile -itemToExport $allMailboxesFolderPermissions -itemNameToExport $allMailboxesFolderPermissionsXML
-    }
-
-    #If there are any sendAs or mailbox access permissiosn for the contact.
-    #The contact should be retained for saftey and only manually deleted if the administrator understands ramiifactions.
-    #In testing disabling the contact will allow the permissions to continue functioning - deleting the contact would loose it.
-    #Overrideing the administrators decision to delete the contact.
-
-    if (($allObjectSendAsAccess -ne 0) -or ($allObjectsFullMailboxAccess -ne 0) -or ($allMailboxesFolderPermissions -ne 0))
-    {
-        out-logfile -string "Overriding any administrator action to delete the contact as dependencies exist."
-        $retainOriginalContact = $TRUE
-    }
-    else 
-    {
-        out-logfile -string "Audit shows no dependencies for sendAs or full mailbox access - keeping administrator settings on contact retention."    
-    }
-
     #exit #Debug Exit
 
     Out-LogFile -string "Capture the original office 365 distribution list information."
@@ -948,8 +792,6 @@ Function Start-ContactMigration
         $office365contactConfiguration="DistributionListIsNonSynced"
     }
 
-    
-    
     Out-LogFile -string $office365contactConfiguration
 
     Out-LogFile -string "Create an XML file backup of the office 365 contact configuration."
@@ -1114,9 +956,9 @@ Function Start-ContactMigration
 
     Out-LogFile -string "REJECT contactS"
 
-    if ($originalContactConfiguration.contactMemRejectPerms -ne $NULL)
+    if ($originalContactConfiguration.dlMemRejectPerms -ne $NULL)
     {
-        foreach ($DN in $originalContactConfiguration.contactMemRejectPerms)
+        foreach ($DN in $originalContactConfiguration.dlMemRejectPerms)
         {
             if ($forLoopCounter -eq $forLoopTrigger)
             {
@@ -1140,7 +982,7 @@ Function Start-ContactMigration
                         externalDirectoryObjectID = $NULL
                         alias=$normalizedTest.alias
                         name=$normalizedTest.name
-                        attribute = "RejectMessagesFromcontactMembers (ADAttribute contactMemRejectPerms)"
+                        attribute = "RejectMessagesFromcontactMembers (ADAttribute dlMemRejectPerms)"
                         errorMessage = $normalizedTest.isErrorMessage
                         errorMessageDetail = ""
                     }
@@ -1222,9 +1064,9 @@ Function Start-ContactMigration
 
     Out-LogFile -string "ACCEPT contactS"
 
-    if ($originalContactConfiguration.contactMemSubmitPerms -ne $NULL)
+    if ($originalContactConfiguration.dlMemSubmitPerms -ne $NULL)
     {
-        foreach ($DN in $originalContactConfiguration.contactMemSubmitPerms)
+        foreach ($DN in $originalContactConfiguration.dlMemSubmitPerms)
         {
             if ($forLoopCounter -eq $forLoopTrigger)
             {
@@ -1248,7 +1090,7 @@ Function Start-ContactMigration
                         externalDirectoryObjectID = $NULL
                         alias=$normalizedTest.alias
                         name=$normalizedTest.name
-                        attribute = "AcceptMessagesOnlyFromcontactMembers (ADAttribute: contactMemSubmitPerms)"
+                        attribute = "AcceptMessagesOnlyFromcontactMembers (ADAttribute: dlMemSubmitPerms)"
                         errorMessage = $normalizedTest.isErrorMessage
                         errorMessageDetail = ""
                     }
@@ -1691,75 +1533,6 @@ Function Start-ContactMigration
 
     Out-LogFile -string "Invoke get-normalizedDN for any on premises object that the migrated contact has send as permissions."
 
-    Out-LogFile -string "contactS WITH SEND AS PERMISSIONS"
-
-    if ($allObjectSendAsAccess -ne $NULL)
-    {
-        foreach ($permission in $allObjectSendAsAccess)
-        {
-            if ($forLoopCounter -eq $forLoopTrigger)
-            {
-                start-sleepProgress -sleepString "Throttling for 5 seconds..." -sleepSeconds 5
-
-                $forLoopCounter = 0
-            }
-            else 
-            {
-                $forLoopCounter++    
-            }
-
-            try 
-            {
-                $normalizedTest=get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN "None" -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -errorAction STOP -CN:$permission.Identity
-
-                if ($normalizedTest.isError -eq $TRUE)
-                {
-                    $isErrorObject = new-Object psObject -property @{
-                        primarySMTPAddressOrUPN = $normalizedTest.name
-                        externalDirectoryObjectID = $NULL
-                        alias=$normalizedTest.alias
-                        name=$normalizedTest.name
-                        attribute = "On Premsies contact not present in Office 365 - Migrated contact has send as permissions."
-                        errorMessage = $normalizedTest.isErrorMessage
-                        errorMessageDetail = ""
-                    }
-
-                    out-logfile -string $isErrorObject
-
-                    $preCreateErrors+=$isErrorObject
-                }
-                else {
-                    $allObjectsSendAsAccessNormalized+=$normalizedTest
-                }
-            }
-            catch 
-            {
-                out-logFile -string $_ -isError:$TRUE
-            }
-        }
-    }
-
-   #At this time we have discovered all permissions based off the LDAP properties of the users.  The one remaining is what objects have SENDAS rights on this contact.
-
-    out-logfile -string "Obtaining send as permissions."
-
-    try 
-    {
-        $exchangeSendAsSMTP=get-contactSendAsPermissions -globalCatalog $globalCatalogWithPort -dn $originalContactConfiguration.distinguishedName -adCredential $activeDirectoryCredential -adGlobalCatalogPowershellSessionName $adGlobalCatalogPowershellSessionName
-    }
-    catch 
-    {
-        out-logfile -string "Unable to normalize the send as DNs."
-        out-logfile -string $_ -isError:$TRUE
-    }
-
-    if ($exchangeSendAsSMTP -ne $NULL)
-    {
-        Out-LogFile -string "The following objects have send as rights on the contact."
-        
-        out-logfile -string $exchangeSendAsSMTP
-    }
-
     #exit #Debug Exit
 
     Out-LogFile -string "********************************************************************************"
@@ -1781,7 +1554,7 @@ Function Start-ContactMigration
     out-logfile -string ("The number of mailbox folders on premises that this contact has access to: "+$allMailboxesFolderPermissions.count)
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
 
-    #Exit #Debug Exit.
+    Exit #Debug Exit.
 
     #At this point we have obtained all the information relevant to the individual contact.
     #Validate that the discovered dependencies are valid in Office 365.
@@ -1908,7 +1681,7 @@ Function Start-ContactMigration
                         ExternalDirectoryObjectID = $member.ExternalDirectoryObjectID
                         Alias = $member.Alias
                         Name = $member.name
-                        Attribute = "RejectMessagesFromSendersorMembers / RejectMessagesFrom / RejectMessagesFromcontactMembers (ADAttributes: UnAuthOrig / contactMemRejectPerms)"
+                        Attribute = "RejectMessagesFromSendersorMembers / RejectMessagesFrom / RejectMessagesFromcontactMembers (ADAttributes: UnAuthOrig / dlMemRejectPerms)"
                         ErrorMessage = "A member of RejectMessagesFromSendersOrMembers was not found in Office 365."
                         errorMessageDetail = ""
                     }
@@ -1963,7 +1736,7 @@ Function Start-ContactMigration
                         ExternalDirectoryObjectID = $member.ExternalDirectoryObjectID
                         Alias = $member.Alias
                         Name = $member.name
-                        Attribute = "AcceptMessagesOnlyFromSendersorMembers / AcceptMessagesOnlyFrom / AcceptMessagesOnlyFromcontactMembers (ADAttributes: authOrig / contactMemSubmitPerms)"
+                        Attribute = "AcceptMessagesOnlyFromSendersorMembers / AcceptMessagesOnlyFrom / AcceptMessagesOnlyFromcontactMembers (ADAttributes: authOrig / dlMemSubmitPerms)"
                         ErrorMessage = "A member of AcceptMessagesOnlyFromSendersorMembers was not found in Office 365."
                         errorMessageDetail = ""
                     }
@@ -2411,11 +2184,11 @@ Function Start-ContactMigration
 
     #Hancontacte all contacts this object has reject permissions on.
 
-    if ($originalContactConfiguration.contactMemRejectPermsBL -ne $NULL)
+    if ($originalContactConfiguration.dlMemRejectPermsBL -ne $NULL)
     {
         out-logfile -string "Calling get-CanonicalName."
 
-        foreach ($DN in $originalContactConfiguration.contactMemRejectPermsBL)
+        foreach ($DN in $originalContactConfiguration.dlMemRejectPermsBL)
         {
             try 
             {
@@ -2440,11 +2213,11 @@ Function Start-ContactMigration
 
     #Hancontacte all contacts this object has accept permissions on.
 
-    if ($originalContactConfiguration.contactMemSubmitPermsBL -ne $NULL)
+    if ($originalContactConfiguration.dlMemSubmitPermsBL -ne $NULL)
     {
         out-logfile -string "Calling get-CanonicalName."
 
-        foreach ($DN in $originalContactConfiguration.contactMemSubmitPermsBL)
+        foreach ($DN in $originalContactConfiguration.dlMemSubmitPermsBL)
         {
             try 
             {
@@ -4109,7 +3882,7 @@ Function Start-ContactMigration
                         distinguishedName = $member.distinguishedName
                         canonicalDomainName = $member.canonicalDomainName
                         canonicalName=$member.canonicalName
-                        attribute = "Distribution List RejectMessagesFromSendersOrMembers (ADAttribute: contactMemRejectPerms)"
+                        attribute = "Distribution List RejectMessagesFromSendersOrMembers (ADAttribute: dlMemRejectPerms)"
                         errorMessage = "Unable to add mail routing contact to on premises distribution contact.  Manual add required."
                         erroMessageDetail = $isTestErrorDetail
                     }
@@ -4174,7 +3947,7 @@ Function Start-ContactMigration
                         distinguishedName = $member.distinguishedName
                         canonicalDomainName = $member.canonicalDomainName
                         canonicalName=$member.canonicalName
-                        attribute = "Distribution List AcceptMessagesOnlyFromSendersorMembers (ADAttribute: contactMemSubmitPerms)"
+                        attribute = "Distribution List AcceptMessagesOnlyFromSendersorMembers (ADAttribute: dlMemSubmitPerms)"
                         errorMessage = "Unable to add mail routing contact to on premises distribution contact.  Manual add required."
                         erroMessageDetail = $isTestErrorDetail
                     }
