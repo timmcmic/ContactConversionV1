@@ -7,13 +7,13 @@
 
     This function creates the routing contact that will be utilized later if hybrid mail flow is enabled <and> to track attribute membership.
     
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
-    This is the original DL configuration from on premises.
+    This is the original contact configuration from on premises.
 
-    .PARAMETER office365DLConfiguration
+    .PARAMETER office365contactConfiguration
 
-    The configuration of the DL from Office 365.
+    The configuration of the contact from Office 365.
 
     .PARAMETER GlobalCatalog
 
@@ -34,14 +34,14 @@
     #>
     Function new-routingContact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory = $true)]
-            $office365DLConfiguration,
+            $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
             $globalCatalogServer,
             [Parameter(Mandatory = $true)]
@@ -60,8 +60,8 @@
 
         #write out parameters utilized to log file.
         
-        out-logfile -string ("Original DL Configuration = "+$originalDLConfiguration)
-        out-logfile -string ("Office 365 DL Configuration = "+$office365DLConfiguration)
+        out-logfile -string ("Original contact Configuration = "+$originalContactConfiguration)
+        out-logfile -string ("Office 365 contact Configuration = "+$office365contactConfiguration)
         out-logfile -string ("Global catalog server = "+$globalCatalogServer)
         out-logfile -string ("AD User Name = "+$adCredential.UserName)
 
@@ -72,22 +72,22 @@
 
 
 
-        if ($originalDLConfiguration.mail -ne $NULL)
+        if ($originalContactConfiguration.mail -ne $NULL)
         {
-            [string]$functionCustomAttribute2=$originalDLConfiguration.mail
+            [string]$functionCustomAttribute2=$originalContactConfiguration.mail
             out-logfile -string ("Function Custom Attribute 2 = "+$functionCustomAttribute2)
         }
         else 
         {
-            [string]$functionCustomAttribute2=$office365DLConfiguration.WindowsEmailAddress
+            [string]$functionCustomAttribute2=$office365contactConfiguration.WindowsEmailAddress
             out-logfile -string ("Function Custom Attribute 2 = "+$functionCustomAttribute2)
         }
 
-        [string]$functionOU=Get-OULocation -originalDLConfiguration $originalDLConfiguration
+        [string]$functionOU=Get-OULocation -originalContactConfiguration $originalContactConfiguration
 
         out-logfile -string ("Function OU = "+$functionOU)
 
-        foreach ($address in $office365DLConfiguration.emailAddresses)
+        foreach ($address in $office365contactConfiguration.emailAddresses)
         {
             out-logfile -string ("Testing address for remote routing address = "+$address)
 
@@ -104,18 +104,18 @@
 
         #This logic allows the code to be re-used when only the Office 365 information is available.
 
-        [string]$functionCN=$originalDLConfiguration.CN+"-MigratedByScript"
+        [string]$functionCN=$originalContactConfiguration.CN+"-MigratedByScript"
         $functionCN=$functionCN.replace(' ','')
-        [array]$functionProxyAddressArray=$originalDLConfiguration.mail.split("@")
+        [array]$functionProxyAddressArray=$originalContactConfiguration.mail.split("@")
 
-        if ($originalDLConfiguration.displayName -ne $NULL)
+        if ($originalContactConfiguration.displayName -ne $NULL)
         {
-            [string]$functionDisplayName = $originalDLConfiguration.DisplayName+"-MigratedByScript"
+            [string]$functionDisplayName = $originalContactConfiguration.DisplayName+"-MigratedByScript"
             $functionDisplayName=$functionDisplayName.replace(' ','')
         }
         else 
         {
-            [string]$functionDisplayName = $office365DLConfiguration.DisplayName+"-MigratedByScript"
+            [string]$functionDisplayName = $office365contactConfiguration.DisplayName+"-MigratedByScript"
             $functionDisplayName=$functionDisplayName.replace(' ','')
         }
         
@@ -136,7 +136,7 @@
 
         [string]$functionMailNickname=$functionProxyAddressArray[0]+"-MigratedByScript"
 
-        [string]$functionDescription="This is the mail contact created post migration to allow non-migrated DLs to retain memberships and permissions settings.  DO NOT DELETE"
+        [string]$functionDescription="This is the mail contact created post migration to allow non-migrated contacts to retain memberships and permissions settings.  DO NOT DELETE"
 
         [string]$functionSelfAccountSid = "S-1-5-10"
 

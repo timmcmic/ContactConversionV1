@@ -13,7 +13,7 @@
 
     .PARAMETER DN
 
-    The DN of the group to remove.
+    The DN of the contact to remove.
 
     .PARAMETER GlobalCatalog
 
@@ -32,14 +32,14 @@
     Get-ADObjectConfiguration -powershellsessionname NAME -contactSMTPAddress Address
 
     #>
-    Function Disable-OriginalDL
+    Function Disable-Originalcontact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory = $true)]
             [string]$globalCatalogServer,
             [Parameter(Mandatory = $false)]
@@ -52,24 +52,24 @@
 
         #Declare function variables.
 
-        $functionDLConfiguration=$NULL #Holds the return information for the group query.
+        $functioncontactConfiguration=$NULL #Holds the return information for the contact query.
         [string]$functionCustomAttribute1="MigratedByScript"
-        [string]$functionCustomAttribute2=$originalDLConfiguration.mail
+        [string]$functionCustomAttribute2=$originalContactConfiguration.mail
 
 
 
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN Disable-OriginalDLConfiguration"
+        Out-LogFile -string "BEGIN Disable-originalContactConfiguration"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
 
-        Out-LogFile -string ("OriginalDLConfiguration = "+$originalDLConfiguration)
+        Out-LogFile -string ("originalContactConfiguration = "+$originalContactConfiguration)
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
         out-logfile -string ("Use Exchange On Premises ="+$useOnPremisesExchange)
-        out-logfile -string ("DN of object to modify / disable "+$originalDLConfiguration.distinguishedName)
+        out-logfile -string ("DN of object to modify / disable "+$originalContactConfiguration.distinguishedName)
 
         OUt-LogFile -string ("Parameter Set:")
         
@@ -78,14 +78,14 @@
             Out-Logfile -string $parameterIncluded
         }
 
-        out-logfile -string ("Disalbed DL Custom Attribute 1 = "+$functionCustomAttribute1)
-        out-logfile -string ("Disabled DL Custom Attribute 2 = "+$functionCustomAttribute2)
+        out-logfile -string ("Disalbed contact Custom Attribute 1 = "+$functionCustomAttribute1)
+        out-logfile -string ("Disabled contact Custom Attribute 2 = "+$functionCustomAttribute2)
 
-        #Get the group using LDAP / AD providers.
+        #Get the contact using LDAP / AD providers.
         
         try 
         {
-            set-adgroup -identity $originalDLConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
+            set-adcontact -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
 
         }
         catch 
@@ -93,17 +93,17 @@
             Out-LogFile -string $_ -isError:$TRUE
         }
 
-        #Now that the DL is disabled - use this oppurtunity to write the custom attributes to show it's been migrated.
+        #Now that the contact is disabled - use this oppurtunity to write the custom attributes to show it's been migrated.
 
-        out-logfile -string "The group has been migrated and is retained - set custom attributes with original information for other migration dependencies."
+        out-logfile -string "The contact has been migrated and is retained - set custom attributes with original information for other migration dependencies."
         
         try {
-            set-adgroup -identity $originalDLConfiguration.distinguishedName -add @{extensionAttribute1=$functionCustomAttribute1;extensionAttribute2=$functionCustomAttribute2} -server $globalCatalogServer -credential $adCredential
+            set-adcontact -identity $originalContactConfiguration.distinguishedName -add @{extensionAttribute1=$functionCustomAttribute1;extensionAttribute2=$functionCustomAttribute2} -server $globalCatalogServer -credential $adCredential
         }
         catch {
             out-logfile -string $_ -isError:$TRUE
         }
 
-        Out-LogFile -string "END Disable-OriginalDLConfiguration"
+        Out-LogFile -string "END Disable-originalContactConfiguration"
         Out-LogFile -string "********************************************************************************"
     }

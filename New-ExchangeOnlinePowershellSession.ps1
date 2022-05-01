@@ -27,7 +27,7 @@
     #>
     Function New-ExchangeOnlinePowershellSession
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -54,7 +54,7 @@
 
         [string]$exchangeOnlineCommandPrefix="O365"
         [boolean]$isCertAuth=$false
-        #$exchangeOnlineCommands=@('get-ExoRecipient','new-distributionGroup','get-recipient','set-distributionGroup','get-distributionGroupMember','get-mailbox','get-unifiedGroup','set-UnifiedGroup')
+        #$exchangeOnlineCommands=@('get-ExoRecipient','new-distributioncontact','get-recipient','set-distributioncontact','get-distributioncontactMember','get-mailbox','get-unifiedcontact','set-Unifiedcontact')
         #Initiate the session.
         
         Out-LogFile -string "********************************************************************************"

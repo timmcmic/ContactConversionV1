@@ -22,7 +22,7 @@
     #>
     Function Import-PowershellSession
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

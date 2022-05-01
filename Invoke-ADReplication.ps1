@@ -26,7 +26,7 @@
     #>
     Function Invoke-ADReplication
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

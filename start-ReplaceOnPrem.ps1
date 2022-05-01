@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
 
-    This function resets the on premises dependencies of the group that was mirgated.
+    This function resets the on premises dependencies of the contact that was mirgated.
 
     .DESCRIPTION
 
-    This function resets the on premises dependencies of the group that was mirgated.
+    This function resets the on premises dependencies of the contact that was mirgated.
 
     .PARAMETER routingContactDN
 
-    The original configuration of the DL on premises.
+    The original configuration of the contact on premises.
 
     .PARAMETER attributeOperation
 
@@ -34,7 +34,7 @@
     #>
     Function start-ReplaceOnPrem
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -77,7 +77,7 @@
         out-Logfile -string "Processing operation..."
 
         #If the contact and the object to operate on are in the same domain - the utilize the same GC that we have for other operations.
-        #If not - we'll need to utilize the domain name as the server - and allow the AD commandlts to make a best attempt against a DC in that domain based on "best selection."
+        #If not - we'll need to utilize the domain name as the server - and allow the AD commancontactts to make a best attempt against a DC in that domain based on "best selection."
 
         if ($functionContactObject.canonicalDomainName -eq $canonicalObject.canonicalDomainName)
         {
@@ -100,7 +100,7 @@
 
                 if ($functionSleepTest -ne $FALSE)
                 {
-                    start-sleepProgress -sleepString "Failed adding member to the group - sleeping before rety." -sleepSeconds 30
+                    start-sleepProgress -sleepString "Failed adding member to the contact - sleeping before rety." -sleepSeconds 30
 
                 }
 
@@ -114,7 +114,7 @@
                 }
                 catch
                 {
-                    out-logfile -string "Error adding member to group."
+                    out-logfile -string "Error adding member to contact."
 
                     $loopError = $TRUE
                 }   
@@ -123,7 +123,7 @@
 
         if ($loopCounter -eq 10)
         {
-            out-logfile -string "ERROR adding member to group."
+            out-logfile -string "ERROR adding member to contact."
             out-logfile -string $canonicalObject.canonicalName
             $isTestError="Yes"
         }

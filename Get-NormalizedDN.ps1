@@ -26,7 +26,7 @@
     #>
     Function Get-NormalizedDN
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $TRUE)]
             $adCredential,
             [Parameter(Mandatory = $TRUE)]
-            [string]$originalGroupDN,
+            [string]$originalcontactDN,
             [Parameter(Mandatory = $false)]
             [boolean]$isMember=$FALSE
 
@@ -47,7 +47,7 @@
 
         #Declare function variables.
 
-        $functionTest=$NULL #Holds the return information for the group query.
+        $functionTest=$NULL #Holds the return information for the contact query.
         $functionObject=$NULL #This is used to hold the object that will be returned.
         [string]$functionSMTPAddress=$NULL
         $functionDN=$NULL
@@ -64,7 +64,7 @@
         OUt-LogFile -string ("DN Set = "+$DN)
         out-logfile -string ("CN Set = "+$CN)
         out-logfile -string ("Credential user name = "+$adCredential.UserName)
-        out-logfile -string ("Original Group DN = "+$originalGroupDN)
+        out-logfile -string ("Original contact DN = "+$originalcontactDN)
         
         #Get the specific user using ad providers.
 
@@ -155,11 +155,11 @@
         {
             #In this iteraction of the script were changing how we track recipients - since we're using adsi.
             #First step check to see if the object has a recipient display type - that means it's mail enabled.
-            #If the object is mail enabled - regardless of object type - look to see if the previous migration was done (group to contact conversion.)
-            #If the group was not migrated or is not a group - take those attributes.
-            #The next case is that we do allow contacts to have a mail attribute but not be a full recipient.  (The only wayt to get them into the group is to use ADUC to do it - but it happens.)
+            #If the object is mail enabled - regarcontactess of object type - look to see if the previous migration was done (contact to contact conversion.)
+            #If the contact was not migrated or is not a contact - take those attributes.
+            #The next case is that we do allow contacts to have a mail attribute but not be a full recipient.  (The only wayt to get them into the contact is to use ADUC to do it - but it happens.)
             #If the object has MAIL and is a CONTACT record information we can.  It can be migrated.
-            #Otherwise we've found non-mail present object (user with mail attribute / bad user / bad group - end.)
+            #Otherwise we've found non-mail present object (user with mail attribute / bad user / bad contact - end.)
 
             #Check to see if the recipient has a recipient display type and is a user, or is a contact.
 
@@ -167,7 +167,7 @@
 
             if ($functiontest.msExchRecipientDisplayType -eq "3")
             {
-                out-logfile -string "A dynamic distribution group was found."
+                out-logfile -string "A dynamic distribution contact was found."
                 out-logfile -string "This could be either member or permission."
                 out-logfile -string "It will be included as an object but failure will occur if not already provisioned in Office 365."
 
@@ -177,7 +177,7 @@
                     PrimarySMTPAddressOrUPN = $functionTest.mail
                     GUID = $NULL
                     RecipientType = $functionTest.objectClass
-                    GroupType = $NULL
+                    contactType = $NULL
                     RecipientOrUser = "Recipient"
                     ExternalDirectoryObjectID = $null
                     isAlreadyMigrated = $false
@@ -202,7 +202,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.extensionAttribute2
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $NULL
+                        contactType = $NULL
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $true
@@ -223,7 +223,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.mail
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $NULL
+                        contactType = $NULL
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $false
@@ -242,7 +242,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.mail
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $NULL
+                        contactType = $NULL
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $false
@@ -260,7 +260,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.userPrincipalName
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $NULL
+                        contactType = $NULL
                         RecipientOrUser = "User"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $FALSE
@@ -268,15 +268,15 @@
                         isErrorMessage=""
                 }
             }
-            elseif ($functionTest.objectClass -eq "Group")
+            elseif ($functionTest.objectClass -eq "contact")
             {
-                out-logfile -string "The recipient is a group."
-                #It is possible that the group has permissions to itself.
+                out-logfile -string "The recipient is a contact."
+                #It is possible that the contact has permissions to itself.
 
-                if (($functionTest.distinguishedname -eq $originalGroupDN) -and ($isMember -eq $FALSE))
+                if (($functionTest.distinguishedname -eq $originalcontactDN) -and ($isMember -eq $FALSE))
                 {
-                    out-logFile -string "The group has permissions to itself - this is permissable - adding to array."
-                    #The group has permissions to itself and this is permissiable.
+                    out-logFile -string "The contact has permissions to itself - this is permissable - adding to array."
+                    #The contact has permissions to itself and this is permissiable.
 
                     $functionObject = New-Object PSObject -Property @{
                         Alias = $functionTest.mailNickName
@@ -284,7 +284,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.mail
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $functionTest.GroupType
+                        contactType = $functionTest.contactType
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $false
@@ -293,12 +293,12 @@
                     }
                 }
 
-                #A group can be present that was previously migrated and then disabled - if so allow the migration to proceed.
-                #Otherwise the group was not previously migrated and would need to be cleaned up.
+                #A contact can be present that was previously migrated and then disabled - if so allow the migration to proceed.
+                #Otherwise the contact was not previously migrated and would need to be cleaned up.
 
                 elseif ($functionTest.extensionattribute1 -eq "MigratedByScript")
                 {
-                    out-logfile -string "A group was found as a member and that group was previously migrated."
+                    out-logfile -string "A contact was found as a member and that contact was previously migrated."
 
                     $functionObject = New-Object PSObject -Property @{
                         Alias = $functionTest.mailNickName
@@ -306,7 +306,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.extensionAttribute2
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $functionTest.GroupType
+                        contactType = $functionTest.contactType
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $true
@@ -317,17 +317,17 @@
                 
                 elseif (($functionTest.msExchRecipientDisplayType -ne $NULL) -and ($isMember -eq $TRUE)) 
                 {
-                    #The group is mail enabled and a member.  All nested groups have to be migrated first.
+                    #The contact is mail enabled and a member.  All nested contacts have to be migrated first.
 
-                    out-logfile -string "A mail enabled group was found as a member of the DL or has permissions on the DL."
+                    out-logfile -string "A mail enabled contact was found as a member of the contact or has permissions on the contact."
                     out-logfile -string $DN
-                    out-logFile -string ("A mail enabled group is a member of the group to be migrated or has permission on the group to be migrated.  This group must first be migrated - "+$DN) -isError:$TRUE
+                    out-logFile -string ("A mail enabled contact is a member of the contact to be migrated or has permission on the contact to be migrated.  This contact must first be migrated - "+$DN) -isError:$TRUE
                 }
                 elseif (($functionTest.msExchRecipientDisplayType -ne $NULL) -and ($isMember -eq $FALSE)) 
                 {
-                    #The group is a recipient and has permissions to an attribute.
+                    #The contact is a recipient and has permissions to an attribute.
                         
-                    out-logfile -string "The group has permissions on the DL and this is permissiable."
+                    out-logfile -string "The contact has permissions on the contact and this is permissiable."
                     out-logfile -string $dn
 
                     $functionObject = New-Object PSObject -Property @{
@@ -336,7 +336,7 @@
                         PrimarySMTPAddressOrUPN = $functionTest.mail
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $functionTest.GroupType
+                        contactType = $functionTest.contactType
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $functionTest.'msDS-ExternalDirectoryObjectId'
                         isAlreadyMigrated = $false
@@ -354,7 +354,7 @@
                         PrimarySMTPAddressOrUPN = $null
                         GUID = $NULL
                         RecipientType = $functionTest.objectClass
-                        GroupType = $functionTest.GroupType
+                        contactType = $functionTest.contactType
                         RecipientOrUser = "Recipient"
                         ExternalDirectoryObjectID = $null
                         isAlreadyMigrated = $false
@@ -373,7 +373,7 @@
                     PrimarySMTPAddressOrUPN = $null
                     GUID = $NULL
                     RecipientType = $functionTest.objectClass
-                    GroupType = $functionTest.GroupType
+                    contactType = $functionTest.contactType
                     RecipientOrUser = "Recipient"
                     ExternalDirectoryObjectID = $null
                     isAlreadyMigrated = $false

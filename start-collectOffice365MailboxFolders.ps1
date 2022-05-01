@@ -23,7 +23,7 @@ function start-collectOffice365MailboxFolders
     .OUTPUTS
 
     Logs all activities and backs up all original data to the log folder directory.
-    Moves the distribution group from on premieses source of authority to office 365 source of authority.
+    Moves the distribution contact from on premieses source of authority to office 365 source of authority.
 
     .EXAMPLE
 
@@ -35,7 +35,7 @@ function start-collectOffice365MailboxFolders
     #https://github.com/12Knocksinna/Office365itpros/blob/master/ReportPermissionsFolderLevel.PS1
     #Don't tell him - he can get grumpy at times.
 
-    [cmdletbinding()]
+    [cmcontactetbinding()]
 
     Param
     (

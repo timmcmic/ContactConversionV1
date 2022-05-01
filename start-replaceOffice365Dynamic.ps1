@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function begins the process of replacing the Office 365 settings for dynamic groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 settings for dynamic contacts that have been migrated that had cloud only dependencies.
 
     .DESCRIPTION
 
-    This function begins the process of replacing the Office 365 settings for dynamic groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 settings for dynamic contacts that have been migrated that had cloud only dependencies.
 
     .PARAMETER office365Attribute
 
@@ -25,12 +25,12 @@
 
     .EXAMPLE
 
-    sstart-ReplaceOffice365Dynamic -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
+    sstart-ReplaceOffice365Dynamic -office365Attribute Attribute -office365Member contactMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-ReplaceOffice365Dynamic
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -63,9 +63,9 @@
 
         if ($office365Attribute -eq "ManagedBy")
         {
-            out-logfile -string "Attribute is managedBy - this is single value on Dynamic DLs"
+            out-logfile -string "Attribute is managedBy - this is single value on Dynamic contacts"
 
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributioncontact -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
 
             $scriptBlock = [scriptBlock]::create($functionCommand)
 
@@ -81,7 +81,7 @@
         }
         else 
         {
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributioncontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
 
             $scriptBlock = [scriptBlock]::create($functionCommand)

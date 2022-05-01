@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function triggers the upgrade of the group to an Office 365 Modern / Unified Group
+    This function triggers the upgrade of the contact to an Office 365 Modern / Unified contact
     
     .DESCRIPTION
 
-    This function triggers the upgrade of the group to an Office 365 Modern / Unified Group
+    This function triggers the upgrade of the contact to an Office 365 Modern / Unified contact
 
     .PARAMETER contactSMTPAddress
 
@@ -15,12 +15,12 @@
 
     .EXAMPLE
 
-    start-upgradeToOffice365Group -contactSMTPAddress address
+    start-upgradeToOffice365contact -contactSMTPAddress address
 
     #>
-    Function start-upgradeToOffice365Group
+    Function start-upgradeToOffice365contact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -35,12 +35,12 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN start-upgradeToOffice365Group"
+        Out-LogFile -string "BEGIN start-upgradeToOffice365contact"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
 
-        out-logfile -string ("Group SMTP Address = "+$contactSMTPAddress)
+        out-logfile -string ("contact SMTP Address = "+$contactSMTPAddress)
 
         #Call the command to begin the upgrade process.
 
@@ -49,7 +49,7 @@
         out-logfile -string "Administrators MUST validate the upgrade as successful manually."
 
         try{
-            $attempt=upgrade-o365DistributionGroup -DlIdentities $contactSMTPAddress
+            $attempt=upgrade-o365Distributioncontact -contactIdentities $contactSMTPAddress
         }
         catch{
             out-logFile -string $_
@@ -65,7 +65,7 @@
             $isTestError="Yes"
         }
         
-        Out-LogFile -string "END start-upgradeToOffice365Group"
+        Out-LogFile -string "END start-upgradeToOffice365contact"
         Out-LogFile -string "********************************************************************************"
 
         return $isTestError

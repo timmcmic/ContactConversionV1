@@ -1,6 +1,6 @@
-DLConversionV2 ReadMe File.
+contactConversionV2 ReadMe File.
 
-*Sample DL Migrations
+*Sample contact Migrations
 
 -Migrate a distribution list without needing Exchange on-premises or enabling hybrid mail flow.  Allow ad connect to trigger as part of migration to speed up process.
 
@@ -16,15 +16,15 @@ $cloudCred = get-credential
 
 Start-ContactMigration-contactSMTPAddress test@domain.com -globalCatalogServer gc.domain.com -activeDirectoryCredential $onPremCred -asdConnectServer adconnect.domain.com -aadConnectCredential $onPremCred -exchangeServer exchange.domain.com -exchangeCredential $onPremCred -exchangeOnlineCredential $cloudCred -logFolderPath c:\temp -dnNoSyncOU "OU=something,dc=domain,dc=com" -enableHybridMailFlow:$TRUE
 
--Migrate a distribution list using Exchange on premsies and enabling hybrid mail flow.  Allow ad connect to trigger as part of migration to speed up process.  At the end of the mirgation trigger an upgrade to a modern / universal / office 365 group.
+-Migrate a distribution list using Exchange on premsies and enabling hybrid mail flow.  Allow ad connect to trigger as part of migration to speed up process.  At the end of the mirgation trigger an upgrade to a modern / universal / office 365 contact.
 
 $onPremCred = get-credential
 $cloudCred = get-credential
 
-Start-ContactMigration-contactSMTPAddress test@domain.com -globalCatalogServer gc.domain.com -activeDirectoryCredential $onPremCred -asdConnectServer adconnect.domain.com -aadConnectCredential $onPremCred -exchangeServer exchange.domain.com -exchangeCredential $onPremCred -exchangeOnlineCredential $cloudCred -logFolderPath c:\temp -dnNoSyncOU "OU=something,dc=domain,dc=com" -triggerUpgradeToOffice365Group:$TRUE
+Start-ContactMigration-contactSMTPAddress test@domain.com -globalCatalogServer gc.domain.com -activeDirectoryCredential $onPremCred -asdConnectServer adconnect.domain.com -aadConnectCredential $onPremCred -exchangeServer exchange.domain.com -exchangeCredential $onPremCred -exchangeOnlineCredential $cloudCred -logFolderPath c:\temp -dnNoSyncOU "OU=something,dc=domain,dc=com" -triggerUpgradeToOffice365contact:$TRUE
 
 
-*Information regarding the usage of the DLConversionV2 module can be found in the following blog posts.
+*Information regarding the usage of the contactConversionV2 module can be found in the following blog posts.
 
 *Introduction to the Distribution List Migration Module v2
 https://timmcmic.wordpress.com/2021/04/25/4116/
@@ -35,10 +35,10 @@ https://timmcmic.wordpress.com/2021/04/26/office-365-distribution-list-migration
 *Using the Distribution List Migration Module v2 for Sample Migrations
 https://timmcmic.wordpress.com/2021/04/26/office-365-distribution-list-migrations-version-2-0-part-3-2/
 
-*Retaining the Original Distribution Group Post Migration
+*Retaining the Original Distribution contact Post Migration
 https://timmcmic.wordpress.com/2021/04/27/office-365-distribution-list-migrations-version-2-0-part-4/
 
-*Gathering Advanced Dependencies for a Group to be Migrated
+*Gathering Advanced Dependencies for a contact to be Migrated
 https://timmcmic.wordpress.com/2021/04/27/office-365-distribution-list-migrations-version-2-0-part-5/
 
 *How Does the Module Track Distribution Lists that have been Migrated

@@ -14,7 +14,7 @@
     #>
     Function Test-PowershellModule
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

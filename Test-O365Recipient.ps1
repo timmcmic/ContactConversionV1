@@ -27,7 +27,7 @@
     #>
     Function Test-O365Recipient
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

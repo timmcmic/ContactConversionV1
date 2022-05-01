@@ -7,9 +7,9 @@
 
     This function calculates the correct OU to place an object.
 
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,18 +17,18 @@
 
     .EXAMPLE
 
-    get-OULocation -originalDLConfiguration $originalDLConfiguration
+    get-OULocation -originalContactConfiguration $originalContactConfiguration
 
     #>
 
     Function Get-OULocation
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration
+            $originalContactConfiguration
         )
 
         Out-LogFile -string "********************************************************************************"
@@ -41,16 +41,16 @@
 
         #Test to see if the DN contains an OU.
 
-        out-logfile -string $originalDLConfiguration.distinguishedname
+        out-logfile -string $originalContactConfiguration.distinguishedname
 
-        $testOUSubstringLocation = $originalDLConfiguration.distinguishedName.indexof(",OU=")
+        $testOUSubstringLocation = $originalContactConfiguration.distinguishedName.indexof(",OU=")
         out-logfile -string ("The location of ,OU= is:"+$testOUSubstringLocation)
 
         if ($testOUSubStringLocation -ge 0)
         {
-            out-logfile -string "The group is in an organizational unit."
+            out-logfile -string "The contact is in an organizational unit."
             out-logfile -string $testOUSubstringLocation.tostring()
-            $tempOUSubstring = $originalDLConfiguration.distinguishedname.substring($testOUSubstringLocation)
+            $tempOUSubstring = $originalContactConfiguration.distinguishedname.substring($testOUSubstringLocation)
             out-logfile -string "Temp OU Substring = "
             out-logfile -string $tempOUSubstring
             $testOUSubstringLocation = $tempOUSubstring.indexof("OU=")
@@ -61,10 +61,10 @@
         }
         else 
         {
-            out-logfile -string "The group is in a container and not an OU."
-            $testOUSubstringLocation = $originalDLConfiguration.distinguishedName.indexof(",CN=")    
+            out-logfile -string "The contact is in a container and not an OU."
+            $testOUSubstringLocation = $originalContactConfiguration.distinguishedName.indexof(",CN=")    
             out-logfile -string $testOUSubstringLocation.tostring()
-            $tempOUSubstring = $originalDLConfiguration.distinguishedname.substring($testOUSubstringLocation)
+            $tempOUSubstring = $originalContactConfiguration.distinguishedname.substring($testOUSubstringLocation)
             out-logfile -string "Temp OU Substring = "
             out-logfile -string $tempOUSubstring
             $testOUSubstringLocation = $tempOUSubstring.indexof("CN=")

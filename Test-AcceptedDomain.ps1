@@ -1,31 +1,31 @@
 <#
     .SYNOPSIS
 
-    This function tests each accepted domain on the group to ensure it appears in Office 365.
+    This function tests each accepted domain on the contact to ensure it appears in Office 365.
 
     .DESCRIPTION
 
-    This function tests each accepted domain on the group to ensure it appears in Office 365.
+    This function tests each accepted domain on the contact to ensure it appears in Office 365.
 
     .EXAMPLE
 
-    Test-AcceptedDomain -originalDLConfiguration $originalDLConfiguration
+    Test-AcceptedDomain -originalContactConfiguration $originalContactConfiguration
 
     #>
     Function Test-AcceptedDomain
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration
+            $originalContactConfiguration
         )
 
         #Define variables that will be utilzed in the function.
 
-        [array]$originalDLAddresses=@()
-        [array]$originalDLDomainNames=@()
+        [array]$originalcontactAddresses=@()
+        [array]$originalcontactDomainNames=@()
 
         #Initiate the test.
         
@@ -33,7 +33,7 @@
         Out-LogFile -string "BEGIN Test-AcceptedDomain"
         Out-LogFile -string "********************************************************************************"
 
-        foreach ($address in $originalDLConfiguration.proxyAddresses)
+        foreach ($address in $originalContactConfiguration.proxyAddresses)
         {
             Out-logfile -string "Testing proxy address for SMTP"
             out-logfile -string $address
@@ -44,7 +44,7 @@
 
                 $tempAddress=$address.split("@")
 
-                $originalDLDomainNames+=$tempAddress[1]
+                $originalcontactDomainNames+=$tempAddress[1]
             }
             else 
             {
@@ -52,20 +52,20 @@
             }
         }
 
-        #It is possible that the group does not have proxy address but just mail - this is now a supported scenario.
+        #It is possible that the contact does not have proxy address but just mail - this is now a supported scenario.
         #To get this far the object has to have mail.
 
-        out-logfile -string ("The mail address is: "+$originalDLConfiguration.mail)
-        $tempAddress=$originalDLConfiguration.mail.split("@")
-        $originalDLDomainNames+=$tempAddress[1]
+        out-logfile -string ("The mail address is: "+$originalContactConfiguration.mail)
+        $tempAddress=$originalContactConfiguration.mail.split("@")
+        $originalcontactDomainNames+=$tempAddress[1]
         
 
-        $originalDLDomainNames=$originalDLDomainNames | select-object -Unique
+        $originalcontactDomainNames=$originalcontactDomainNames | select-object -Unique
 
-        out-logfile -string "Unique domain names on the group."
-        out-logfile -string $originalDLDomainNames
+        out-logfile -string "Unique domain names on the contact."
+        out-logfile -string $originalcontactDomainNames
 
-        foreach ($domain in $originalDLDomainNames)
+        foreach ($domain in $originalcontactDomainNames)
         {
             out-logfile -string "Testing Office 365 for Domain Name."
 
@@ -76,8 +76,8 @@
             else 
             {
                 out-logfile -string $domain
-                out-logfile -string "Group cannot be migrated until the domain is an accepted domain in Office 365 or removed from the group."    
-                out-logfile -string "Email address exists on group that is not in Office 365." -isError:$TRUE
+                out-logfile -string "contact cannot be migrated until the domain is an accepted domain in Office 365 or removed from the contact."    
+                out-logfile -string "Email address exists on contact that is not in Office 365." -isError:$TRUE
             }
         }
 

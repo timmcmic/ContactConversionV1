@@ -7,9 +7,9 @@
 
     This function utilizes exchange on premises and searches for all send as rights across all recipients.
 
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,17 +17,17 @@
 
     .EXAMPLE
 
-    get-o365dlconfiguration -contactSMTPAddress Address
+    get-o365contactconfiguration -contactSMTPAddress Address
 
     #>
     Function get-onPremFolderPermissions
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory=$false)]
             $collectedData=$NULL
         )
@@ -62,9 +62,9 @@
                 if ($recipient.user.tostring() -notlike "*S-1-5-21*")
                 {
                     write-host $recipient.user
-                    write-host $originalDLConfiguration.samAccountName
+                    write-host $originalContactConfiguration.samAccountName
 
-                    if ($recipient.user.ADRecipient.SamAccountName.tostring() -eq $originalDLConfiguration.samAccountName)
+                    if ($recipient.user.ADRecipient.SamAccountName.tostring() -eq $originalContactConfiguration.samAccountName)
                     {
                         out-logfile -string ("Mailbox folder permission found - recording."+$recipient.identity)
                         $functionFolderRightsUsers+=$recipient
@@ -89,7 +89,7 @@
 
         out-logfile -string ("Post collected data count: "+$collecteddata.count)
 
-        $functionFolderRightsUsers = $collectedData | where {$_.user.ADRecipient.primarySMTpAddress.contains($originalDLConfiguration.mail)}
+        $functionFolderRightsUsers = $collectedData | where {$_.user.ADRecipient.primarySMTpAddress.contains($originalContactConfiguration.mail)}
 
         
 

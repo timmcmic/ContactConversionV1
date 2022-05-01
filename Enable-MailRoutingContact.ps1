@@ -26,7 +26,7 @@
     #>
     Function Enable-MailRoutingContact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -40,7 +40,7 @@
 
         #Declare function variables.
 
-        $functionGroup=$NULL
+        $functioncontact=$NULL
         $functionRemoteRoutingAddress=$NULL
 
         #Start function processing.
@@ -69,7 +69,7 @@
         try{
             out-logfile -string "Gathering the mail contact configuration..."
 
-            $functionGroup=get-mailContact -identity $routingContactConfig.mailNickName -domainController $globalCatalogServer -errorAction STOP
+            $functioncontact=get-mailContact -identity $routingContactConfig.mailNickName -domainController $globalCatalogServer -errorAction STOP
         }
         catch{
             out-logfile -string $_
@@ -82,7 +82,7 @@
         try{
             out-logfile -string "Forcing upgrade to contact - necessary in order to provision."
 
-            set-mailcontact -identity $functionGroup.alias -domainController $globalCatalogServer -ForceUpgrade
+            set-mailcontact -identity $functioncontact.alias -domainController $globalCatalogServer -ForceUpgrade
         }
         catch{
             out-logfile -string $_
@@ -95,7 +95,7 @@
         try{
             out-logfile -string "Setting email address policy enabled to $FALSE - stop further automatic email addressing."
 
-            set-mailcontact -identity $functionGroup.alias -EmailAddressPolicyEnabled:$FALSE -domainController $globalCatalogServer -forceUpgrade -confirm:$FALSE
+            set-mailcontact -identity $functioncontact.alias -EmailAddressPolicyEnabled:$FALSE -domainController $globalCatalogServer -forceUpgrade -confirm:$FALSE
         }
         catch{
             out-logfile -string $_
@@ -112,7 +112,7 @@
             out-logfile -string $_ -isError:$TRUE
         }
 
-        #Removee the target address from the list of proxy addresses so it does not collide with the migrated group.
+        #Removee the target address from the list of proxy addresses so it does not collide with the migrated contact.
 
         try{
             out-logfile -string "Removing the remote routing address..."

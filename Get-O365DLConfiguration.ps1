@@ -9,7 +9,7 @@
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,31 +17,31 @@
 
     .EXAMPLE
 
-    get-o365dlconfiguration -contactSMTPAddress Address
+    get-o365contactconfiguration -contactSMTPAddress Address
 
     #>
-    Function Get-o365DLConfiguration
+    Function Get-o365contactConfiguration
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
             [string]$contactSMTPAddress,
             [Parameter(Mandatory = $false)]
-            [string]$groupTypeOverride=""
+            [string]$contactTypeOverride=""
         )
 
         #Declare function variables.
 
-        $functionDLConfiguration=$NULL #Holds the return information for the group query.
-        $functionMailSecurity="MailUniversalSecurityGroup"
-        $functionMailDistribution="MailUniversalDistributionGroup"
+        $functioncontactConfiguration=$NULL #Holds the return information for the contact query.
+        $functionMailSecurity="MailUniversalSecuritycontact"
+        $functionMailDistribution="MailUniversalDistributioncontact"
 
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN GET-O365DLCONFIGURATION"
+        Out-LogFile -string "BEGIN GET-O365contactCONFIGURATION"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
@@ -52,29 +52,29 @@
         
         try 
         {
-            if ($groupTypeOverride -eq "")
+            if ($contactTypeOverride -eq "")
             {
-                Out-LogFile -string "Using Exchange Online to capture the distribution group."
+                Out-LogFile -string "Using Exchange Online to capture the distribution contact."
 
-                $functionDLConfiguration=get-O365DistributionGroup -identity $contactSMTPAddress -errorAction STOP
+                $functioncontactConfiguration=get-O365Distributioncontact -identity $contactSMTPAddress -errorAction STOP
             
-                Out-LogFile -string "Original DL configuration found and recorded."
+                Out-LogFile -string "Original contact configuration found and recorded."
             }
-            elseif ($groupTypeOverride -eq "Security")
+            elseif ($contactTypeOverride -eq "Security")
             {
-                Out-logfile -string "Using Exchange Online to capture distribution group with filter security"
+                Out-logfile -string "Using Exchange Online to capture distribution contact with filter security"
 
-                $functionDLConfiguration=get-o365DistributionGroup -identity $contactSMTPAddress -RecipientTypeDetails $functionMailSecurity -errorAction STOP
+                $functioncontactConfiguration=get-o365Distributioncontact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailSecurity -errorAction STOP
 
-                out-logfile -string "Original DL configuration found and recorded by filter security."
+                out-logfile -string "Original contact configuration found and recorded by filter security."
             }
-            elseif ($groupTypeOverride -eq "Distribution")
+            elseif ($contactTypeOverride -eq "Distribution")
             {
-                out-logfile -string "Using Exchange Online to capture distribution group with filter distribution."
+                out-logfile -string "Using Exchange Online to capture distribution contact with filter distribution."
 
-                $functionDLConfiguration=get-o365DistributionGroup -identity $contactSMTPAddress -RecipientTypeDetails $functionMailDistribution
+                $functioncontactConfiguration=get-o365Distributioncontact -identity $contactSMTPAddress -RecipientTypeDetails $functionMailDistribution
 
-                out-logfile -string "Original DL configuration found and recorded by filter distribution."
+                out-logfile -string "Original contact configuration found and recorded by filter distribution."
             }
             
         }
@@ -83,12 +83,12 @@
             Out-LogFile -string $_ -isError:$TRUE
         }
 
-        Out-LogFile -string "END GET-O365DLCONFIGURATION"
+        Out-LogFile -string "END GET-O365contactCONFIGURATION"
         Out-LogFile -string "********************************************************************************"
         
         #This function is designed to open local and remote powershell sessions.
         #If the session requires import - for example exchange - return the session for later work.
         #If not no return is required.
         
-        return $functionDLConfiguration
+        return $functioncontactConfiguration
     }

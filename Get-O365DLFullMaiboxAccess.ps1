@@ -9,7 +9,7 @@
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,12 +17,12 @@
 
     .EXAMPLE
 
-    Get-O365DLFullMaiboxAccess -contactSMTPAddress Address
+    Get-O365contactFullMaiboxAccess -contactSMTPAddress Address
 
     #>
-    Function Get-O365DLFullMaiboxAccess
+    Function Get-O365contactFullMaiboxAccess
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -41,7 +41,7 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN Get-O365DLFullMaiboxAccess"
+        Out-LogFile -string "BEGIN Get-O365contactFullMaiboxAccess"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
@@ -137,7 +137,7 @@
             $functionFullMailboxAccess = $collectedData | where {$_.user.contains($functionRecipient.identity)}
         }
 
-        Out-LogFile -string "END Get-O365DLFullMaiboxAccess"
+        Out-LogFile -string "END Get-O365contactFullMaiboxAccess"
         Out-LogFile -string "********************************************************************************"
         
         if ($functionFullMailboxAccess.count -gt 0)

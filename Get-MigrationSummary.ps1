@@ -22,7 +22,7 @@
     #>
     Function get-MigrationSummary
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -73,8 +73,8 @@
         {
             $temp = $job.name.split('-')
 			$tempStatus = $temp[-1]
-			$tempGroupName = $temp[1..($temp.count - 2)] -join '-'
-            out-logfile -string "Group: $($tempGroupName)  Status: $($tempStatus)"
+			$tempcontactName = $temp[1..($temp.count - 2)] -join '-'
+            out-logfile -string "contact: $($tempcontactName)  Status: $($tempStatus)"
         }
 
         out-logfile -string ''
@@ -85,8 +85,8 @@
         {
             $temp = $job.name.split('-')
 			$tempStatus = $temp[-1]
-			$tempGroupName = $temp[1..($temp.count - 2)] -join '-'
-            out-logfile -string "Group: $($tempGroupName)  Status: $($tempStatus)"
+			$tempcontactName = $temp[1..($temp.count - 2)] -join '-'
+            out-logfile -string "contact: $($tempcontactName)  Status: $($tempStatus)"
         }
 
         out-logfile -string '================================================================================'

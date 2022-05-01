@@ -30,7 +30,7 @@
     #>
     Function Out-XMLFile
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

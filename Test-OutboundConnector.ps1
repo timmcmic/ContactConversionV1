@@ -1,20 +1,20 @@
 <#
     .SYNOPSIS
 
-    This function tests each accepted domain on the group to ensure it appears in Office 365.
+    This function tests each accepted domain on the contact to ensure it appears in Office 365.
 
     .DESCRIPTION
 
-    This function tests each accepted domain on the group to ensure it appears in Office 365.
+    This function tests each accepted domain on the contact to ensure it appears in Office 365.
 
     .EXAMPLE
 
-    Test-AcceptedDomain -originalDLConfiguration $originalDLConfiguration
+    Test-AcceptedDomain -originalContactConfiguration $originalContactConfiguration
 
     #>
     Function Test-OutboundConnector
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -42,9 +42,9 @@
                 {
                     out-logfile -string "***WARNING***"
                     out-logfile -string "Centralized transport is enabled."
-                    out-logfile -string "When centralized mail transport is enabled - if the migrated group contains any on premises mailboxes the public MX is utilized for routing."
+                    out-logfile -string "When centralized mail transport is enabled - if the migrated contact contains any on premises mailboxes the public MX is utilized for routing."
                     out-logfile -string "If not properly tested this could lead to NDRs or messages appearing as external to on premises resources."
-                    out-logfile -string "Migrating this DL can only be accomplished by acknolwedging centralized mail transport is enabled using the -overrideCentalizedMailTransportEnabled:$TRUE"
+                    out-logfile -string "Migrating this contact can only be accomplished by acknolwedging centralized mail transport is enabled using the -overrideCentalizedMailTransportEnabled:$TRUE"
                     out-logfile -string $outboundConnector.name
                     out-logfile -string $outboundConnector.RouteAllMessagesViaOnPremises
                     out-logfile -string "***WARNING***" -isError:$true
@@ -65,7 +65,7 @@
                 {
                     out-logfile -string "***WARNING***"
                     out-logfile -string "Centralized transport is enabled."
-                    out-logfile -string "When centralized mail transport is enabled - if the migrated group contains any on premises mailboxes the public MX is utilized for routing if the message originated from on premises."
+                    out-logfile -string "When centralized mail transport is enabled - if the migrated contact contains any on premises mailboxes the public MX is utilized for routing if the message originated from on premises."
                     out-logfile -string "If not properly tested this could lead to NDRs or messages appearing as external to on premises resources."
                     out-logfile -string "The administrator has acknowledged the warning by overriding centralized mail transport enabled."
                     out-logfile -string $outboundConnector.name

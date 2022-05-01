@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function moves the group to the non-SYNC OU.  This is necessary to process the group deletion from Office 365.
+    This function moves the contact to the non-SYNC OU.  This is necessary to process the contact deletion from Office 365.
     
     .DESCRIPTION
 
-    This function moves the group to the non-SYNC OU.  This is necessary to process the group deletion from Office 365.
+    This function moves the contact to the non-SYNC OU.  This is necessary to process the contact deletion from Office 365.
 
     .PARAMETER GlobalCatalogServer
 
@@ -25,12 +25,12 @@
 
     .EXAMPLE
 
-    move-toNonSyncOU -globalCatalogServer GC -OU NonSyncOU -DN groupDN
+    move-toNonSyncOU -globalCatalogServer GC -OU NonSyncOU -DN contactDN
 
     #>
     Function move-toNonSyncOU
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -60,7 +60,7 @@
         
         try 
         {
-            Out-LogFile -string "Move the group to the non-SYNC OU..."
+            Out-LogFile -string "Move the contact to the non-SYNC OU..."
 
             move-adObject -identity $DN -targetPath $OU -credential $adCredential -server $globalCatalogServer
         }

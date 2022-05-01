@@ -1,19 +1,19 @@
 <#
     .SYNOPSIS
 
-    This function gets the original DL configuration for the on premises group using AD providers.
+    This function gets the original contact configuration for the on premises contact using AD providers.
 
     .DESCRIPTION
 
-    This function gets the original DL configuration for the on premises group using AD providers.
+    This function gets the original contact configuration for the on premises contact using AD providers.
 
     .PARAMETER parameterSet
 
-    These are the parameters that the GET will gather from AD for the DL.  This should be the full map.
+    These are the parameters that the GET will gather from AD for the contact.  This should be the full map.
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .PARAMETER GlobalCatalog
 
@@ -21,7 +21,7 @@
 
     .OUTPUTS
 
-    Returns the DL configuration from the LDAP / AD call to the calling function.
+    Returns the contact configuration from the LDAP / AD call to the calling function.
 
     .EXAMPLE
 
@@ -30,7 +30,7 @@
     #>
     Function Get-ADObjectConfiguration
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -51,7 +51,7 @@
 
         #Declare function variables.
 
-        $functionDLConfiguration=$NULL #Holds the return information for the group query.
+        $functioncontactConfiguration=$NULL #Holds the return information for the contact query.
 
         #Start function processing.
 
@@ -72,11 +72,11 @@
 
         out-logfile -string ("Credential user name = "+$adCredential.UserName)
 
-        #Get the group using LDAP / AD providers.
+        #Get the contact using LDAP / AD providers.
         
         try 
         {
-            Out-LogFile -string "Using AD / LDAP provider to get original DL configuration"
+            Out-LogFile -string "Using AD / LDAP provider to get original contact configuration"
 
             if ($contactSMTPAddress -ne "None")
             {
@@ -87,13 +87,13 @@
 
                 out-logfile -string ("Spaces Removed Address Length: "+$contactSMTPAddress.length.toString())
 
-                $functionDLConfiguration=Get-ADObject -filter "mail -eq '$contactSMTPAddress'" -properties $parameterSet -server $globalCatalogServer -credential $adCredential -errorAction STOP
+                $functioncontactConfiguration=Get-ADObject -filter "mail -eq '$contactSMTPAddress'" -properties $parameterSet -server $globalCatalogServer -credential $adCredential -errorAction STOP
             }
             elseif ($DN -ne "None")
             {
                 out-logfile -string ("Searching by distinguished name "+$dn)
 
-                $functionDLConfiguration=get-adObject -identity $DN -properties $parameterSet -server $globalCatalogServer -credential $adCredential
+                $functioncontactConfiguration=get-adObject -identity $DN -properties $parameterSet -server $globalCatalogServer -credential $adCredential
             }
             else 
             {
@@ -101,14 +101,14 @@
             }
             
 
-            #If the ad provider command cannot find the group - the variable is NULL.  An error is not thrown.
+            #If the ad provider command cannot find the contact - the variable is NULL.  An error is not thrown.
 
-            if ($functionDLConfiguration -eq $NULL)
+            if ($functioncontactConfiguration -eq $NULL)
             {
-                throw "The group cannot be found in Active Directory by email address."
+                throw "The contact cannot be found in Active Directory by email address."
             }
 
-            Out-LogFile -string "Original DL configuration found and recorded."
+            Out-LogFile -string "Original contact configuration found and recorded."
         }
         catch 
         {
@@ -122,5 +122,5 @@
         #If the session requires import - for example exchange - return the session for later work.
         #If not no return is required.
         
-        return $functionDLConfiguration
+        return $functioncontactConfiguration
     }

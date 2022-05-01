@@ -30,7 +30,7 @@
     #>
     Function New-PowershellSession
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

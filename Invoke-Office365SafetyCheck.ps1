@@ -7,9 +7,9 @@
 
     This function confirms that the distribution list specified and found in Office 365 is DirSynced=TRUE
 
-    .PARAMETER O365DLConfiguration
+    .PARAMETER O365contactConfiguration
 
-    The DL configuration obtained by the service.
+    The contact configuration obtained by the service.
 
     .OUTPUTS
 
@@ -17,17 +17,17 @@
 
     .EXAMPLE
 
-    invoke-office365safetycheck -o365dlconfiguration o365dlconfiguration
+    invoke-office365safetycheck -o365contactconfiguration o365contactconfiguration
 
     #>
     Function Invoke-Office365SafetyCheck
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $o365dlconfiguration
+            $o365contactconfiguration
         )
 
         Out-LogFile -string "********************************************************************************"
@@ -38,9 +38,9 @@
         
         try 
         {
-            Out-LogFile -string ("Distribution list isDirSynced = "+$o365dlconfiguration.isDirSynced)
+            Out-LogFile -string ("Distribution list isDirSynced = "+$o365contactconfiguration.isDirSynced)
 
-            if ($o365dlconfiguration.isDirSynced -eq $FALSE)
+            if ($o365contactconfiguration.isDirSynced -eq $FALSE)
             {
                 Out-LogFile -string "The distribution list requested is not directory synced and cannot be migrated." -isError:$TRUE
             }

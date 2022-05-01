@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function begins the process of replacing the Office 365 unified group settings for groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 unified contact settings for contacts that have been migrated that had cloud only dependencies.
 
     .DESCRIPTION
 
-    This function begins the process of replacing the Office 365 unified group settings for groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 unified contact settings for contacts that have been migrated that had cloud only dependencies.
 
     .PARAMETER office365Attribute
 
@@ -25,12 +25,12 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member contactMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-replaceOffice365Unified
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -61,7 +61,7 @@
 
         out-Logfile -string "Processing operation..."
 
-        $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
+        $functionCommand="set-o365Unifiedcontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
         out-logfile -string ("The command to execute:  "+$functionCommand)
 
         $scriptBlock = [scriptBlock]::create($functionCommand)

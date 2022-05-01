@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function sets the multi valued attributes of the DL
+    This function sets the multi valued attributes of the contact
 
     .DESCRIPTION
 
-    This function sets the multi valued attributes of the DL.
+    This function sets the multi valued attributes of the contact.
     For each of use - I've combined these into a single function instead of splitting them out.dddd
 
     .PARAMETER allSendAs
@@ -22,12 +22,12 @@
 
     .EXAMPLE
 
-    set-Office365DLPermissions -allSendAs SENDAS -allFullMailboxAccess FULLMAILBOXACCESS
+    set-Office365contactPermissions -allSendAs SENDAS -allFullMailboxAccess FULLMAILBOXACCESS
 
     #>
-    Function set-Office365DLPermissions
+    Function set-Office365contactPermissions
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -44,7 +44,7 @@
             [AllowEmptyCollection()]
             [array]$allFolderPermissions=@(),
             [Parameter(Mandatory = $false)]
-            [string]$originalGroupPrimarySMTPAddress=""
+            [string]$originalcontactPrimarySMTPAddress=""
         )
 
         $isTestError="No"
@@ -54,15 +54,15 @@
         #Start processing the recipient permissions.
        
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "START set-Office365DLPermissions"
+        Out-LogFile -string "START set-Office365contactPermissions"
         Out-LogFile -string "********************************************************************************"
 
-        #Determine if any dir synced groups on premises has send as set.  If so reset in service so migrated group continues to work.
+        #Determine if any dir synced contacts on premises has send as set.  If so reset in service so migrated contact continues to work.
 
         if ($allOnPremSendAs.count -gt 0)
         {
-            out-logfile -string "The migrated group has send as rights on premises for groups that are directory synced."
-            out-logfile -string "Adding the send as right to the cloud for the migrated distribution group."
+            out-logfile -string "The migrated contact has send as rights on premises for contacts that are directory synced."
+            out-logfile -string "Adding the send as right to the cloud for the migrated distribution contact."
 
             foreach ($permission in $allOnPremSendAs)
             {
@@ -70,11 +70,11 @@
                 $accessRight="SendAs"
 
                 out-logfile -string ("Processing permission identity = "+$permission.primarySMTPAddressorUPN)
-                out-logfile -string ("Processing permission trustee = "+$originalGroupPrimarySMTPAddress)
+                out-logfile -string ("Processing permission trustee = "+$originalcontactPrimarySMTPAddress)
                 out-logfile -string ("Processing permission access rights = "+$accessRight)
 
                 try {
-                    add-o365RecipientPermission -identity $permission.primarySMTPAddressOrUPN -trustee $originalGroupPrimarySMTPAddress -accessRights $accessRight -confirm:$FALSE -errorAction STOP
+                    add-o365RecipientPermission -identity $permission.primarySMTPAddressOrUPN -trustee $originalcontactPrimarySMTPAddress -accessRights $accessRight -confirm:$FALSE -errorAction STOP
                 }
                 catch {
                     out-logfile -string "Unable to add the recipient permission in office 365."
@@ -86,12 +86,12 @@
 
                 if ($isTestError -eq "Yes")
                 {
-                    out-logfile -string "Error adding mirgated distribution list to send as permission of cloud only group.."
+                    out-logfile -string "Error adding mirgated distribution list to send as permission of cloud only contact.."
     
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.primarySMTPAddressorUPN
                         attribute = "SendAs Permission"
-                        errorMessage = "Migrated DL has send as permissions on directory synced group.  Attempt to mirror permission in cloud failed.  Manaul add required."
+                        errorMessage = "Migrated contact has send as permissions on directory synced contact.  Attempt to mirror permission in cloud failed.  Manaul add required."
                         errorMessageDetail = $errorMessageDetail
                     }
     
@@ -133,7 +133,7 @@
 
                 if ($isTestError -eq "Yes")
                 {
-                    out-logfile -string "Error adding migrated DL to on premises DL send as on cloud object.."
+                    out-logfile -string "Error adding migrated contact to on premises contact send as on cloud object.."
     
                     $isErrorObject = new-Object psObject -property @{
                         permissionIdentity = $permission.Identity
@@ -286,7 +286,7 @@
             out-logfile -string "There are no full mailbox access permissions to process."  
         }
 
-        Out-LogFile -string "END set-Office365DLPermissions"
+        Out-LogFile -string "END set-Office365contactPermissions"
         Out-LogFile -string "********************************************************************************"
         
     }

@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function sets the multi valued attributes of the DL
+    This function sets the multi valued attributes of the contact
 
     .DESCRIPTION
 
-    This function sets the multi valued attributes of the DL.
+    This function sets the multi valued attributes of the contact.
     For each of use - I've combined these into a single function instead of splitting them out.
 
     .PARAMETER allSendAs
@@ -22,12 +22,12 @@
 
     .EXAMPLE
 
-    set-Office365DLPermissions -allSendAs SENDAS -allFullMailboxAccess FULLMAILBOXACCESS
+    set-Office365contactPermissions -allSendAs SENDAS -allFullMailboxAccess FULLMAILBOXACCESS
 
     #>
-    Function set-OnPremDLPermissions
+    Function set-OnPremcontactPermissions
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -51,7 +51,7 @@
         #Start processing the recipient permissions.
        
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "START set-OnPremDLPermissions"
+        Out-LogFile -string "START set-OnPremcontactPermissions"
         Out-LogFile -string "********************************************************************************"
 
         #Determine if send as is populated and if so reset permissiosn.
@@ -84,7 +84,7 @@
                 $isErrorObject = new-Object psObject -property @{
                     permissionIdentity = $permission.Identity
                     attribute = "Send As Permission"
-                    errorMessage = "Unable to add the migrated distribution list mail contact with send as permissions to groups sourced on onPremRecipientSendAs."
+                    errorMessage = "Unable to add the migrated distribution list mail contact with send as permissions to contacts sourced on onPremRecipientSendAs."
                     errorMessageDetail = $errorMessageDetail
                 }
     
@@ -127,7 +127,7 @@
 
             if ($isTestError -eq "Yes")
             {
-                out-logfile -string "Error processing full mailbox access rights on premises (migrated mail contact) for migrated DL."
+                out-logfile -string "Error processing full mailbox access rights on premises (migrated mail contact) for migrated contact."
 
                 $isErrorObject = new-Object psObject -property @{
                     permissionIdentity = $permission.Identity
@@ -195,6 +195,6 @@
             out-logfile -string "There are no full mailbox access permissions to process."  
         }
 
-        Out-LogFile -string "END set-OnPremDLPermissions"
+        Out-LogFile -string "END set-OnPremcontactPermissions"
         Out-LogFile -string "********************************************************************************"
     }

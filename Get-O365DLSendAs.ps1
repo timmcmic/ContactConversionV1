@@ -9,7 +9,7 @@
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,12 +17,12 @@
 
     .EXAMPLE
 
-    Get-O365DLSendAs -contactSMTPAddress Address
+    Get-O365contactSendAs -contactSMTPAddress Address
 
     #>
-    Function Get-O365DLSendAs
+    Function Get-O365contactSendAs
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -39,7 +39,7 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN Get-O365DLSendAs"
+        Out-LogFile -string "BEGIN Get-O365contactSendAs"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
@@ -52,7 +52,7 @@
         {
             try 
             {
-                Out-LogFile -string "Obtaining all Office 365 groups the migrated DL has send as permissions on."
+                Out-LogFile -string "Obtaining all Office 365 contacts the migrated contact has send as permissions on."
 
                 $functionSendAs = get-o365RecipientPermission -Trustee $contactSMTPAddress -resultsize unlimited -errorAction STOP
             }
@@ -65,7 +65,7 @@
         {
             try
             {
-                out-logfile -string "Obtaining all send as permissions set directly in Office 365 on the group to be migrated."
+                out-logfile -string "Obtaining all send as permissions set directly in Office 365 on the contact to be migrated."
 
                 $functionSendAs = get-O365RecipientPermission -identity $contactSMTPAddress -resultsize unlimited -errorAction STOP
             }
@@ -77,7 +77,7 @@
         
         
 
-        Out-LogFile -string "END Get-O365DLSendAs"
+        Out-LogFile -string "END Get-O365contactSendAs"
         Out-LogFile -string "********************************************************************************"
         
         return $functionSendAs

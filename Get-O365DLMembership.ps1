@@ -1,28 +1,28 @@
 <#
     .SYNOPSIS
 
-    This function obtains the DL membership of the Office 365 distribution group.
+    This function obtains the contact membership of the Office 365 distribution contact.
 
     .DESCRIPTION
 
-    This function obtains the DL membership of the Office 365 distribution group.
+    This function obtains the contact membership of the Office 365 distribution contact.
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
-    Returns the membership array of the DL in Office 365.
+    Returns the membership array of the contact in Office 365.
 
     .EXAMPLE
 
-    get-o365dlMembership -contactSMTPAddress Address
+    get-o365contactMembership -contactSMTPAddress Address
 
     #>
-    Function Get-o365DLMembership
+    Function Get-o365contactMembership
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -32,12 +32,12 @@
 
         #Declare function variables.
 
-        $functionDLMembership=$NULL #Holds the return information for the group query.
+        $functioncontactMembership=$NULL #Holds the return information for the contact query.
 
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN GET-O365DLMEMBERSHIP"
+        Out-LogFile -string "BEGIN GET-O365contactMEMBERSHIP"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
@@ -48,21 +48,21 @@
         
         try 
         {
-            Out-LogFile -string "Using Exchange Online to obtain the group membership."
+            Out-LogFile -string "Using Exchange Online to obtain the contact membership."
 
-            $functionDLMembership=get-O365DistributionGroupMember -identity $contactSMTPAddress -errorAction STOP
+            $functioncontactMembership=get-O365DistributioncontactMember -identity $contactSMTPAddress -errorAction STOP
             
-            Out-LogFile -string "Distribution group membership recorded."
+            Out-LogFile -string "Distribution contact membership recorded."
         }
         catch 
         {
             Out-LogFile -string $_ -isError:$TRUE
         }
 
-        Out-LogFile -string "END GET-O365DLMEMBERSHIP"
+        Out-LogFile -string "END GET-O365contactMEMBERSHIP"
         Out-LogFile -string "********************************************************************************"
         
         #Return the membership to the caller.
         
-        return $functionDLMembership
+        return $functioncontactMembership
     }

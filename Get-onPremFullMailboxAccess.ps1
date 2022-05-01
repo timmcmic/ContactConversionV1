@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
 
-    This function locates any mailbox level permissions on the DL to be migrated.
+    This function locates any mailbox level permissions on the contact to be migrated.
 
     .DESCRIPTION
 
-    This function locates any mailbox level permissions on the DL to be migrated.
+    This function locates any mailbox level permissions on the contact to be migrated.
 
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,17 +17,17 @@
 
     .EXAMPLE
 
-    Get-onPremFullMailboxAccess -originalDLConfiguration DLConfig
+    Get-onPremFullMailboxAccess -originalContactConfiguration contactConfig
 
     #>
     Function Get-onPremFullMailboxAccess
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory = $false)]
             $collectedData=$NULL
         )
@@ -83,7 +83,7 @@
                         $functionCounter++    
                     }
 
-                    $functionPermissions+= invoke-command {Get-MailboxPermission -identity $args[0] -user $args[1]}-ArgumentList $recipient.identity,$originalDLConfiguration.samAccountName
+                    $functionPermissions+= invoke-command {Get-MailboxPermission -identity $args[0] -user $args[1]}-ArgumentList $recipient.identity,$originalContactConfiguration.samAccountName
                 } 
             }
             catch {
@@ -114,7 +114,7 @@
                         #Need to ignore anything that looks like a SID / orphaned entry.
                         $stringTest = $recipient.user.split("\")
 
-                        if ($stringTest[1] -eq $originalDLConfiguration.samAccountName)
+                        if ($stringTest[1] -eq $originalContactConfiguration.samAccountName)
                         {
                             out-logfile -string ("Full mailbox access permission found - recording."+$recipient.identity)
                             $functionPermissions+=$recipient
@@ -134,7 +134,7 @@
 
             out-logfile -string "Testing for full mailbo access rights.."
 
-            $functionPermissions = $collectedData | where {$_.user.contains($originalDLConfiguration.samAccountName)}
+            $functionPermissions = $collectedData | where {$_.user.contains($originalContactConfiguration.samAccountName)}
         }
 
         Out-LogFile -string "********************************************************************************"

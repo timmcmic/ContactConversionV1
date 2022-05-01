@@ -20,7 +20,7 @@
     #>
     Function Start-ArchiveFiles
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -35,12 +35,12 @@
         $functionDate = Get-Date -Format FileDateTime
         $functionNameSplit = $global:logFile.split("\")
 
-        out-logfile -string "Split string for group name."
+        out-logfile -string "Split string for contact name."
         out-logfile -string $functionNameSplit
 
         $functionNameSplit = $functionNameSplit[-1].split(".")
 
-        out-logfile -string "Split string for group name."
+        out-logfile -string "Split string for contact name."
         out-logfile -string $functionNameSplit
 
         if ($isSuccess -eq $TRUE)

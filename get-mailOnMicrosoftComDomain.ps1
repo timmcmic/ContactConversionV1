@@ -15,7 +15,7 @@
     #>
     Function Get-MailOnMicrosoftComDomain
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         #Define variables that will be utilzed in the function.
 

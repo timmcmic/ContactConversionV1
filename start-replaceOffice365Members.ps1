@@ -1,13 +1,13 @@
 <#
     .SYNOPSIS
 
-    This function updates the membership of any cloud only distribution lists for the migrated distribution group.
+    This function updates the membership of any cloud only distribution lists for the migrated distribution contact.
 
     .DESCRIPTION
 
-    This function updates the membership of any cloud only distribution lists for the migrated distribution group.
+    This function updates the membership of any cloud only distribution lists for the migrated distribution contact.
 
-    .PARAMETER office365Group
+    .PARAMETER office365contact
 
     The member that is being added.
 
@@ -21,17 +21,17 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member contactMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-replaceOffice365Members
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $office365Group,
+            $office365contact,
             [Parameter(Mandatory = $true)]
             [string]$contactSMTPAddress
         )
@@ -48,7 +48,7 @@
 
         $functionCommand=$NULL
 
-        Out-LogFile -string ("Office 365 Attribute = "+$office365Group)
+        Out-LogFile -string ("Office 365 Attribute = "+$office365contact)
         out-logfile -string ("Office 365 Member = "+$contactSMTPAddress)
 
         #Declare function variables.
@@ -56,7 +56,7 @@
         out-Logfile -string "Processing operation..."
 
         try{
-            add-o365DistributionGroupMember -identity $office365Group.primarySMTPAddress -member $contactSMTPAddress -errorAction STOP -BypassSecurityGroupManagerCheck
+            add-o365DistributioncontactMember -identity $office365contact.primarySMTPAddress -member $contactSMTPAddress -errorAction STOP -BypassSecuritycontactManagerCheck
         }
         catch{
             out-logfile -string $_

@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
 
-    This function loops until we detect that the cloud DL is no longer present.
+    This function loops until we detect that the cloud contact is no longer present.
     
     .DESCRIPTION
 
-    This function loops until we detect that the cloud DL is no longer present.
+    This function loops until we detect that the cloud contact is no longer present.
 
     .PARAMETER contactSMTPAddress
 
-    The SMTP Address of the group.
+    The SMTP Address of the contact.
 
     .OUTPUTS
 
@@ -17,12 +17,12 @@
 
     .EXAMPLE
 
-    test-CloudDLPresent -contactSMTPAddress SMTPAddress
+    test-CloudcontactPresent -contactSMTPAddress SMTPAddress
 
     #>
-    Function test-CloudDLPresent
+    Function test-CloudcontactPresent
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -37,27 +37,27 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN TEST-CLOUDDLPRESENT"
+        Out-LogFile -string "BEGIN TEST-CLOUDcontactPRESENT"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
 
-        out-Logfile -string ("Group SMTP Address = "+$contactSMTPAddress)
+        out-Logfile -string ("contact SMTP Address = "+$contactSMTPAddress)
 
         do 
         {
             if ($firstLoopProcessing -eq $TRUE)
             {
-                Out-LogFile -string "First time checking for group - do not sleep."
+                Out-LogFile -string "First time checking for contact - do not sleep."
                 $firstLoopProcessing = $FALSE
             }
             else 
             {
-                start-sleepProgress -sleepString "Group found in Office 365 - sleep for 30 seconds - try again." -sleepSeconds 30
+                start-sleepProgress -sleepString "contact found in Office 365 - sleep for 30 seconds - try again." -sleepSeconds 30
             }
 
         } while (get-exoRecipient -identity $contactSMTPAddress)
 
-        Out-LogFile -string "END TEST-CLOUDDLPRESENT"
+        Out-LogFile -string "END TEST-CLOUDcontactPRESENT"
         Out-LogFile -string "********************************************************************************"
     }

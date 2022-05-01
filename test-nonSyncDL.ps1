@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
 
-    This function loops until we detect that the cloud DL is no longer present.
+    This function loops until we detect that the cloud contact is no longer present.
     
     .DESCRIPTION
 
-    This function loops until we detect that the cloud DL is no longer present.
+    This function loops until we detect that the cloud contact is no longer present.
 
     .PARAMETER contactSMTPAddress
 
-    The SMTP Address of the group.
+    The SMTP Address of the contact.
 
     .OUTPUTS
 
@@ -17,17 +17,17 @@
 
     .EXAMPLE
 
-    test-CloudDLPresent -contactSMTPAddress SMTPAddress
+    test-CloudcontactPresent -contactSMTPAddress SMTPAddress
 
     #>
-    Function test-nonSyncDL
+    Function test-nonSynccontact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration
+            $originalContactConfiguration
         )
 
         [array]$functionErrors=@()
@@ -36,16 +36,16 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN TEST-NONSYNCDL"
+        Out-LogFile -string "BEGIN TEST-NONSYNCcontact"
         Out-LogFile -string "********************************************************************************"
 
         out-logfile -string "Testing mail attribute..."
 
-        if ($originalDLConfiguration.mail -eq $NULL)
+        if ($originalContactConfiguration.mail -eq $NULL)
         {
             $isErrorObject = new-Object psObject -property @{
                 Attribute = "Mail"
-                ErrorMessage = ("Mail attribute missing on non-syncDL and is required.")
+                ErrorMessage = ("Mail attribute missing on non-synccontact and is required.")
                 ErrorMessageDetail = $_
             }
 
@@ -58,11 +58,11 @@
 
         out-logfile -string "Testing legacyExchangeDN attribute..."
 
-        if ($originalDLCOnfiguration.legacyExchangeDN -eq $NULL)
+        if ($originalContactConfiguration.legacyExchangeDN -eq $NULL)
         {
             $isErrorObject = new-Object psObject -property @{
                 Attribute = "LegacyExchangeDN"
-                ErrorMessage = ("LegacyExchangeDN attribute missing on non-syncDL and is required.")
+                ErrorMessage = ("LegacyExchangeDN attribute missing on non-synccontact and is required.")
                 errorMessageDetail = $_
             }
 
@@ -75,11 +75,11 @@
 
         out-logfile -string "Testing proxyAddresses attribute..."
 
-        if ($originalDLCOnfiguration.proxyAddresses -eq $NULL)
+        if ($originalContactConfiguration.proxyAddresses -eq $NULL)
         {
             $isErrorObject = new-Object psObject -property @{
                 Attribute = "ProxyAddresses"
-                ErrorMessage = ("ProxyAddresses attribute missing on non-syncDL and is required.")
+                ErrorMessage = ("ProxyAddresses attribute missing on non-synccontact and is required.")
                 ErrorMessageDetail = $_
             }
 
@@ -92,11 +92,11 @@
 
         out-logfile -string "Testing mailNickName attribute..."
 
-        if ($originalDLCOnfiguration.mailNickName -eq $NULL)
+        if ($originalContactConfiguration.mailNickName -eq $NULL)
         {
             $isErrorObject = new-Object psObject -property @{
                 Attribute = "MailNickName"
-                ErrorMessage = ("MailNickName attribute missing on non-syncDL and is required.")
+                ErrorMessage = ("MailNickName attribute missing on non-synccontact and is required.")
                 ErrorMessageDetail = $_
             }
 
@@ -111,18 +111,18 @@
         {
             foreach ($error in $functionErrors)
             {
-                out-logfile -string "Error detected in non sync DL."
+                out-logfile -string "Error detected in non sync contact."
                 out-logfile -string $error.attribute
                 out-logfile -string $error.errormessage
             }
 
-            out-logfile -string "All errors must be corrected prior to non-sync DL migration." -isError:$TRUE
+            out-logfile -string "All errors must be corrected prior to non-sync contact migration." -isError:$TRUE
         }
         else 
         {
             out-logfile -string "No attribute validation errors found proceed with migration."
         }
 
-        Out-LogFile -string "END TEST-NONSYNCDL"
+        Out-LogFile -string "END TEST-NONSYNCcontact"
         Out-LogFile -string "********************************************************************************"
     }

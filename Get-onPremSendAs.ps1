@@ -7,9 +7,9 @@
 
     This function utilizes exchange on premises and searches for all send as rights across all recipients.
 
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -17,17 +17,17 @@
 
     .EXAMPLE
 
-    get-o365dlconfiguration -contactSMTPAddress Address
+    get-o365contactconfiguration -contactSMTPAddress Address
 
     #>
     Function Get-onPremSendAs
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory=$false)]
             $collectedData=$NULL
         )
@@ -36,7 +36,7 @@
 
         [array]$functionSendAsRights=@()
         $functionRecipients=$NULL
-        $functionQueryName=("*"+$originalDLConfiguration.sAMAccountName+"*")
+        $functionQueryName=("*"+$originalContactConfiguration.sAMAccountName+"*")
         [array]$functionSendAsIdentities=@()
         [int]$functionCounter=0
 
@@ -44,7 +44,7 @@
         Out-LogFile -string "BEGIN Get-onPremSendAs"
         Out-LogFile -string "********************************************************************************"
 
-        out-logfile -string ("DL query name = "+$functionQueryName)
+        out-logfile -string ("contact query name = "+$functionQueryName)
 
         if ($collectedData -eq $NULL)
         {
@@ -110,9 +110,9 @@
 
                     #Test the second half of the string for a direct eq to samAccountName.
 
-                    if ($stringTest[1] -eq $originalDLConfiguration.samAccountName)
+                    if ($stringTest[1] -eq $originalContactConfiguration.samAccountName)
                     {
-                        out-logfile -string ("Send as permission matching group found - recording."+$sendAsRight.identity)
+                        out-logfile -string ("Send as permission matching contact found - recording."+$sendAsRight.identity)
                         $functionSendAsIdentities+=$sendAsRight.identity
                     }
                 }
@@ -142,9 +142,9 @@
                         #Need to ignore anything that looks like a SID / orphaned entry.
                         $stringTest = $recipient.user.split("\")
 
-                        if ($stringTest[1] -eq $originalDLConfiguration.samAccountName)
+                        if ($stringTest[1] -eq $originalContactConfiguration.samAccountName)
                         {
-                            out-logfile -string ("Send as permission matching group found - recording."+$recipient.identity)
+                            out-logfile -string ("Send as permission matching contact found - recording."+$recipient.identity)
                             $functionSendAsIdentities+=$recipient
                         }
                     } 
@@ -161,7 +161,7 @@
 
             out-logfile -string "Test for send as rights."
 
-            $functionSendAsIdentities = $collectedData | where {$_.user.contains($originalDLConfiguration.samaccountname)}
+            $functionSendAsIdentities = $collectedData | where {$_.user.contains($originalContactConfiguration.samaccountname)}
         }
         else 
         {

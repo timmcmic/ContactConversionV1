@@ -26,7 +26,7 @@
     #>
     Function get-canonicalName
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -40,7 +40,7 @@
 
         #Declare function variables.
 
-        $functionTest=$NULL #Holds the return information for the group query.
+        $functionTest=$NULL #Holds the return information for the contact query.
         $functionObject=$NULL #This is used to hold the object that will be returned.
         $functionDomain=$NULL
 

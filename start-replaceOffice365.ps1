@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function begins the process of replacing the Office 365 settings for groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 settings for contacts that have been migrated that had cloud only dependencies.
 
     .DESCRIPTION
 
-    This function begins the process of replacing the Office 365 settings for groups that have been migrated that had cloud only dependencies.
+    This function begins the process of replacing the Office 365 settings for contacts that have been migrated that had cloud only dependencies.
 
     .PARAMETER office365Attribute
 
@@ -25,12 +25,12 @@
 
     .EXAMPLE
 
-    sstart-replaceOffice365 -office365Attribute Attribute -office365Member groupMember -contactSMTPAddress smtpAddess
+    sstart-replaceOffice365 -office365Attribute Attribute -office365Member contactMember -contactSMTPAddress smtpAddess
 
     #>
     Function start-ReplaceOffice365
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -54,12 +54,12 @@
 
         $functionCommand=$NULL
         $functionMailboxRecipientType = "UserMailbox"
-        $functionDistributionGroupRecipientType = "MailUniversalDistributionGroup"
-        $functionSecurityGroupRecipientType = "MailUniversalSecurityGroup"
+        $functionDistributioncontactRecipientType = "MailUniversalDistributioncontact"
+        $functionSecuritycontactRecipientType = "MailUniversalSecuritycontact"
         $functionMailUserRecipientType = "MailUser"
         $functionMailContactRecipientType = "MailContact"
-        $functionUniveralRecipientDisplayType = "GroupMailbox"
-        $functionDynamicDistributionGroupRecipientType = "DynamicDistributionGroup"
+        $functionUniveralRecipientDisplayType = "contactMailbox"
+        $functionDynamicDistributioncontactRecipientType = "DynamicDistributioncontact"
 
         $functionForwarding = "ForwardingAddress"
 
@@ -79,25 +79,25 @@
             $functionCommand="set-o365Mailbox -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
-        elseif (($office365Member.recipientType -eq $functionDistributionGroupRecipientType) -and ($office365Member.recipientTypeDetails -eq $functionUniveralRecipientDisplayType))
+        elseif (($office365Member.recipientType -eq $functionDistributioncontactRecipientType) -and ($office365Member.recipientTypeDetails -eq $functionUniveralRecipientDisplayType))
         {
-            out-logfile -string "Recipient is a unified group."
+            out-logfile -string "Recipient is a unified contact."
 
-            $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365Unifiedcontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
-        elseif (($office365Member.recipientType -eq $functionDistributionGroupRecipientType) -or ($office365Member.recipientType -eq $functionSecurityGroupRecipientType))
+        elseif (($office365Member.recipientType -eq $functionDistributioncontactRecipientType) -or ($office365Member.recipientType -eq $functionSecuritycontactRecipientType))
         {
-            out-logfile -string "Recipient is a mail enabled distribution group or mail enabled security group."
+            out-logfile -string "Recipient is a mail enabled distribution contact or mail enabled security contact."
 
-            $functionCommand="set-o365DistributionGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP -bypassSecurityGroupManagerCheck"
+            $functionCommand="set-o365Distributioncontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP -bypassSecuritycontactManagerCheck"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
-        elseif ($office365Member.recipientType -eq $functionDynamicDistributionGroupRecipientType)
+        elseif ($office365Member.recipientType -eq $functionDynamicDistributioncontactRecipientType)
         {
-            out-logfile -string "Recipient is a dynamic distribution group."
+            out-logfile -string "Recipient is a dynamic distribution contact."
 
-            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributioncontact -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365member.recipientType -eq $functionMailboxRecipientType)

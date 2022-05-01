@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function add a character to the DL name if exchange hybrid is enabled (allows for the dynamic group creation.)
+    This function add a character to the contact name if exchange hybrid is enabled (allows for the dynamic contact creation.)
     
     .DESCRIPTION
 
-    This function add a character to the DL name if exchange hybrid is enabled (allows for the dynamic group creation.)
+    This function add a character to the contact name if exchange hybrid is enabled (allows for the dynamic contact creation.)
 
     .PARAMETER GlobalCatalogServer
 
@@ -15,11 +15,11 @@
 
     The original DN of the object.
 
-    .PARAMETER DLName
+    .PARAMETER contactName
 
-    The name of the DL from the original configuration.
+    The name of the contact from the original configuration.
 
-    .PARAMETER DLSamAccountName
+    .PARAMETER contactSamAccountName
 
     The original DN of the object.
 
@@ -29,21 +29,21 @@
 
     .EXAMPLE
 
-    set-newDLName -dlConfiguration dlConfiguration -globalCatalogServer globalCatalogServer
+    set-newcontactName -contactConfiguration contactConfiguration -globalCatalogServer globalCatalogServer
 
     #>
-    Function set-newDLName
+    Function set-newcontactName
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
             [string]$globalCatalogServer,
             [Parameter(Mandatory = $true)]
-            $dlName,
+            $contactName,
             [Parameter(Mandatory = $true)]
-            $dlSAMAccountName,
+            $contactSAMAccountName,
             [Parameter(Mandatory = $true)]
             $DN,
             [Parameter(Mandatory = $true)]
@@ -52,37 +52,37 @@
 
         #Declare function variables.
 
-        [string]$functionGroupName=$NULL #Holds the calculated name.
-        [string]$functionGroupSAMAccountName=$NULL #Holds the calculated sam account name.
+        [string]$functioncontactName=$NULL #Holds the calculated name.
+        [string]$functioncontactSAMAccountName=$NULL #Holds the calculated sam account name.
 
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN SET-NEWDLNAME"
+        Out-LogFile -string "BEGIN SET-NEWcontactNAME"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
 
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
-        OUt-LogFile -string ("DLName = "+$dlName)
-        out-logfile -string ("DLSamAccontName = "+$dlSAMAccountName)
+        OUt-LogFile -string ("contactName = "+$contactName)
+        out-logfile -string ("contactSamAccontName = "+$contactSAMAccountName)
         out-logfile -string ("DN = "+$dn)
 
         #Establish new names
 
-        [string]$functionGroupName = $dlName+"!"
-        [string]$functionGroupSAMAccountName = $dlSAMAccountName+"!"
+        [string]$functioncontactName = $contactName+"!"
+        [string]$functioncontactSAMAccountName = $contactSAMAccountName+"!"
 
-        out-logfile -string ("New group name = "+$functionGroupName)
-        out-logfile -string ("New group sam account name = "+$functionGroupSAMAccountName)
+        out-logfile -string ("New contact name = "+$functioncontactName)
+        out-logfile -string ("New contact sam account name = "+$functioncontactSAMAccountName)
         
         #Get the specific user using ad providers.
         
         try 
         {
-            Out-LogFile -string "Set the AD group name."
+            Out-LogFile -string "Set the AD contact name."
 
-            set-adGroup -identity $dn -samAccountName $functionGroupSAMAccountName -server $globalCatalogServer -Credential $adCredential
+            set-adcontact -identity $dn -samAccountName $functioncontactSAMAccountName -server $globalCatalogServer -Credential $adCredential
         }
         catch 
         {
@@ -91,15 +91,15 @@
 
         try
         {
-            out-logfile -string "Setting the new group name.."
+            out-logfile -string "Setting the new contact name.."
 
-            rename-adobject -identity $dn -newName $functionGroupName -server $globalCatalogServer -credential $adCredential
+            rename-adobject -identity $dn -newName $functioncontactName -server $globalCatalogServer -credential $adCredential
         }
         catch
         {
             Out-LogFile -string $_ -isError:$true  
         }
 
-        Out-LogFile -string "END Set-NewDLName"
+        Out-LogFile -string "END Set-NewcontactName"
         Out-LogFile -string "********************************************************************************"
     }

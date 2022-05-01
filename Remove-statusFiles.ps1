@@ -18,7 +18,7 @@
     #>
     Function remove-statusFiles
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (

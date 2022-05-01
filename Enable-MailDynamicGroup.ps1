@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function enables the dynamic group for hybird mail flow.
+    This function enables the dynamic contact for hybird mail flow.
     
     .DESCRIPTION
 
-    This function enables the dynamic group for hybird mail flow.
+    This function enables the dynamic contact for hybird mail flow.
 
     .PARAMETER GlobalCatalogServer
 
@@ -15,7 +15,7 @@
 
     The original DN of the object.
 
-    .PARAMETER originalDLConfiguration
+    .PARAMETER originalContactConfiguration
 
     The original DN of the object.
 
@@ -25,12 +25,12 @@
 
     .EXAMPLE
 
-    enable-mailDynamicGroup -globalCatalogServer GC -routingContactConfig contactConfiguration -originalDLConfiguration DLConfiguration
+    enable-mailDynamiccontact -globalCatalogServer GC -routingContactConfig contactConfiguration -originalContactConfiguration contactConfiguration
 
     #>
-    Function Enable-MailDyamicGroup
+    Function Enable-MailDyamiccontact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $true)]
             $routingContactConfig,
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory = $false)]
             $isRetry=$FALSE
         )
@@ -53,30 +53,30 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN Enable-MailDyamicGroup"
+        Out-LogFile -string "BEGIN Enable-MailDyamiccontact"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
 
-        #Create the dynamic distribution group.
-        #This is very import - the group is scoped to the OU where it was created and uses the two custom attributes.
-        #If the mail contact is ever moved from the OU that the DL originally existed in - hybrid mail flow breaks.
+        #Create the dynamic distribution contact.
+        #This is very import - the contact is scoped to the OU where it was created and uses the two custom attributes.
+        #If the mail contact is ever moved from the OU that the contact originally existed in - hybrid mail flow breaks.
 
         try{
-            out-logfile -string "Creating dynamic group..."
+            out-logfile -string "Creating dynamic contact..."
 
             if ($isRetry -eq $false)
             {
-                $tempOUSubstring = Get-OULocation -originalDLConfiguration $originalDLConfiguration
+                $tempOUSubstring = Get-OULocation -originalContactConfiguration $originalContactConfiguration
 
-                new-dynamicDistributionGroup -name $originalDLConfiguration.name -alias $originalDLConfiguration.mailNickName -primarySMTPAddress $originalDLConfiguration.mail -organizationalUnit $tempOUSubstring -domainController $globalCatalogServer -includedRecipients AllRecipients -conditionalCustomAttribute1 $routingContactConfig.extensionAttribute1 -conditionalCustomAttribute2 $routingContactConfig.extensionAttribute2 -displayName $originalDLConfiguration.DisplayName 
+                new-dynamicDistributioncontact -name $originalContactConfiguration.name -alias $originalContactConfiguration.mailNickName -primarySMTPAddress $originalContactConfiguration.mail -organizationalUnit $tempOUSubstring -domainController $globalCatalogServer -includedRecipients AllRecipients -conditionalCustomAttribute1 $routingContactConfig.extensionAttribute1 -conditionalCustomAttribute2 $routingContactConfig.extensionAttribute2 -displayName $originalContactConfiguration.DisplayName 
 
             }
             else 
             {
-                $tempOUSubstring = Get-OULocation -originalDLConfiguration $routingContactConfig
+                $tempOUSubstring = Get-OULocation -originalContactConfiguration $routingContactConfig
 
-                new-dynamicDistributionGroup -name $originalDLConfiguration.name -alias $originalDLConfiguration.Alias -primarySMTPAddress $originalDLConfiguration.windowsEmailAddress -organizationalUnit $tempOUSubstring -domainController $globalCatalogServer -includedRecipients AllRecipients -conditionalCustomAttribute1 $routingContactConfig.extensionAttribute1 -conditionalCustomAttribute2 $routingContactConfig.extensionAttribute2 -displayName $originalDLConfiguration.DisplayName
+                new-dynamicDistributioncontact -name $originalContactConfiguration.name -alias $originalContactConfiguration.Alias -primarySMTPAddress $originalContactConfiguration.windowsEmailAddress -organizationalUnit $tempOUSubstring -domainController $globalCatalogServer -includedRecipients AllRecipients -conditionalCustomAttribute1 $routingContactConfig.extensionAttribute1 -conditionalCustomAttribute2 $routingContactConfig.extensionAttribute2 -displayName $originalContactConfiguration.DisplayName
             }
 
         }
@@ -86,11 +86,11 @@
             return $isTestError
         }
 
-        #All of the email addresses that existed on the migrated group need to be stamped on the new group.
+        #All of the email addresses that existed on the migrated contact need to be stamped on the new contact.
 
         if ($isRetry -eq $FALSE)
         {
-            foreach ($address in $originalDLConfiguration.proxyAddresses)
+            foreach ($address in $originalContactConfiguration.proxyAddresses)
             {
                 out-logfile -string ("Adding proxy address = "+$address)
 
@@ -102,7 +102,7 @@
                     out-logfile -string "Address is not a mail.onmicrosoft.com address."
 
                     try{
-                        set-dynamicdistributionGroup -identity $originalDLConfiguration.mail -emailAddresses @{add=$address} -domainController $globalCatalogServer
+                        set-dynamicdistributioncontact -identity $originalContactConfiguration.mail -emailAddresses @{add=$address} -domainController $globalCatalogServer
                     }
                     catch{
                         out-logfile -string $_ 
@@ -118,7 +118,7 @@
         }
         else
         {
-            foreach ($address in $originalDLConfiguration.emailAddresses)
+            foreach ($address in $originalContactConfiguration.emailAddresses)
             {
                 out-logfile -string ("Adding proxy address = "+$address)
 
@@ -130,7 +130,7 @@
                     out-logfile -string "Address is not a mail.onmicrosoft.com address."
 
                     try{
-                        set-dynamicdistributionGroup -identity $originalDLConfiguration.windowsEmailAddress -emailAddresses @{add=$address} -domainController $globalCatalogServer
+                        set-dynamicdistributioncontact -identity $originalContactConfiguration.windowsEmailAddress -emailAddresses @{add=$address} -domainController $globalCatalogServer
                     }
                     catch{
                         out-logfile -string $_ 
@@ -145,17 +145,17 @@
             }
         }
 
-        #The legacy Exchange DN must now be added to the group.
+        #The legacy Exchange DN must now be added to the contact.
 
         if ($isRetry -eq $FALSE)
         {
-            $functionEmailAddress = "x500:"+$originalDLConfiguration.legacyExchangeDN
+            $functionEmailAddress = "x500:"+$originalContactConfiguration.legacyExchangeDN
 
-            out-logfile -string $originalDLConfiguration.legacyExchangeDN
+            out-logfile -string $originalContactConfiguration.legacyExchangeDN
             out-logfile -string ("Calculated x500 Address = "+$functionEmailAddress)
 
             try{
-                set-dynamicDistributionGroup -identity $originalDLConfiguration.mail -emailAddresses @{add=$functionEmailAddress} -domainController $globalCatalogServer
+                set-dynamicDistributioncontact -identity $originalContactConfiguration.mail -emailAddresses @{add=$functionEmailAddress} -domainController $globalCatalogServer
             }
             catch{
                 out-logfile -string $_
@@ -165,23 +165,23 @@
         }
         else 
         {
-            out-logfile -string "X500 added in previous operation since it already existed on the group."    
+            out-logfile -string "X500 added in previous operation since it already existed on the contact."    
         }
 
         
-        #The script intentionally does not set any other restrictions on the DL.
+        #The script intentionally does not set any other restrictions on the contact.
         #It allows all restriction to be evaluated once the mail reaches office 365.
-        #The only restriction I set it require sender authentication - this ensures that anonymous email can still use the DL if the source is on prem.
+        #The only restriction I set it require sender authentication - this ensures that anonymous email can still use the contact if the source is on prem.
 
         if ($isRetry -eq $FALSE)
         {
-            if ($originalDLConfiguration.msExchRequireAuthToSendTo -eq $NULL)
+            if ($originalContactConfiguration.msExchRequireAuthToSendTo -eq $NULL)
             {
                 out-logfile -string "The sender authentication setting was not set - maybe legacy version of Exchange."
                 out-logfile -string "The sender authentication setting value FALSE in this instance."
 
                 try {
-                    set-dynamicdistributionGroup -identity $originalDLConfiguration.mail -RequireSenderAuthenticationEnabled $FALSE -domainController $globalCatalogServer
+                    set-dynamicdistributioncontact -identity $originalContactConfiguration.mail -RequireSenderAuthenticationEnabled $FALSE -domainController $globalCatalogServer
                 }
                 catch {
                     out-logfile -string $_
@@ -194,7 +194,7 @@
                 out-logfile -string "Sender authentication setting is present - retaining setting as present."
 
                 try {
-                    set-dynamicdistributionGroup -identity $originalDLConfiguration.mail -RequireSenderAuthenticationEnabled $originalDLConfiguration.msExchRequireAuthToSendTo -domainController $globalCatalogServer
+                    set-dynamicdistributioncontact -identity $originalContactConfiguration.mail -RequireSenderAuthenticationEnabled $originalContactConfiguration.msExchRequireAuthToSendTo -domainController $globalCatalogServer
                 }
                 catch {
                     out-logfile -string $_
@@ -206,10 +206,10 @@
         else 
         {
             try{
-                set-dynamicDistributionGroup -identity $originalDLConfiguration.windowsEmailAddress -RequireSenderAuthenticationEnabled $originalDLConfiguration.RequireSenderAuthenticationEnabled -domainController $globalCatalogServer
+                set-dynamicDistributioncontact -identity $originalContactConfiguration.windowsEmailAddress -RequireSenderAuthenticationEnabled $originalContactConfiguration.RequireSenderAuthenticationEnabled -domainController $globalCatalogServer
             }
             catch{
-                out-logfile -string "Unable to update require sender authentication on the group."
+                out-logfile -string "Unable to update require sender authentication on the contact."
                 out-logfile -string $_ -isError:$TRUE
             }
         }
@@ -218,12 +218,12 @@
 
         if ($isRetry -eq $FALSE)
         {
-            if (($originalDLConfiguration.msExchHideFromAddressLists -eq $TRUE) -or ($originalDLConfiguration.msExchHideFromAddressLists -eq $FALSE))
+            if (($originalContactConfiguration.msExchHideFromAddressLists -eq $TRUE) -or ($originalContactConfiguration.msExchHideFromAddressLists -eq $FALSE))
             {
                 out-logfile -string "Evaluating hide from address list."
 
                 try {
-                    set-dynamicdistributionGroup -identity $originalDLConfiguration.mail -HiddenFromAddressListsEnabled $originalDLConfiguration.msExchHideFromAddressLists -domainController $globalCatalogServer
+                    set-dynamicdistributioncontact -identity $originalContactConfiguration.mail -HiddenFromAddressListsEnabled $originalContactConfiguration.msExchHideFromAddressLists -domainController $globalCatalogServer
                 }
                 catch {
                     out-logfile -string $_
@@ -239,7 +239,7 @@
         else 
         {
             try {
-                set-dynamicdistributionGroup -identity $originalDLConfiguration.windowsEmailAddress -HiddenFromAddressListsEnabled $originalDLConfiguration.HiddenFromAddressListsEnabled -domainController $globalCatalogServer
+                set-dynamicdistributioncontact -identity $originalContactConfiguration.windowsEmailAddress -HiddenFromAddressListsEnabled $originalContactConfiguration.HiddenFromAddressListsEnabled -domainController $globalCatalogServer
             }
             catch {
                 out-logfile -string $_
@@ -248,6 +248,6 @@
             }
         }
 
-        Out-LogFile -string "END Enable-MailDyamicGroup"
+        Out-LogFile -string "END Enable-MailDyamiccontact"
         Out-LogFile -string "********************************************************************************"
     }

@@ -9,7 +9,7 @@
 
     .PARAMETER contactSMTPAddress
 
-    The mail attribute of the group to search.
+    The mail attribute of the contact to search.
 
     .OUTPUTS
 
@@ -22,7 +22,7 @@
     #>
     Function enable-hybridMailFlowPostMigration
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -59,13 +59,13 @@
         #Declare function variables.
 
         $global:logFile=$NULL #This is the global variable for the calculated log file name
-        [string]$global:staticFolderName="\DLMigration\"
+        [string]$global:staticFolderName="\contactMigration\"
 
         [boolean]$useOnPremisesExchange=$FALSE #Determines if function will utilize onpremises exchange during migration.
         [string]$exchangeOnPremisesPowershellSessionName="ExchangeOnPremises" #Defines universal name for on premises Exchange Powershell session.
         [string]$exchangeOnlinePowershellModuleName="ExchangeOnlineManagement" #Defines the exchage management shell name to test for.
         [string]$activeDirectoryPowershellModuleName="ActiveDirectory" #Defines the active directory shell name to test for.
-        [string]$dlConversionPowershellModule="DLConversionV2"
+        [string]$contactConversionPowershellModule="contactConversionV2"
         [string]$globalCatalogPort=":3268"
         [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
 
@@ -77,12 +77,12 @@
 
         #Declare logging variables.
 
-        [string]$office365DLConfigurationXML = "office365DLConfigurationXML"
+        [string]$office365contactConfigurationXML = "office365contactConfigurationXML"
         [string]$routingContactXML="routingContactXML"
-        [string]$routingDynamicGroupXML="routingDynamicGroupXML"
+        [string]$routingDynamiccontactXML="routingDynamiccontactXML"
 
         $routingContactConfig=$NULL
-        $office365DLConfiguration = $NULL
+        $office365contactConfiguration = $NULL
 
         #Create the log file.
 
@@ -141,9 +141,9 @@
         Out-LogFile -string "PARAMETERS"
         Out-LogFile -string "********************************************************************************"
         Out-LogFile -string ("contactSMTPAddress = "+$contactSMTPAddress)
-        out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.tostring())
-        out-logfile -string ("Spaces Removed Group SMTP Address: "+$contactSMTPAddress)
-        out-logfile -string ("Group SMTP Address Length = "+$contactSMTPAddress.length.toString())
+        out-logfile -string ("contact SMTP Address Length = "+$contactSMTPAddress.length.tostring())
+        out-logfile -string ("Spaces Removed contact SMTP Address: "+$contactSMTPAddress)
+        out-logfile -string ("contact SMTP Address Length = "+$contactSMTPAddress.length.toString())
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
         Out-LogFile -string ("ActiveDirectoryUserName = "+$activeDirectoryCredential.UserName.tostring())
         Out-LogFile -string ("LogFolderPath = "+$logFolderPath)
@@ -266,7 +266,7 @@
         Out-LogFile -string "********************************************************************************"
 
         #Test to determine if the exchange online powershell module is installed.
-        #The exchange online session has to be established first or the commandlet set from on premises fails.
+        #The exchange online session has to be established first or the commancontactet set from on premises fails.
 
         Out-LogFile -string "Calling Test-PowerShellModule to validate the Exchange Module is installed."
 
@@ -276,9 +276,9 @@
 
         Test-PowershellModule -powershellModuleName $activeDirectoryPowershellModuleName
 
-        out-logfile -string "Calling Test-PowershellModule to validate the DL Conversion Module version installed."
+        out-logfile -string "Calling Test-PowershellModule to validate the contact Conversion Module version installed."
 
-        Test-PowershellModule -powershellModuleName $dlConversionPowershellModule -powershellVersionTest:$TRUE
+        Test-PowershellModule -powershellModuleName $contactConversionPowershellModule -powershellVersionTest:$TRUE
 
         #Create the connection to exchange online.
 
@@ -355,39 +355,39 @@
         Out-LogFile -string "END ESTABLISH POWERSHELL SESSIONS"
         Out-LogFile -string "********************************************************************************"
 
-        #First step - gather the Office 365 DL Information.
-        #The DL should be present in the service and previously migrated.
+        #First step - gather the Office 365 contact Information.
+        #The contact should be present in the service and previously migrated.
 
         try {
             out-logfile -string "Obtaining Office 365 Distribution List Configuration"
 
-            $office365DLConfiguration = get-o365dlconfiguration -contactSMTPAddress $contactSMTPAddress -errorAction STOP
+            $office365contactConfiguration = get-o365contactconfiguration -contactSMTPAddress $contactSMTPAddress -errorAction STOP
         }
         catch {
             out-logfile -string "Unable to obtain the distribution list information from Office 365."
             out-logfile -string $_ -isError:$TRUE
         }
 
-        out-xmlFile -itemToExport $office365DLConfiguration -itemNameToExport $office365DLConfigurationXML
+        out-xmlFile -itemToExport $office365contactConfiguration -itemNameToExport $office365contactConfigurationXML
 
         #Now that we have the configuration - we need to ensure dir sync is set to false.
 
         out-logfile -string "Testing to ensure that the distribution list is directory synchornized."
 
-        out-logfile -string ("IsDirSynced: "+$office365DLConfiguration.isDirSynced)
+        out-logfile -string ("IsDirSynced: "+$office365contactConfiguration.isDirSynced)
 
-        if ($office365DLConfiguration.isDirSynced -eq $FALSE)
+        if ($office365contactConfiguration.isDirSynced -eq $FALSE)
         {
             out-logfile -string "The distribution list is cloud only - proceed."
         }
         else 
         {
-            out-logfile -string "The distribution list is directory synchronized - this function may only run on cloud only groups." -isError:$TRUE    
+            out-logfile -string "The distribution list is directory synchronized - this function may only run on cloud only contacts." -isError:$TRUE    
         }
 
         #At this time test to ensure the routing contact is present.
 
-        $tempMailArray = $office365DLConfiguration.windowsEmailAddress.split("@")
+        $tempMailArray = $office365contactConfiguration.windowsEmailAddress.split("@")
 
         foreach ($member in $tempMailArray)
         {
@@ -407,7 +407,7 @@
 
             out-logfile -string "Overriding OU selection by adminsitrator - contact already exists.  Must be the same as contact."
 
-            $OU = get-OULocation -originalDLConfiguration $routingContactConfiguration
+            $OU = get-OULocation -originalContactConfiguration $routingContactConfiguration
 
             out-logfile -string "The routing contact was found and recorded."
 
@@ -420,7 +420,7 @@
             try{
                 out-logfile -string "Creating the routing contact that is missing."
 
-                new-routingContact -originalDLConfiguration $office365DLConfiguration -office365DlConfiguration $office365DLConfiguration -globalCatalogServer $globalCatalogServer -adCredential $activeDirectoryCredential -isRetry:$TRUE -isRetryOU $OU -errorAction STOP
+                new-routingContact -originalContactConfiguration $office365contactConfiguration -office365contactConfiguration $office365contactConfiguration -globalCatalogServer $globalCatalogServer -adCredential $activeDirectoryCredential -isRetry:$TRUE -isRetryOU $OU -errorAction STOP
 
                 out-logfile -string "The routing contact was created successfully."
             }
@@ -484,15 +484,15 @@
 
         out-xmlFile -itemToExport $routingContactConfiguration -itemNameToExport $routingContactXML+2
 
-        #The routing contact is now mail enabled.  Create the dynamic distribution group.
+        #The routing contact is now mail enabled.  Create the dynamic distribution contact.
 
         try {
-            out-logfile -string "Creating the dynamic distribution group for mail routing."
+            out-logfile -string "Creating the dynamic distribution contact for mail routing."
 
-            Enable-MailDyamicGroup -globalCatalogServer $globalCatalogServer -originalDLConfiguration $office365DLConfiguration -routingContactConfig $routingContactConfiguration -isRetry:$TRUE -errorAction STOP
+            Enable-MailDyamiccontact -globalCatalogServer $globalCatalogServer -originalContactConfiguration $office365contactConfiguration -routingContactConfig $routingContactConfiguration -isRetry:$TRUE -errorAction STOP
         }
         catch {
-            out-logfile -string "Unable to create the dynamic distribution group."
+            out-logfile -string "Unable to create the dynamic distribution contact."
             out-logfile -string $_ -isError:$TRUE
         }
 

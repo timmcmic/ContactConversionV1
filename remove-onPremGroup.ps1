@@ -16,16 +16,16 @@
     disable-allPowerShellSessions
 
     #>
-    Function remove-onPremGroup
+    Function remove-onPremcontact
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
             [Parameter(Mandatory = $true)]
             [string]$globalCatalogServer,
             [Parameter(Mandatory = $true)]
-            $originalDLConfiguration,
+            $originalContactConfiguration,
             [Parameter(Mandatory = $true)]
             $adCredential
         )
@@ -33,14 +33,14 @@
         [string]$isTestError="No"
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN remove-onPremGroup"
+        Out-LogFile -string "BEGIN remove-onPremcontact"
         Out-LogFile -string "********************************************************************************"
 
-        out-logFile -string "Remove on premises distribution group."
+        out-logFile -string "Remove on premises distribution contact."
 
         try
         {
-            remove-adobject -identity $originalDLConfiguration.distinguishedName -server $globalCatalogServer -credential $adCredential -confirm:$FALSE -errorAction STOP
+            remove-adobject -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -credential $adCredential -confirm:$FALSE -errorAction STOP
         }
         catch
         {
@@ -48,7 +48,7 @@
             $isTestError="Yes"
         }
 
-        Out-LogFile -string "END remove-onPremGroup"
+        Out-LogFile -string "END remove-onPremcontact"
         Out-LogFile -string "********************************************************************************"
 
         return $isTestError

@@ -13,7 +13,7 @@
 
     .PARAMETER contactSMTPAddress
 
-    The SMTP address of the group being migrated - this will be parsed for the log file name.
+    The SMTP address of the contact being migrated - this will be parsed for the log file name.
 
 	.OUTPUTS
 
@@ -27,7 +27,7 @@
     #>
     Function new-LogFile
     {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -39,11 +39,11 @@
 
         #Define the string separator and then separate the string.
         
-        $groupsSMTPAddress = $contactSMTPAddress.trim()
+        $contactsSMTPAddress = $contactSMTPAddress.trim()
         [string]$separator="@"
         [array]$fileNameSplit = $contactSMTPAddress.Split($separator)
 
-        #First entry in split array is the prefix of the group - use that for log file name.
+        #First entry in split array is the prefix of the contact - use that for log file name.
         #The SMTP address may contain letters that are not permitted in a file name - for example ?.
         #Using regex and a pattern to replace invalid file name characters with a -
 

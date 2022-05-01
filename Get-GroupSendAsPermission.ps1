@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
 
-    This function extracts the send as ACLs of the group to be migrated.
+    This function extracts the send as ACLs of the contact to be migrated.
     
     .DESCRIPTION
 
-    This function extracts the send as ACLs of the group to be migrated.
+    This function extracts the send as ACLs of the contact to be migrated.
 
     .PARAMETER adGlobalCatalogPowershellSessionName
 
@@ -29,12 +29,12 @@
 
     .EXAMPLE
 
-    get-GroupSendAsPermissions -DN DN -globalCatalog GC
+    get-contactSendAsPermissions -DN DN -globalCatalog GC
 
     #>
-    Function get-GroupSendAsPermissions
+    Function get-contactSendAsPermissions
      {
-        [cmdletbinding()]
+        [cmcontactetbinding()]
 
         Param
         (
@@ -61,7 +61,7 @@
         #Start function processing.
 
         Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN GET-GroupSendAsPermissions"
+        Out-LogFile -string "BEGIN GET-contactSendAsPermissions"
         Out-LogFile -string "********************************************************************************"
 
         #Log the parameters and variables for the function.
@@ -89,7 +89,7 @@
         #Get ACL and the ability to work varies greatly with windows versions.
         #We'll implement a home grown try catch here.
 
-        #Get the ACLS on the object building the path without dll in the name.
+        #Get the ACLS on the object building the path without contactl in the name.
 
 
         out-logfile -string ("Obtaining the ACLS on DN = "+$dn)
@@ -113,11 +113,11 @@
             $success=$TRUE    
         }
 
-        #If the previous call was not successful - this time try with DLL.
+        #If the previous call was not successful - this time try with contactL.
 
         if ($success -eq $FALSE)
         {
-            $objectPath = "Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/$DN"
+            $objectPath = "Microsoft.ActiveDirectory.Management.contactl\ActiveDirectory:://RootDSE/$DN"
 
             out-logfile -string $objectPath
 
@@ -162,7 +162,7 @@
             }
         }
     
-        #At this time we've made three attempts to capture send as permissions on the group to be migrated.
+        #At this time we've made three attempts to capture send as permissions on the contact to be migrated.
         #If success is not true throw exception.
 
         if ($success -eq $FALSE)
@@ -267,7 +267,7 @@
 
                 try 
                 {
-                    $functionSendAsObjects+=get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $dnToNormalize -adCredential $activeDirectoryCredential -originalGroupDN $dn  -errorAction STOP -cn "None"
+                    $functionSendAsObjects+=get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $dnToNormalize -adCredential $activeDirectoryCredential -originalcontactDN $dn  -errorAction STOP -cn "None"
                 }
                 catch 
                 {
@@ -290,7 +290,7 @@
             }
         }
 
-        Out-LogFile -string "END GET-GroupSendAsPermissions"
+        Out-LogFile -string "END GET-contactSendAsPermissions"
         Out-LogFile -string "********************************************************************************"
 
         return $functionSendAsObjects
