@@ -2631,6 +2631,20 @@ Function Start-ContactMigration
         {
             $allOffice365BypassModeration=@()    
         }
+
+        if ($allOffice365ManagedBy -ne $NULL)
+        {
+            out-logfile -string $allOffice365ManagedBy
+            out-xmlFile -itemToExport $allOffice365ManagedBy -itemNameToExport $allOffice365ManagedByXML
+
+            out-logfile -string "Setting group type override to security - the group type may have changed on premises after the permission was added."
+
+            $groupTypeOverride="Security"
+        }
+        else 
+        {
+            $allOffice365ManagedBy=@()    
+        }
         
         if ($allOffice365ForwardingAddress -ne $NULL)
         {
@@ -2651,6 +2665,7 @@ Function Start-ContactMigration
     out-logfile -string ("Summary of dependencies found:")
     out-logfile -string ("The number of office 365 objects that the migrated contact is a member of = "+$allOffice365MemberOf.count)
     out-logfile -string ("The number of office 365 objects that have this contact as bypass moderation = "+$allOffice365BypassModeration.count)
+    out-logfile -string ("The number of office 365 objects that this group is a manager of: = "+$allOffice365ManagedBy.count)
     out-logfile -string ("The number of office 365 objects with accept permissions = "+$allOffice365Accept.count)
     out-logfile -string ("The number of office 365 objects with reject permissions = "+$allOffice365Reject.count)
     out-logfile -string ("The number of office 365 mailboxes forwarding to this contact is = "+$allOffice365ForwardingAddress.count)
