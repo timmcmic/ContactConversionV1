@@ -52,7 +52,6 @@
 
         OUt-LogFile -string ("DN Set = "+$DN)
         out-logfile -string ("Attribute Type = "+$attributeType)
-        out-logfile -string ("contact Type = "+$contactType)
         
         #Get the specific user using ad providers.
         
@@ -116,55 +115,6 @@
             }
             else
             {
-                #The attribute type is a property of the contact - attempt to obtain.
-
-                <#
-
-                Out-LogFile -string "Entering query office 365 for contact to be set on property."
-
-                if ($contactType -eq "Standard")
-                {
-                    out-logfile -string "The contact type is standard - querying distribution contacts."
-                    
-                    $functionCommand = "get-o365MailContact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
-
-                    $scriptBlock=[scriptBlock]::create($functionCommand)
-
-                    $functionTest = invoke-command -scriptBlock $scriptBlock
-                    
-                    out-logfile -string ("The function command executed = "+$functionCommand)
-                }
-                elseif ($contactType -eq "Unified")
-                {
-                    out-logfile -string "The contact type is unified - querying distribution contacts."
-                    
-                    $functionCommand = "Get-o365Unifiedcontact -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
-
-                    $scriptBlock=[scriptBlock]::create($functionCommand)
-
-                    $functionTest = invoke-command -scriptBlock $scriptBlock
-                    
-                    out-logfile -string ("The function command executed = "+$functionCommand)
-                }
-                elseif ($contactType -eq "Dynamic")
-                {
-                    out-logfile -string "The contact type is dynamic - querying distribution contacts."
-                    
-                    $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
-
-                    $scriptBlock=[scriptBlock]::create($functionCommand)
-
-                    $functionTest = invoke-command -scriptBlock $scriptBlock
-                    
-                    out-logfile -string ("The function command executed = "+$functionCommand)
-                }
-                else 
-                {
-                    throw "Invalid contact type specified in function call.  Acceptable Standard or Universal"    
-                } 
-
-                #>
-
                 out-logfile -string "Starting to gather attribute for all recipient types."
                 out-logfile -string "Starting collection of distribution contacts."
 
@@ -188,7 +138,7 @@
 
                 out-logfile -string "Starting collection of universal distribution contacts."
 
-                $functionCommand = "Get-o365Unifiedcontact -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
+                $functionCommand = "Get-o365UnifiedGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 
