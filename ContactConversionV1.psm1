@@ -3603,33 +3603,6 @@ Function Start-ContactMigration
         out-logfile -string "No cloud only contacts had the migrated contact as a member."
     }   
     
-    if ($allowNonSyncedcontact -eq $FALSE)
-    {
-        out-logFile -string "Start replacing Office 365 permissions."
-
-        try 
-        {
-            set-Office365contactPermissions -allSendAs $allOffice365SendAsAccess -allFullMailboxAccess $allOffice365FullMailboxAccess -allFolderPermissions $allOffice365MailboxFolderPermissions -allOnPremSendAs $allObjectsSendAsAccessNormalized -originalcontactPrimarySMTPAddress $contactSMTPAddress -errorAction STOP
-        }
-        catch 
-        {
-            out-logfile -string "Unable to set office 365 send as or full mailbox access permissions."
-            out-logfile -string $_
-            $isTestErrorDetail=$_
-
-            $isErrorObject = new-Object psObject -property @{
-                permissionIdentity = "ALL"
-                attribute = "Send As / Full Mailbox Access / Mailbox Folder Permissions"
-                errorMessage = "Unable to call function to reset send as, full mailbox access, and mailbox folder permissions in Office 365."
-                erroMessageDetail = $isTestErrorDetail
-            }
-
-            out-logfile -string $isErrorObject
-
-            $global:office365ReplacePermissionsErrors+=$isErrorObject
-        }
-    }    
-
     #If the administrator has selected to not retain the contact - remove it.
 
     if ($retainOriginalContact -eq $FALSE)
