@@ -287,6 +287,7 @@ Function Start-ContactMigration
 
     [string]$office365AcceptMessagesFrom="AcceptMessagesOnlyFrom"
     [string]$office365BypassModerationFrom="BypassModerationFrom"
+    [string]$office365ManagedBy="ManagedBy"
     [string]$office365GrantSendOnBehalfTo="GrantSendOnBehalfTo"
     [string]$office365Members="Members"
     [string]$office365RejectMessagesFrom="RejectMessagesFrom"
