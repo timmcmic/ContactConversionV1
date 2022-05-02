@@ -105,7 +105,6 @@
         [string]$functionMail=""
         [string]$functionMailNickname=""
         [string]$functionExternalDirectoryObjectID = ""
-        [string]$functionEmailAddressToRemove = ""
 
         [boolean]$isTestError=$false
         [array]$functionErrors=@()
@@ -164,10 +163,6 @@
         out-logfile -string "External directory object ID utilized for set commands:"
         out-logfile -string $functionExternalDirectoryObjectID
 
-        $functionEmailAddressToRemove = $office365contactConfigurationPostMigration.primarySMTPAddress
-
-        out-logfile -string "Email address to remove after resetting attributes."
-        out-logfile -string $functionEmailAddressToRemove
 
         if ($originalContactConfiguration.mailNickName -ne $NULL)
         {
@@ -818,31 +813,6 @@
         }
 
         $isTestError=$FALSE
-
-        out-logfile -string "Remove the SMTP Address added by creating the temporary contact."
-
-        try {
-            out-logfile -string ("Removing: "+$functionEmailAddressToRemove)
-            set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{remove=$functionEmailAddressToRemove} -errorAction STOP 
-        }
-        catch {
-            out-logfile -string "Unable to remove SMTP address assigned by default during contact creation."
-            out-logfile -string $_
-
-            $isErrorObject = new-Object psObject -property @{
-                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                Alias = $functionMailNickName
-                Name = $originalContactConfiguration.name
-                Attribute = "Unable to remove temporary SMTP address of contact."
-                ErrorMessage = ("Unable to remove" +$functionEmailAddressToRemove+" - manaual removal required.")
-                ErrorMessageDetail = $_
-            }
-
-            out-logfile -string $isErrorObject
-
-            $functionErrors+=$isErrorObject
-        }
 
         Out-LogFile -string "END SET-Office365contactMV"
         Out-LogFile -string "********************************************************************************"
