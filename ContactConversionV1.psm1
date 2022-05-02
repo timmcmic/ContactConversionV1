@@ -2534,7 +2534,7 @@ Function Start-ContactMigration
 
     #Process normal mail enabled contacts.
 
-    if ($allowNonSyncedcontact -eq $FALSE))
+    if ($allowNonSyncedcontact -eq $FALSE)
     {
         out-logFile -string "Office 365 settings are to be retained."
 
