@@ -277,7 +277,7 @@ Function Start-ContactMigration
     [array]$allOffice365Reject=$NULL
     [array]$allOffice365BypassModeration=$NULL
     [array]$allOffice365ManagedBy=$NULL
-    [array]$allOffice365GrantSendOnBehalfTo=$NULL
+
 
     #These are for other mail enabled objects.
 
@@ -2573,13 +2573,15 @@ Function Start-ContactMigration
         out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grant send on behalf to righbypassModeration rights = "+$allOffice365BypassModeration.count)
 
         try {
-            $allOffice365ManagedBy = Get-O365GroupDependency -dn $office365DLConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
+            $allOffice365ManagedBy = Get-O365ContactDependency -dn $office365DLConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
         }
         catch {
             out-logFile -string $_ -isError:$TRUE
         }
 
         out-logfile -string ("The number of groups in Office 365 cloud only that the DL has managedBY = "+$allOffice365ManagedBy.count)
+
+        
 
         try {
             $allOffice365ForwardingAddress = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365ForwardingAddress -errorAction STOP
@@ -3390,6 +3392,58 @@ Function Start-ContactMigration
     else 
     {
         out-LogFile -string "There were no Office 365 contacts with accept permissions."    
+    }
+
+    out-logfile -string "Processing Office 365 Managed By"
+
+    if ($allOffice365ManagedBy.count -gt 0)
+    {
+        foreach ($member in $allOffice365ManagedBy)
+        {
+            $isTestError="No" #Reset error tracking.
+
+            if ($forLoopCounter -eq $forLoopTrigger)
+            {
+                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
+                $forLoopCounter = 0
+            }
+            else 
+            {
+                $forLoopCounter++    
+            }
+
+            try{
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365ManagedBy -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            }
+            catch{
+                out-logfile -string $_
+                $isTestErrorDetail = $_
+                $isTestError="Yes"
+            }
+
+            if ($isTestError -eq "Yes")
+            {
+                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
+
+                $isErrorObject = new-Object psObject -property @{
+                    distinguishedName = $member.distinguishedName
+                    primarySMTPAddress = $member.primarySMTPAddress
+                    alias = $member.Alias
+                    displayName = $member.displayName
+                    attribute = "Distribution List ManagedBy"
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
+                    erroMessageDetail = $isTestErrorDetail
+                }
+
+                out-logfile -string $isErrorObject
+
+                $office365ReplaceErrors+=$isErrorObject
+            }
+        }
+    }
+    else 
+    {
+        out-LogFile -string "There were no Office 365 managed by permissions."    
     }
 
     
