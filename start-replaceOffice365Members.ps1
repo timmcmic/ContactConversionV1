@@ -56,7 +56,7 @@
         out-Logfile -string "Processing operation..."
 
         try{
-            add-o365DistributioncontactMember -identity $office365contact.primarySMTPAddress -member $contactSMTPAddress -errorAction STOP -BypassSecuritycontactManagerCheck
+            add-o365DistributioncontactMember -identity $office365contact.primarySMTPAddress -member $contactSMTPAddress -errorAction STOP 
         }
         catch{
             out-logfile -string $_

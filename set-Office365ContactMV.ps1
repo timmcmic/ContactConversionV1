@@ -71,16 +71,10 @@
             $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
             [AllowEmptyCollection()]
-            [array]$exchangecontactMembershipSMTP=$NULL,
-            [Parameter(Mandatory = $true)]
-            [AllowEmptyCollection()]
             [array]$exchangeRejectMessagesSMTP=$NULL,
             [Parameter(Mandatory = $true)]
             [AllowEmptyCollection()]
             [array]$exchangeAcceptMessageSMTP=$NULL,
-            [Parameter(Mandatory = $true)]
-            [AllowEmptyCollection()]
-            [array]$exchangeManagedBySMTP=$NULL,
             [Parameter(Mandatory = $true)]
             [AllowEmptyCollection()]
             [array]$exchangeModeratedBySMTP=$NULL,
@@ -90,19 +84,12 @@
             [Parameter(Mandatory = $true)]
             [AllowEmptyCollection()]
             [array]$exchangeGrantSendOnBehalfToSMTP=$NULL,
-            [Parameter(Mandatory = $true)]
-            [AllowEmptyCollection()]
-            [array]$exchangeSendAsSMTP=$NULL,
-            [Parameter(Mandatory=$true)]
-            [string]$contactTypeOverride,
             [Parameter(Mandatory=$true)]
             $office365contactConfigurationPostMigration,
             [Parameter(Mandatory=$TRUE)]
             $mailOnMicrosoftComDomain,
             [Parameter(Mandatory=$TRUE)]
-            $allowNonSyncedcontact=$FALSE,
-            [Parameter(Mandatory=$TRUE)]
-            $allOffice365SendAsAccessOncontact=$NULL
+            $allowNonSyncedcontact=$FALSE
         )
 
         #Declare function variables.
@@ -209,7 +196,7 @@
 
                 out-logfile -string ("Max retry attempt: "+$maxRetries.toString())
 
-                Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses $functionEmailAddresses -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses $functionEmailAddresses -errorAction STOP 
 
                 $maxRetries = 10 #The previous set was successful - so immediately bail.
             }
@@ -231,7 +218,7 @@
             out-logfile -string "Establishing contact primary SMTP Address."
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -primarySMTPAddress $originalContactConfiguration.mail -errorAction STOP
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -primarySMTPAddress $originalContactConfiguration.mail -errorAction STOP
             }
             catch {
                 out-logfile -string "Error establishing new contact primary SMTP Address."
@@ -258,7 +245,7 @@
                 out-logfile -string ("Processing address: "+$address)
 
                 try{
-                    Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$address} -errorAction STOP -BypassSecuritycontactManagerCheck
+                    set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$address} -errorAction STOP 
                 }
                 catch{
                     out-logfile -string ("Error processing address: "+$address)
@@ -296,7 +283,7 @@
             out-logfile -string ("The x500 address to process = "+$functionEmailAddress)
 
             try {
-                Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$functionEmailAddress} -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$functionEmailAddress} -errorAction STOP 
             }
             catch {
                 out-logfile -string ("Error processing address: "+$functionEmailAddress)
@@ -329,7 +316,7 @@
             out-logfile -string ("The x500 address to process = "+$functionEmailAddress)
 
             try {
-                Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$functionEmailAddress} -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$functionEmailAddress} -errorAction STOP 
             }
             catch {
                 out-logfile -string ("Error processing address: "+$functionEmailAddress)
@@ -360,7 +347,7 @@
             out-logfile -string ("Hybrid remote routing address = "+$hybridRemoteRoutingAddress)
 
             try {
-                Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$hybridRemoteRoutingAddress} -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{add=$hybridRemoteRoutingAddress} -errorAction STOP 
             }
             catch {
                 out-logfile -string ("Error processing address: "+$hybridRemoteRoutingAddress)
@@ -382,92 +369,7 @@
                 $functionErrors+=$isErrorObject
             }
         }
-
-        $isTestError=$FALSE
-
-        out-logFile -string "Evaluating exchangecontactMembershipSMTP"
-
-        if ($exchangecontactMembershipSMTP -ne $NULL)
-        {
-            #All of the members were previously verified as present - so no member should be gone by now unless removed.
-            #This adds all members as a single operation.  Errors we silently continue.
-
-            #Ensureing all addresses in the array are unique.
-            foreach ($member in $exchangecontactMembershipSMTP)
-            {
-                if ($member.externalDirectoryObjectID -ne $NULL)
-                {
-                    out-logfile -string ("Processing directory ID: "+$member.ExternalDirectoryObjectID)
-                    $functionDirectoryObjectID=$member.externalDirectoryObjectID.Split("_")
-                    $functionRecipients+=$functionDirectoryObjectID[1]
-                }
-                else 
-                {
-                    out-logfile -string ("Processing SMTPAddress: "+$member.primarySMTPAddressOrUPN)  
-                    $functionRecipients+=$member.primarySMTPAddressOrUPN    
-                }
-            }
-
-            #Becuase contacts could have been mirgated and retained - this ensures that all SMTP addresses and GUIDs in the array are unique.
-
-            $functionRecipients = $functionRecipients | select-object -Unique
-
-            out-logfile -string "Updating membership with unique values."
-            out-logfile -string $functionRecipients
-
-            #Using update to reset the entire membership of the contact to the unique array.
-            #Alberto Larrinaga for the suggestion.
-
-            try {
-                update-o365DistributioncontactMember -identity $functionExternalDirectoryObjectID -members $functionRecipients -BypassSecuritycontactManagerCheck -confirm:$FALSE -errorAction Stop
-            }
-            catch {
-                out-logfile -string "Unable to bulk update distribution contact membership."
-
-                out-logfile -string $_
-
-                $isTestError=$TRUE
-            }
-            
-            if ($isTestError -eq $TRUE)
-            {
-                out-logfile -string "Attempting to update membership individually..."
-
-                foreach ($recipient in $functionRecipients)
-                {
-                    out-logfile -string ("Attempting to add recipient: "+$recipient)
-
-
-                    try {
-                        add-O365DistributioncontactMember -identity $functionExternalDirectoryObjectID -member $recipient -BypassSecuritycontactManagerCheck -errorAction STOP
-                    }
-                    catch {
-                        out-logfile -string ("Error procesing recipient: "+$recipient)
-
-                        out-logfile -string $_
-
-                        $isErrorObject = new-Object psObject -property @{
-                            PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                            ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                            Alias = $originalContactConfiguration.mailNickName
-                            Name = $functionMailNickName
-                            Attribute = "Cloud Distribution contact Member"
-                            ErrorMessage = ("Member "+$recipient+" unable to add to cloud distribution contact.  Manual addition required.")
-                            ErrorMessageDetail = $_
-                        }
-
-                        out-logfile -string $isErrorObject
-
-                        $functionErrors+=$isErrorObject
-                    }
-                }
-            }
-        }
-        else 
-        {
-            Out-LogFile -string "There were no members to process."    
-        }
-
+       
         $isTestError=$FALSE #Resetting error trigger.
 
         $functionRecipients=@() #Reset the test array.
@@ -510,7 +412,7 @@
             out-logfile -string $functionRecipients
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -RejectMessagesFromSendersOrMembers $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -RejectMessagesFromSendersOrMembers $functionRecipients -errorAction STOP 
             }
             catch {
                 out-logfile -string "Error bulk updating RejectMessagesFromSendersOrMembers"
@@ -529,7 +431,7 @@
                     out-logfile -string ("Attempting to add recipient: "+$recipient)
 
                     try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -RejectMessagesFromSendersOrMembers @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
+                        set-o365MailContact -identity $functionExternalDirectoryObjectID -RejectMessagesFromSendersOrMembers @{Add=$recipient} -errorAction STOP                     }
                     catch {
                         out-logfile -string ("Error procesing recipient: "+$recipient)
 
@@ -600,7 +502,7 @@
             out-logfile -string $functionRecipients
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -AcceptMessagesOnlyFromSendersOrMembers $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -AcceptMessagesOnlyFromSendersOrMembers $functionRecipients -errorAction STOP 
 
             }
             catch {
@@ -620,7 +522,7 @@
                     out-logfile -string ("Attempting to add recipient: "+$recipient)
 
                     try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -AcceptMessagesOnlyFromSendersOrMembers @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
+                        set-o365MailContact -identity $functionExternalDirectoryObjectID -AcceptMessagesOnlyFromSendersOrMembers @{Add=$recipient} -errorAction STOP                     }
                     catch {
                         out-logfile -string ("Error procesing recipient: "+$recipient)
 
@@ -633,95 +535,6 @@
                             Name = $originalContactConfiguration.name
                             Attribute = "Cloud Distribution contact AcceptMessagesOnlyFromSendersOrMembers"
                             ErrorMessage = ("Member of AcceptMessagesOnlyFromSendersOrMembers "+$recipient+" unable to add to cloud distribution contact.  Manual addition required.")
-                            ErrorMessageDetail = $_
-                        }
-
-                        out-logfile -string $isErrorObject
-
-                        $functionErrors+=$isErrorObject
-                    }
-                }
-            }
-        }
-        else 
-        {
-            Out-LogFile -string "There were no members to process."    
-        }
-
-        $isTestError = $FALSE #Reset error tracker.
-
-        $functionRecipients=@() #Reset the test array.
-
-        out-logFile -string "Evaluating exchangeManagedBySMTP"
-
-        if ($exchangeManagedBySMTP -ne $NULL)
-        {
-            foreach ($member in $exchangeManagedBySMTP)
-            {
-                #Implement some protections for larger operations to ensure we do not exhaust our powershell budget.
-
-                if ($member.externalDirectoryObjectID -ne $NULL)
-                {
-                    out-LogFile -string ("Processing member = "+$member.externalDirectoryObjectID)
-
-                    $functionDirectoryObjectID=$member.externalDirectoryObjectID.Split("_")
-
-                    out-LogFile -string ("Processing updated member = "+$functionDirectoryObjectID[1])
-
-                    $functionRecipients+=$functionDirectoryObjectID[1]
-                }
-                elseif ($member.primarySMTPAddressOrUPN -ne $NULL)
-                {
-                    out-LogFile -string ("Processing member = "+$member.PrimarySMTPAddressOrUPN)
-
-                    $functionRecipients+=$member.primarySMTPAddressOrUPN    
-                }
-                else 
-                {
-                    out-logfile -string "Invalid function object for recipient." -isError:$TRUE
-                } 
-            }
-
-            #Becuase contacts could have been mirgated and retained - this ensures that all SMTP addresses and GUIDs in the array are unique.
-
-            $functionRecipients = $functionRecipients | select-object -Unique
-
-            out-logfile -string "Updating managed by SMTP with unique values."
-            out-logfile -string $functionRecipients
-
-            try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -managedBy $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
-            }
-            catch {
-                out-logfile -string "Unable to bulk update managedBy"
-
-                out-logfile $_
-
-                $isTestError=$TRUE
-            }
-
-            if ($isTestError -eq $TRUE)
-            {
-                out-logfile -string "Attempting individual update of ManagedBy"
-
-                foreach ($recipient in $functionRecipients)
-                {
-                    out-logfile -string ("Attempting to add recipient: "+$recipient)
-
-                    try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -managedBy @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
-                    catch {
-                        out-logfile -string ("Error procesing recipient: "+$recipient)
-
-                        out-logfile -string $_
-
-                        $isErrorObject = new-Object psObject -property @{
-                            PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                            ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                            Alias = $functionMailNickName
-                            Name = $originalContactConfiguration.name
-                            Attribute = "Cloud Distribution contact ManagedBy"
-                            ErrorMessage = ("Member of ManagedBy "+$recipient+" unable to add to cloud distribution contact.  Manual addition required.")
                             ErrorMessageDetail = $_
                         }
 
@@ -779,7 +592,7 @@
             out-logfile -string $functionRecipients
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -moderatedBy $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -moderatedBy $functionRecipients -errorAction STOP 
             }
             catch {
                 out-logfile -string "Unable to bulk update moderatedBy."
@@ -798,7 +611,7 @@
                     out-logfile -string ("Attempting to add recipient: "+$recipient)
 
                     try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -moderatedBy @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
+                        set-o365MailContact -identity $functionExternalDirectoryObjectID -moderatedBy @{Add=$recipient} -errorAction STOP                     }
                     catch {
                         out-logfile -string ("Error procesing recipient: "+$recipient)
 
@@ -868,7 +681,7 @@
             out-logfile -string $functionRecipients
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -BypassModerationFromSendersOrMembers $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -BypassModerationFromSendersOrMembers $functionRecipients -errorAction STOP 
             }
             catch {
                 out-logfile -string "Unable to bulk modify bypassModerationFromSendersOrMembers"
@@ -887,7 +700,7 @@
                     out-logfile -string ("Attempting to add recipient: "+$recipient)
 
                     try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -BypassModerationFromSendersOrMembers @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
+                        set-o365MailContact -identity $functionExternalDirectoryObjectID -BypassModerationFromSendersOrMembers @{Add=$recipient} -errorAction STOP                     }
                     catch {
                         out-logfile -string ("Error procesing recipient: "+$recipient)
 
@@ -957,7 +770,7 @@
             out-logfile -string $functionRecipients
 
             try {
-                set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -GrantSendOnBehalfTo $functionRecipients -errorAction STOP -BypassSecuritycontactManagerCheck
+                set-o365MailContact -identity $functionExternalDirectoryObjectID -GrantSendOnBehalfTo $functionRecipients -errorAction STOP 
             }
             catch {
                 out-logfile -string "Unable to bulk updated GrantSendOnBehalfTo."
@@ -976,7 +789,7 @@
                     out-logfile -string ("Attempting to add recipient: "+$recipient)
 
                     try {
-                        set-o365Distributioncontact -identity $functionExternalDirectoryObjectID -GrantSendOnBehalfTo @{Add=$recipient} -errorAction STOP -BypassSecuritycontactManagerCheck                    }
+                        set-o365MailContact -identity $functionExternalDirectoryObjectID -GrantSendOnBehalfTo @{Add=$recipient} -errorAction STOP                     }
                     catch {
                         out-logfile -string ("Error procesing recipient: "+$recipient)
 
@@ -1006,120 +819,11 @@
 
         $isTestError=$FALSE
 
-        out-logFile -string "Evaluating exchangeSendAsSMTP"
-
-        if ($exchangeSendAsSMTP -ne $NULL)
-        {
-            foreach ($member in $exchangeSendAsSMTP)
-            {
-                if ($member.externalDirectoryObjectID -ne $NULL)
-                {
-                    out-LogFile -string ("Processing member = "+$member.externalDirectoryObjectID)
-
-                    $functionDirectoryObjectID=$member.externalDirectoryObjectID.Split("_")
-
-                    out-LogFile -string ("Processing updated member = "+$functionDirectoryObjectID[1])
-
-                    try {
-                        add-o365RecipientPermission -Identity $functionExternalDirectoryObjectID -Trustee $functionDirectoryObjectID[1] -AccessRights "SendAs" -confirm:$FALSE
-                    }
-                    catch {
-                        out-logfile -string "Unable to add member. "
-
-                        out-logfile -string $_
-
-                        $isErrorObject = new-Object psObject -property @{
-                            PrimarySMTPAddressorUPN = $member.externalDirectoryObjectID
-                            ExternalDirectoryObjectID = $NULL
-                            Alias = $NULL
-                            Name = $NULL
-                            Attribute = "Cloud Distribution contact SendAs"
-                            ErrorMessage = ("Unable to add migrated distribution contact with send as to "+$member.externalDirectoryObjectID+".  Manual addition required.")
-                            ErrorMessageDetail = $_
-                        }
-
-                        out-logfile -string $isErrorObject
-
-                        $functionErrors+=$isErrorObject
-                    }
-                }
-                elseif ($member.primarySMTPAddressOrUPN -ne $NULL)
-                {
-                    out-LogFile -string ("Processing member = "+$member.PrimarySMTPAddressOrUPN)
-
-                    try {
-                        add-o365RecipientPermission -Identity $functionExternalDirectoryObjectID -Trustee $member.primarySMTPAddressOrUPN -AccessRights "SendAs" -confirm:$FALSE
-                    }
-                    catch {
-                        out-logfile -string "Unable to add member. "
-                        out-logfile -string $_
-
-                        $isErrorObject = new-Object psObject -property @{
-                            PrimarySMTPAddressorUPN = $member.primarySMTPAddressorUPN
-                            ExternalDirectoryObjectID = $NULL
-                            Alias = $NULL
-                            Name = $NULL
-                            Attribute = "Cloud Distribution contact SendAs"
-                            ErrorMessage = ("Unable to add migrated distribution contact with send as to "+$member.primarySMTPAddressOrUPN+".  Manual addition required.")
-                            ErrorMessageDetail = $_
-                        }
-
-                        out-logfile -string $isErrorObject
-
-                        $functionErrors+=$isErrorObject
-                    }
-                }
-                else 
-                {
-                    out-logfile -string "Invalid function object for recipient." -isError:$TRUE
-                } 
-            }
-        }
-        else 
-        {
-            Out-LogFile -string "There were no members to process."    
-        }
-
-        out-logfile -string "Resetting send as directly set on the contact to be migrated."
-
-        if ($allOffice365SendAsAccessOncontact -ne $NULL)
-        {
-            foreach ($member in $allOffice365SendAsAccessOncontact)
-            {
-                out-logfile -string ("Processing trustee: "+$member.trustee)
-
-                try
-                {
-                    add-o365RecipientPermission -identity $functionExternalDirectoryObjectID -trustee $member.trustee -accessRights $member.accessRights -confirm:$FALSE -errorAction STOP
-                }
-                catch
-                {
-                    out-logfile -string "Unable to add member. "
-
-                    out-logfile -string $_
-
-                    $isErrorObject = new-Object psObject -property @{
-                        PrimarySMTPAddressorUPN = $member.trustee
-                        ExternalDirectoryObjectID = $null
-                        Alias = $functionMailNickName
-                        Name = $originalContactConfiguration.name
-                        Attribute = "Send As On Migrated contact"
-                        ErrorMessage = ("Unable to add "+$member.trustee+" to migrated distribution contact with send as rights.  Manual addition required.")
-                        ErrorMessageDetail = $_
-                    }
-
-                    out-logfile -string $isErrorObject
-
-                    $functionErrors+=$isErrorObject
-                }
-            }
-        }
-
         out-logfile -string "Remove the SMTP Address added by creating the temporary contact."
 
         try {
             out-logfile -string ("Removing: "+$functionEmailAddressToRemove)
-            Set-O365Distributioncontact -identity $functionExternalDirectoryObjectID -emailAddresses @{remove=$functionEmailAddressToRemove} -errorAction STOP -BypassSecuritycontactManagerCheck
+            set-o365MailContact -identity $functionExternalDirectoryObjectID -emailAddresses @{remove=$functionEmailAddressToRemove} -errorAction STOP 
         }
         catch {
             out-logfile -string "Unable to remove SMTP address assigned by default during contact creation."

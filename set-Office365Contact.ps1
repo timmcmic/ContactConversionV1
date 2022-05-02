@@ -35,22 +35,20 @@
             [Parameter(Mandatory = $true)]
             $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
-            [string]$contactTypeOverride,
             [Parameter(Mandatory = $true)]
             $office365contactConfigurationPostMigration
         )
 
         #Declare function variables.
 
-        $functionModerationFlags=$NULL
         $functionSendModerationNotifications=$NULL
         $functionModerationEnabled=$NULL
-        $functionoofReplyToOriginator=$NULL
-        $functionreportToOwner=$NULL
         $functionHiddenFromAddressList=$NULL
-        $functionMemberJoinRestriction=$NULL
-        $functionMemberDepartRestriction=$NULL
         $functionRequireAuthToSendTo=$NULL
+
+        $functionMacFormat = ""
+        $functionMessageFormat = ""
+        $functionMessageBodyFormat = ""
 
         [string]$functionMailNickName=""
         [string]$functionDisplayName=""
@@ -72,64 +70,10 @@
 
         Out-LogFile -string ("originalContactConfiguration = ")
         out-logfile -string $originalContactConfiguration
-        out-logfile -string ("contact Type Override = "+$contactTypeOverride)
 
         #There are several flags of a contact that are either calculated hashes <or> booleans not set by default.
         #The exchange commancontactets abstract this by performing a conversion or filling the values in.
         #Since we use ldap to get these values now - we must reverse engineer these and / or set them.
-
-        #If the contact type was overridden from the default - the member join restriction has to be adjusted.
-        #If the contact tyoe was not overriden - check to see if depart is NULL and set to closed which is default.
-        #Otherwise take the value from the string.
-
-        if ( $contactTypeOverride -eq "Security" )
-		{
-            out-logfile -string "contact type overriden to Security by administrator.  This requires depart restriction closed."
-
-			$functionMemberDepartRestriction = "Closed"
-
-            out-logfile -string ("Function member depart restrictions = "+$functionMemberDepartRestriction)
-		}
-        elseif ($originalContactConfiguration.msExchcontactDepartRestriction -eq $NULL)
-        {
-            out-logFile -string ("Member depart restriction is NULL.")
-
-            $functionMemberDepartRestriction="Closed"
-
-            out-LogFile -string ("The member depart restriction is now = "+$functionMemberDepartRestriction)
-        }
-        elseif (($originalContactConfiguration.contactType -eq "-2147483640") -or ($originalContactConfiguration.contactType -eq "-2147483646") -or ($originalContactConfiguration.contactType -eq "-2147483644"))
-        {
-            Out-logfile -string ("contact type is security - ensuring member depart restriction CLOSED")
-
-            $functionMemberDepartRestriction="Closed"
-        }
-		else 
-		{
-			$functionMemberDepartRestriction = $originalContactConfiguration.msExchcontactDepartRestriction
-
-            out-logfile -string ("Function member depart restrictions = "+$functionMemberDepartRestriction)
-		}
-
-        #The moderation settings a are a hash valued flag.
-        #This test looks to see if bypass nested moderation is enabled from the hash.
-
-        if (($originalContactConfiguration.msExchModerationFlags -eq "1") -or ($originalContactConfiguration.msExchModerationFlags -eq "3") -or ($originalContactConfiguration.msExchModerationFlags -eq "7") )
-        {
-            out-logfile -string ("The moderation flags are 1 / 3 / 7 - setting bypass nested moderation to TRUE - "+$originalContactConfiguration.msExchModerationFlags)
-
-            $functionModerationFlags=$TRUE
-
-            out-logfile ("The function moderation flags are = "+$functionModerationFlags)
-        }
-        else 
-        {
-            out-logfile -string ("The moderation flags are NOT 1 / 3 / 7 - setting bypass nested moderation to FALSE - "+$originalContactConfiguration.msExchModerationFlags)
-
-            $functionModerationFlags=$FALSE
-
-            out-logfile ("The function moderation flags is = "+$functionModerationFlags)
-        }
 
         #Test now to see if the moderation settings are always, internal, or none.  This uses the same hash.
 
@@ -186,55 +130,6 @@
             out-Logfile -string ("The function moderation setting is "+$functionModerationEnabled)
         }
 
-        #Evaluate oofReplyToOriginator
-
-        if ($originalContactConfiguration.oofReplyToOriginator -eq $NULL)
-        {
-            out-logfile -string "The oofReplyToOriginator is null."
-
-            $functionoofReplyToOriginator = $FALSE
-
-            out-logfile -string ("The oofReplyToOriginator is now = "+$functionoofReplyToOriginator)
-        }
-        else 
-        {
-            out-logFile -string "The oofReplyToOriginator was set on premises."
-            
-            $functionoofReplyToOriginator=$originalContactConfiguration.oofReplyToOriginator
-
-            out-logfile -string ("The function oofReplyToOriginator = "+$functionoofReplyToOriginator)
-        }
-
-        #Evaluate reportToOwner
-
-        if ($originalContactConfiguration.reportToOwner -eq $NULL)
-        {
-            out-logfile -string "The reportToOwner is null."
-
-            $functionreportToOwner = $FALSE
-
-            out-logfile -string ("The reportToOwner is now = "+$functionreportToOwner)
-        }
-        else 
-        {
-            out-logfile -string "The reportToOwner was set on premises." 
-            
-            $functionReportToOwner = $originalContactConfiguration.reportToOwner
-
-            out-logfile -string ("The function reportToOwner = "+$functionreportToOwner)
-        }
-
-        if ($originalContactConfiguration.reportToOriginator -eq $NULL)
-        {
-            out-logfile -string "The report to originator is NULL."
-
-            $functionReportToOriginator = $FALSE
-        }
-        else 
-        {
-            $functionReportToOriginator = $originalContactConfiguration.reportToOriginator    
-        }
-
         #Evaluate hidden from address list.
 
         if ($originalContactConfiguration.msExchHideFromAddressLists -eq $NULL)
@@ -252,23 +147,7 @@
             $functionHiddenFromAddressList=$originalContactConfiguration.msExchHideFromAddressLists
         }
 
-        #Evaluate member join restrictions.
-
-        if ($originalContactConfiguration.msExchcontactJoinRestriction -eq $NULL)
-        {
-            out-Logfile -string ("Member join restriction is NULL.")
-
-            $functionMemberJoinRestriction="Closed"
-
-            out-logfile -string ("The member join restriction is now = "+$functionMemberJoinRestriction)
-        }
-        else 
-        {
-            $functionMemberJoinRestriction = $originalContactConfiguration.msExchcontactJoinRestriction
-
-            out-logfile -string ("The function member join restriction is: "+$functionMemberJoinRestriction)
-        }
-
+        
         #Evaluate require auth to send to contact.  If the contact is open to everyone - the value may not be present.
 
         if ($originalContactConfiguration.msExchRequireAuthToSendTo -eq $NULL)
@@ -284,6 +163,143 @@
             out-logfile -string ("Require auth to send to is set - retaining value. "+ $originalContactConfiguration.msExchRequireAuthToSendTo)
             
             $functionRequireAuthToSendTo = $originalContactConfiguration.msExchRequireAuthToSendTo
+        }
+
+        out-logfile -string "Determine mail contact internet coding."
+
+        if ($originalDLConfiguration.internetEncoding -eq "0")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Text"
+            $functionMessageBodyFormat = "Text"
+
+            out-logfile -string "Internet encoding value 0"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "2097152")
+        {
+            $functionMacFormat = "uUEncode"
+            $functionMessageFormat = "Text"
+            $functionMessageBodyFormat = "Text"
+
+            out-logfile -string "Internet encoding value 2097152"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "262144")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+
+            out-logfile -string "Internet encoding value 262144"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "4456448")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+
+            out-logfile -string "Internet encoding value 4456448"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "6553600")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+
+            out-logfile -string "Internet encoding value 6553600"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "786432")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+
+            out-logfile -string "Internet encoding value 786432"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "7077888")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+
+            out-logfile -string "Internet encoding value 7077888"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "4980736")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+
+            out-logfile -string "Internet encoding value 4980736"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "5505024")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextandHTML"
+
+            out-logfile -string "Internet encoding value 5505024"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "7602176")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+
+            out-logfile -string "Internet encoding value 7602176"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "1310720")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextandHTML"
+
+            out-logfile -string "Defaults intentionally set as value is present."
+            out-logfile -string "Internet encoding value 1310720"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        else 
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextandHTML"
+
+            out-logfile -string "Using default values as no explicit value was established on premises."
+            out-logfile -string "Internet encoding value 1310720"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
         }
 
         #It is possible that the contact is not fully mail enabled.
@@ -325,9 +341,9 @@
 
         try 
         {
-            out-logfile -string "Setting core single values for the distribution contact."
+            out-logfile -string "Setting core single values for the contact contact."
 
-            Set-O365Distributioncontact -Identity $functionExternalDirectoryObjectID -name $originalContactConfiguration.cn -Alias $functionMailNickName -DisplayName $functionDisplayName -HiddenFromAddressListsEnabled $functionHiddenFromAddressList -RequireSenderAuthenticationEnabled $functionRequireAuthToSendTo -SimpleDisplayName $functionSimpleDisplayName -WindowsEmailAddress $originalContactConfiguration.mail -MailTipTranslations $originalContactConfiguration.msExchSenderHintTranslations -BypassSecuritycontactManagerCheck -errorAction STOP
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -name $originalContactConfiguration.cn -Alias $functionMailNickName -DisplayName $functionDisplayName -HiddenFromAddressListsEnabled $functionHiddenFromAddressList -RequireSenderAuthenticationEnabled $functionRequireAuthToSendTo -SimpleDisplayName $functionSimpleDisplayName -WindowsEmailAddress $originalContactConfiguration.mail -MailTipTranslations $originalContactConfiguration.msExchSenderHintTranslations -errorAction STOP
         }
         catch 
         {
@@ -340,8 +356,8 @@
                 ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalContactConfiguration.name
-                Attribute = "Cloud distribution list:  Alias / DisplayName / HiddenFromAddressList / RequireSenderAuthenticaiton / SimpleDisplayName / WindowsEmailAddress / MailTipTranslations / Name"
-                ErrorMessage = "Error setting single valued attribute of the migrated distribution list."
+                Attribute = "Cloud contact list:  Alias / DisplayName / HiddenFromAddressList / RequireSenderAuthenticaiton / SimpleDisplayName / WindowsEmailAddress / MailTipTranslations / Name"
+                ErrorMessage = "Error setting single valued attribute of the migrated contact list."
                 ErrorMessageDetail = $_
             }
 
@@ -352,7 +368,7 @@
         {
             out-logfile -string "Setting single valued moderation propeties for the contact.."
 
-            Set-O365Distributioncontact -Identity $functionExternalDirectoryObjectID -BypassNestedModerationEnabled $functionModerationFlags -ModerationEnabled $functionModerationEnabled -SendModerationNotifications $functionSendModerationNotifications -BypassSecuritycontactManagerCheck -errorAction STOP
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -ModerationEnabled $functionModerationEnabled -SendModerationNotifications $functionSendModerationNotifications  -errorAction STOP
         }
         catch 
         {
@@ -365,58 +381,8 @@
                 ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalContactConfiguration.name
-                Attribute = "Cloud distribution list:  BypassNedstedModerationEnabled / ModerationEnabled / SendModerationNotifications"
-                ErrorMessage = "Error setting additional single valued attribute of the migrated distribution contact."
-                ErrorMessageDetail = $_
-            }
-
-            $functionErrors+=$isErrorObject
-        }
-
-        try 
-        {
-            out-logfile -string "Setting member join depart restritions on the contact.."
-
-            Set-O365Distributioncontact -Identity $functionExternalDirectoryObjectID -MemberJoinRestriction $functionMemberJoinRestriction -MemberDepartRestriction $functionMemberDepartRestriction -BypassSecuritycontactManagerCheck -errorAction STOP
-        }
-        catch 
-        {
-            out-logfile "Error encountered setting member join depart restritions on the contact...."
-
-            out-logfile -string $_
-
-            $isErrorObject = new-Object psObject -property @{
-                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                Alias = $functionMailNickName
-                Name = $originalContactConfiguration.name
-                Attribute = "Cloud distribution list:  MemberJoinRestriction / MemberDepartRestriction"
-                ErrorMessage = "Error setting join or depart restrictions."
-                ErrorMessageDetail = $_
-            }
-
-            $functionErrors+=$isErrorObject
-        }
-
-        try 
-        {
-            out-logfile -string "Setting the single valued report to settings.."
-
-            Set-O365Distributioncontact -Identity $functionExternalDirectoryObjectID -ReportToManagerEnabled $functionreportToOwner -ReportToOriginatorEnabled $functionReportToOriginator -SendOofMessageToOriginatorEnabled $functionoofReplyToOriginator -BypassSecuritycontactManagerCheck -errorAction STOP       
-        }
-        catch 
-        {
-            out-logfile "Error encountered setting single valued report to settings on the contact...."
-
-            out-logfile -string $_
-
-            $isErrorObject = new-Object psObject -property @{
-                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                Alias = $functionMailNickName
-                Name = $originalContactConfiguration.name
-                Attribute = "Cloud distribution list:  ReportToManagerEnabled / ReportToOriginatorEnabled / SendOOFMessageToOriginatorEnabled"
-                ErrorMessage = "Error setting report to attributes."
+                Attribute = "Cloud contact list:  BypassNedstedModerationEnabled / ModerationEnabled / SendModerationNotifications"
+                ErrorMessage = "Error setting additional single valued attribute of the migrated contact contact."
                 ErrorMessageDetail = $_
             }
 
@@ -427,7 +393,7 @@
         {
             out-logfile -string "Setting the custom and extension attributes of the contact."
 
-            Set-O365Distributioncontact -Identity $functionExternalDirectoryObjectID -CustomAttribute1 $originalContactConfiguration.extensionAttribute1 -CustomAttribute10 $originalContactConfiguration.extensionAttribute10 -CustomAttribute11 $originalContactConfiguration.extensionAttribute11 -CustomAttribute12 $originalContactConfiguration.extensionAttribute12 -CustomAttribute13 $originalContactConfiguration.extensionAttribute13 -CustomAttribute14 $originalContactConfiguration.extensionAttribute14 -CustomAttribute15 $originalContactConfiguration.extensionAttribute15 -CustomAttribute2 $originalContactConfiguration.extensionAttribute2 -CustomAttribute3 $originalContactConfiguration.extensionAttribute3 -CustomAttribute4 $originalContactConfiguration.extensionAttribute4 -CustomAttribute5 $originalContactConfiguration.extensionAttribute5 -CustomAttribute6 $originalContactConfiguration.extensionAttribute6 -CustomAttribute7 $originalContactConfiguration.extensionAttribute7 -CustomAttribute8 $originalContactConfiguration.extensionAttribute8 -CustomAttribute9 $originalContactConfiguration.extensionAttribute9 -ExtensionCustomAttribute1 $originalContactConfiguration.msExtensionCustomAttribute1 -ExtensionCustomAttribute2 $originalContactConfiguration.msExtensionCustomAttribute2 -ExtensionCustomAttribute3 $originalContactConfiguration.msExtensionCustomAttribute3 -ExtensionCustomAttribute4 $originalContactConfiguration.msExtensionCustomAttribute4 -ExtensionCustomAttribute5 $originalContactConfiguration.msExtensionCustomAttribute5 -BypassSecuritycontactManagerCheck -errorAction STOP        
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -CustomAttribute1 $originalContactConfiguration.extensionAttribute1 -CustomAttribute10 $originalContactConfiguration.extensionAttribute10 -CustomAttribute11 $originalContactConfiguration.extensionAttribute11 -CustomAttribute12 $originalContactConfiguration.extensionAttribute12 -CustomAttribute13 $originalContactConfiguration.extensionAttribute13 -CustomAttribute14 $originalContactConfiguration.extensionAttribute14 -CustomAttribute15 $originalContactConfiguration.extensionAttribute15 -CustomAttribute2 $originalContactConfiguration.extensionAttribute2 -CustomAttribute3 $originalContactConfiguration.extensionAttribute3 -CustomAttribute4 $originalContactConfiguration.extensionAttribute4 -CustomAttribute5 $originalContactConfiguration.extensionAttribute5 -CustomAttribute6 $originalContactConfiguration.extensionAttribute6 -CustomAttribute7 $originalContactConfiguration.extensionAttribute7 -CustomAttribute8 $originalContactConfiguration.extensionAttribute8 -CustomAttribute9 $originalContactConfiguration.extensionAttribute9 -ExtensionCustomAttribute1 $originalContactConfiguration.msExtensionCustomAttribute1 -ExtensionCustomAttribute2 $originalContactConfiguration.msExtensionCustomAttribute2 -ExtensionCustomAttribute3 $originalContactConfiguration.msExtensionCustomAttribute3 -ExtensionCustomAttribute4 $originalContactConfiguration.msExtensionCustomAttribute4 -ExtensionCustomAttribute5 $originalContactConfiguration.msExtensionCustomAttribute5  -errorAction STOP        
         }
         catch 
         {
@@ -440,7 +406,32 @@
                 ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
                 Alias = $functionMailNickName
                 Name = $originalContactConfiguration.name
-                Attribute = "Cloud distribution list:  CustomAttributeX / ExtensionAttributeX"
+                Attribute = "Cloud contact list:  CustomAttributeX / ExtensionAttributeX"
+                ErrorMessage = "Error setting custom or extension attributes."
+                ErrorMessageDetail = $_
+            }
+
+            $functionErrors+=$isErrorObject
+        }
+
+        try 
+        {
+            out-logfile -string "Setting internet encoding information."
+
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -macFormat $functionMacFormat -messageFormat $functionMessageFormat -messageBodyFormat $functionMessageBodyFormat -errorAction STOP        
+        }
+        catch 
+        {
+            out-logfile "Error encountered setting custom and extension attributes of the contact...."
+
+            out-logfile -string $_
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                Alias = $functionMailNickName
+                Name = $originalContactConfiguration.name
+                Attribute = "Cloud contact list:  Internet encoding information / macFormat / messageFormat / MessageBodyFormat"
                 ErrorMessage = "Error setting custom or extension attributes."
                 ErrorMessageDetail = $_
             }

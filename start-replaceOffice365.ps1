@@ -90,7 +90,7 @@
         {
             out-logfile -string "Recipient is a mail enabled distribution contact or mail enabled security contact."
 
-            $functionCommand="set-o365Distributioncontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP -bypassSecuritycontactManagerCheck"
+            $functionCommand="set-o365Distributioncontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP "
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionDynamicDistributioncontactRecipientType)
