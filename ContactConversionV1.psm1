@@ -2645,7 +2645,7 @@ Function Start-ContactMigration
     out-logfile -string ("The number of office 365 mailboxes forwarding to this contact is = "+$allOffice365ForwardingAddress.count)
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
 
-    EXIT #Debug Exit
+    #EXIT #Debug Exit
 
     Out-LogFile -string "********************************************************************************"
     Out-LogFile -string "END RETAIN OFFICE 365 contact DEPENDENCIES"
