@@ -285,13 +285,11 @@ Function Start-ContactMigration
   
     #The following are the cloud parameters we query for to look for dependencies.
 
-    [string]$office365AcceptMessagesFrom="AcceptMessagesOnlyFromcontactMembers"
-    [string]$office365BypassModerationFrom="BypassModerationFromcontactMembers"
-    [string]$office365CoManagers="CoManagedBy"
+    [string]$office365AcceptMessagesFrom="AcceptMessagesOnlyFrom"
+    [string]$office365BypassModerationFrom="BypassModerationFromSendersOrMembers"
     [string]$office365GrantSendOnBehalfTo="GrantSendOnBehalfTo"
-    [string]$office365ManagedBy="ManagedBy"
     [string]$office365Members="Members"
-    [string]$office365RejectMessagesFrom="RejectMessagesFromcontactMembers"
+    [string]$office365RejectMessagesFrom="RejectMessagesFrom"
     [string]$office365ForwardingAddress="ForwardingAddress"
 
     [string]$office365BypassModerationusers="BypassModerationFromSendersOrMembers"
@@ -2584,15 +2582,6 @@ Function Start-ContactMigration
         out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grantSendOnBehalFto = "+$allOffice365GrantSendOnBehalfTo.count)
 
         try {
-            $allOffice365ManagedBy = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
-        }
-        catch {
-            out-logFile -string $_ -isError:$TRUE
-        }
-
-        out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has managedBY = "+$allOffice365ManagedBy.count)
-
-        try {
             $allOffice365ForwardingAddress = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365ForwardingAddress -errorAction STOP
         }
         catch {
@@ -2651,78 +2640,7 @@ Function Start-ContactMigration
             $allOffice365GrantSendOnBehalfTo=@()    
         }
 
-        if ($allOffice365ManagedBy -ne $NULL)
-        {
-            out-logfile -string $allOffice365ManagedBy
-            out-xmlFile -itemToExport $allOffice365ManagedBy -itemNameToExport $allOffice365ManagedByXML
-
-            out-logfile -string "Setting contact type override to security - the contact type may have changed on premises after the permission was added."
-
-            $contactTypeOverride="Security"
-        }
-        else 
-        {
-            $allOffice365ManagedBy=@()    
-        }
-
-        <#
-
-        if ($allOffice365DynamicAccept -ne $NULL)
-        {
-            out-logfile -string $allOffice365DynamicAccept
-            out-xmlFile -itemToExport $allOffice365DynamicAccept -itemNameToExport $allOffice365DynamicAcceptXML
-        }
-        else 
-        {
-            $allOffice365DynamicAccept=@()    
-        }
-
-        if ($allOffice365DynamicReject -ne $NULL)
-        {
-            out-logfile -string $allOffice365DynamicReject
-            out-xmlFile -itemToExport $allOffice365DynamicReject -itemNameToExport $allOffice365DynamicRejectXML
-        }
-        else 
-        {
-            $allOffice365DynamicReject=@()    
-        }
         
-        if ($allOffice365DynamicBypassModeration -ne $NULL)
-        {
-            out-logfile -string $allOffice365DynamicBypassModeration
-            out-xmlFile -itemToExport $allOffice365DynamicBypassModeration -itemNameToExport $allOffice365DynamicBypassModerationXML
-        }
-        else 
-        {
-            $allOffice365DynamicBypassModeration=@()    
-        }
-
-        if ($allOffice365DynamicGrantSendOnBehalfTo -ne $NULL)
-        {
-            out-logfile -string $allOffice365DynamicGrantSendOnBehalfTo
-            out-xmlfile -itemToExport $allOffice365DynamicGrantSendOnBehalfTo -itemNameToExport $allOffice365DynamicGrantSendOnBehalfToXML
-        }
-        else 
-        {
-            $allOffice365DynamicGrantSendOnBehalfTo=@()    
-        }
-
-        if ($allOffice365DynamicManagedBy -ne $NULL)
-        {
-            out-logfile -string $allOffice365DynamicManagedBy
-            out-xmlFile -itemToExport $allOffice365DynamicManagedBy -itemNameToExport $allOffice365DynamicManagedByXML
-
-            out-logfile -string "Setting contact type override to security - the contact type may have changed on premises after the permission was added."
-
-            $contactTypeOverride="Security"
-        }
-        else 
-        {
-            $allOffice365DynamicManagedBy=@()    
-        }
-
-        #>
-
         if ($allOffice365ForwardingAddress -ne $NULL)
         {
             out-logfile -string $allOffice365ForwardingAddress
@@ -2731,93 +2649,6 @@ Function Start-ContactMigration
         else 
         {
             $allOffice365ForwardingAddress=@()    
-        }
-
-        <#
-
-        if ($allOffice365UniversalAccept -ne $NULL)
-        {
-            out-logfile -string $allOffice365UniversalAccept
-            out-xmlfile -itemToExport $allOffice365UniversalAccept -itemNameToExport $allOffice365UniversalAcceptXML
-        }
-        else 
-        {
-            $allOffice365UniversalAccept=@()    
-        }
-
-        if ($allOffice365UniversalReject -ne $NULL)
-        {
-            out-logfile -string $allOffice365UniversalReject
-            out-xmlFIle -itemToExport $allOffice365UniversalReject -itemNameToExport $allOffice365UniversalRejectXML
-        }
-        else 
-        {
-            $allOffice365UniversalReject=@()    
-        }
-
-        if ($allOffice365UniversalGrantSendOnBehalfTo -ne $NULL)
-        {
-            out-logfile -string $allOffice365UniversalGrantSendOnBehalfTo
-            out-xmlFile -itemToExport $allOffice365UniversalGrantSendOnBehalfTo -itemNameToExport $allOffice365UniversalGrantSendOnBehalfToXML
-        }
-        else 
-        {
-            $allOffice365UniversalGrantSendOnBehalfTo=@()    
-        }
-
-        #>
-
-        if ($allOffice365SendAsAccess -ne $NULL)
-        {
-            out-logfile -string $allOffice365SendAsAccess
-            out-xmlfile -itemToExport $allOffice365SendAsAccess -itemNameToExport $allOffic365SendAsAccessXML
-
-            out-logfile -string "Resetting contact type to security - this is required for send as permissions and may have been changed on premsies."
-
-            $contactTypeOverride="Security"
-        }
-        else 
-        {
-            $allOffice365SendAsAccess=@()    
-        }
-
-        if ($allOffice365SendAsAccessOncontact -ne $NULL)
-        {
-            out-logfile -string $allOffice365SendAsAccessOncontact
-            out-xmlfile -itemToExport $allOffice365SendAsAccessOncontact -itemNameToExport $allOffice365SendAsAccessOncontactXML
-        }
-        else
-        {
-            $allOffice365SendAsAccessOncontact=@()
-        }
-        
-
-        if ($allOffice365FullMailboxAccess -ne $NULL)
-        {
-            out-logfile -string $allOffice365FullMailboxAccess
-            out-xmlFile -itemToExport $allOffice365FullMailboxAccess -itemNameToExport $allOffice365FullMailboxAccessXML
-
-            out-logfile -string "Resetting contact type to security - this is required for mailbox permissions but may have changed on premises."
-
-            $contactTypeOverride="Security"
-        }
-        else 
-        {
-            $allOffice365FullMailboxAccess=@()    
-        }
-
-        if ($allOffice365MailboxFolderPermissions -ne $NULL)
-        {
-            out-logfile -string $allOffice365MailboxFolderPermissions
-            out-xmlfile -itemToExport $allOffice365MailboxFolderPermissions -itemNameToExport $allOffice365MailboxesFolderPermissionsXML
-
-            out-logfile -string "Resetting contact type to security - this is required for mailbox folder permissions but may have changed on premsies."
-
-            $contactTypeOverride="Security"
-        }
-        else 
-        {
-            $allOffice365MailboxFolderPermissions=@()    
         }
     }
     else 
@@ -2828,24 +2659,11 @@ Function Start-ContactMigration
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
     out-logfile -string ("Summary of dependencies found:")
     out-logfile -string ("The number of office 365 objects that the migrated contact is a member of = "+$allOffice365MemberOf.count)
-    out-logfile -string ("The number of office 365 objects that this contact is a manager of: = "+$allOffice365ManagedBy.count)
     out-logfile -string ("The number of office 365 objects that this contact has grant send on behalf to = "+$allOffice365GrantSendOnBehalfTo.count)
     out-logfile -string ("The number of office 365 objects that have this contact as bypass moderation = "+$allOffice365BypassModeration.count)
     out-logfile -string ("The number of office 365 objects with accept permissions = "+$allOffice365Accept.count)
     out-logfile -string ("The number of office 365 objects with reject permissions = "+$allOffice365Reject.count)
     out-logfile -string ("The number of office 365 mailboxes forwarding to this contact is = "+$allOffice365ForwardingAddress.count)
-    #out-logfile -string ("The number of office 365 unified contacts with accept permissions = "+$allOffice365UniversalAccept.count)
-    #out-logfile -string ("The number of office 365 unified contacts with grant send on behalf to permissions = "+$allOffice365UniversalGrantSendOnBehalfTo.count)
-    #out-logfile -string ("The number of office 365 unified contacts with reject permissions = "+$allOffice365UniversalReject.count)
-    out-logfile -string ("The number of recipients that have send as rights on the contact to be migrated = "+$allOffice365SendAsAccessOncontact.count)
-    out-logfile -string ("The number of office 365 recipients where the contact has send as rights = "+$allOffice365SendAsAccess.count)
-    out-logfile -string ("The number of office 365 recipients with full mailbox access = "+$allOffice365FullMailboxAccess.count)
-    out-logfile -string ("The number of office 365 mailbox folders with migrated contact rights = "+$allOffice365MailboxFolderPermissions.count)
-    #out-logfile -string ("The number of office 365 dynamic contacts that this contact is a manager of: = "+$allOffice365DynamicManagedBy.count)
-    #out-logfile -string ("The number of office 365 dynamic contacts with accept permissions = "+$allOffice365DynamicAccept.count)
-    #out-logfile -string ("The number of office 365 dynamic contacts with reject permissions = "+$allOffice365DynamicReject.count)
-    #out-logfile -string ("The number of office 365 dynamic contacts that have this contact as bypass moderation = "+$allOffice365DynamicBypassModeration.count)
-    #out-logfile -string ("The number of office 365 dynamic contacts that this contact has grant send on behalf to = "+$allOffice365DynamicGrantSendOnBehalfTo.count)
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
 
     #EXIT #Debug Exit

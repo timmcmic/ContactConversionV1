@@ -106,7 +106,7 @@
 
                 out-logfile -string "Starting collection of dynamic distribution contacts."
 
-                $functionCommand = "Get-o365DynamicDistributioncontact -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
+                $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 
@@ -150,7 +150,7 @@
                 {
                     out-logfile -string "The contact type is dynamic - querying distribution contacts."
                     
-                    $functionCommand = "Get-o365DynamicDistributioncontact -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
+                    $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
                     $scriptBlock=[scriptBlock]::create($functionCommand)
 
@@ -178,7 +178,7 @@
 
                 out-logfile -string "Starting collection of dynamic distribution contacts."
 
-                $functionCommand = "Get-o365DynamicDistributioncontact -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
+                $functionCommand = "Get-o365DynamicDistributionGroup -Filter { $attributeType -eq '$dn' } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 
