@@ -91,11 +91,11 @@
             {
                 #The attribute type is managed by.  This is only relevant to contacts.
 
-                out-logfile "Managed by is only relevant to contacts - performing query on only contacts."
+                out-logfile "Managed by is only relevant to distribution groups - performing query on only distribution groups."
 
                 out-logfile -string "Starting collection of distribution contacts."
 
-                $functionCommand = "get-o365MailContact -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
+                $functionCommand = "get-o365DistributionGroup -Filter { ($attributeType -eq '$dn') -and (isDirSynced -eq '$FALSE') } -errorAction 'STOP'"
 
                 $scriptBlock=[scriptBlock]::create($functionCommand)
 
