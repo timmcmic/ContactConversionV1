@@ -35,7 +35,6 @@
             [Parameter(Mandatory = $true)]
             $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
-            [Parameter(Mandatory = $true)]
             $office365contactConfigurationPostMigration
         )
 
