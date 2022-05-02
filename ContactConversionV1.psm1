@@ -2573,15 +2573,6 @@ Function Start-ContactMigration
         out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grant send on behalf to righbypassModeration rights = "+$allOffice365BypassModeration.count)
 
         try {
-            $allOffice365GrantSendOnBehalfTo = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365GrantSendOnBehalfTo -errorAction STOP
-        }
-        catch {
-            out-logFile -string $_ -isError:$TRUE
-        }
-
-        out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grantSendOnBehalFto = "+$allOffice365GrantSendOnBehalfTo.count)
-
-        try {
             $allOffice365ForwardingAddress = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365ForwardingAddress -errorAction STOP
         }
         catch {
@@ -2666,7 +2657,7 @@ Function Start-ContactMigration
     out-logfile -string ("The number of office 365 mailboxes forwarding to this contact is = "+$allOffice365ForwardingAddress.count)
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
 
-    #EXIT #Debug Exit
+    EXIT #Debug Exit
 
     Out-LogFile -string "********************************************************************************"
     Out-LogFile -string "END RETAIN OFFICE 365 contact DEPENDENCIES"
