@@ -2573,6 +2573,15 @@ Function Start-ContactMigration
         out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grant send on behalf to righbypassModeration rights = "+$allOffice365BypassModeration.count)
 
         try {
+            $allOffice365ManagedBy = Get-O365GroupDependency -dn $office365DLConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
+        }
+        catch {
+            out-logFile -string $_ -isError:$TRUE
+        }
+
+        out-logfile -string ("The number of groups in Office 365 cloud only that the DL has managedBY = "+$allOffice365ManagedBy.count)
+
+        try {
             $allOffice365ForwardingAddress = Get-O365contactDependency -dn $office365contactConfiguration.distinguishedName -attributeType $office365ForwardingAddress -errorAction STOP
         }
         catch {
