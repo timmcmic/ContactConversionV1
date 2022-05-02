@@ -49,6 +49,8 @@
         $functionMacFormat = ""
         $functionMessageFormat = ""
         $functionMessageBodyFormat = ""
+        $FunctionMapiRecipient=""
+        $functionUsePreferMessageFormat=""
 
         [string]$functionMailNickName=""
         [string]$functionDisplayName=""
@@ -172,8 +174,21 @@
             $functionMacFormat = "BinHex"
             $functionMessageFormat = "Text"
             $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 0"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "131072")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Text"
+            $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 131072"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -183,8 +198,21 @@
             $functionMacFormat = "uUEncode"
             $functionMessageFormat = "Text"
             $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 2097152"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "222824")
+        {
+            $functionMacFormat = "uUEncode"
+            $functionMessageFormat = "Text"
+            $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$true
+
+            out-logfile -string "Internet encoding value 222824"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -194,8 +222,21 @@
             $functionMacFormat = "BinHex"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 262144"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "393216")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 393216"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -205,8 +246,21 @@
             $functionMacFormat = "AppleSingle"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 4456448"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "4587520")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$true
+
+            out-logfile -string "Internet encoding value 4587520"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -216,8 +270,21 @@
             $functionMacFormat = "AppleDouble"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 6553600"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "6684672")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "Text"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 6684672"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -227,8 +294,21 @@
             $functionMacFormat = "BinHex"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 786432"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "917504")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 917504"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -238,8 +318,21 @@
             $functionMacFormat = "AppleDouble"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 7077888"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "7208960")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 7208960"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -249,8 +342,21 @@
             $functionMacFormat = "AppleSingle"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 4980736"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "5111808")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "HTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 5111808"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -260,8 +366,21 @@
             $functionMacFormat = "AppleSingle"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "TextandHTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 5505024"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "5636096")
+        {
+            $functionMacFormat = "AppleSingle"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextandHTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 5636096"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -270,9 +389,22 @@
         {
             $functionMacFormat = "AppleDouble"
             $functionMessageFormat = "Mime"
-            $functionMessageBodyFormat = "HTML"
+            $functionMessageBodyFormat = "TextAndHTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Internet encoding value 7602176"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "7733248")
+        {
+            $functionMacFormat = "AppleDouble"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextAndHTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Internet encoding value 7733248"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -282,9 +414,23 @@
             $functionMacFormat = "BinHex"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "TextandHTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Defaults intentionally set as value is present."
             out-logfile -string "Internet encoding value 1310720"
+            out-logfile -string $functionMacFormat
+            out-logfile -string $functionMessageFormat
+            out-logfile -string $functionMessageBodyFormat
+        }
+        elseif ($originalDLConfiguration.internetEncoding -eq "1441792")
+        {
+            $functionMacFormat = "BinHex"
+            $functionMessageFormat = "Mime"
+            $functionMessageBodyFormat = "TextandHTML"
+            $functionUsePreferMessageFormat=$TRUE
+
+            out-logfile -string "Defaults intentionally set as value is present."
+            out-logfile -string "Internet encoding value 1441792"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
@@ -294,12 +440,31 @@
             $functionMacFormat = "BinHex"
             $functionMessageFormat = "Mime"
             $functionMessageBodyFormat = "TextandHTML"
+            $functionUsePreferMessageFormat=$FALSE
 
             out-logfile -string "Using default values as no explicit value was established on premises."
             out-logfile -string "Internet encoding value 1310720"
             out-logfile -string $functionMacFormat
             out-logfile -string $functionMessageFormat
             out-logfile -string $functionMessageBodyFormat
+        }
+
+        out-logfile -string "Evaluate if the object is a MAPI recipient."
+
+        if ($originalDLConfiguration.mapiRecipient -eq $NULL)
+        {
+            out-logfile -string "Mapi recipient is NULL = UseDefaultSettings"
+            $FunctionMapiRecipient="UseDefaultSettings"
+        }
+        elseif ($originalDLConfiguration.mapiRecipient -eq $TRUE)
+        {
+            out-logfile -string "Mapi Recipient is TRUE = Always"
+            $functionMapiRecipient="Always"
+        }
+        elseif ($originalDLConfiguration.mapiRecipient -eq $FALSE)
+        {
+            out-logfile -string "Mapi Recipient is FALSE = Never"
+            $functionMapiRecipient = "Never"
         }
 
         #It is possible that the contact is not fully mail enabled.
@@ -407,6 +572,31 @@
                 Alias = $functionMailNickName
                 Name = $originalContactConfiguration.name
                 Attribute = "Cloud contact list:  CustomAttributeX / ExtensionAttributeX"
+                ErrorMessage = "Error setting custom or extension attributes."
+                ErrorMessageDetail = $_
+            }
+
+            $functionErrors+=$isErrorObject
+        }
+
+        try 
+        {
+            out-logfile -string "Setting internet encoding information."
+
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -macFormat $functionMacFormat -messageFormat $functionMessageFormat -messageBodyFormat $functionMessageBodyFormat -usePreferMessageFormat $functionUsePreferMessageFormat -errorAction STOP        
+        }
+        catch 
+        {
+            out-logfile "Error encountered setting custom and extension attributes of the contact...."
+
+            out-logfile -string $_
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                Alias = $functionMailNickName
+                Name = $originalContactConfiguration.name
+                Attribute = "Cloud contact list:  Internet encoding information / macFormat / messageFormat / MessageBodyFormat"
                 ErrorMessage = "Error setting custom or extension attributes."
                 ErrorMessageDetail = $_
             }
