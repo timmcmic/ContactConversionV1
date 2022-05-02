@@ -35,30 +35,30 @@
 
         foreach ($address in $originalContactConfiguration.proxyAddresses)
         {
-            Out-logfile -string "Testing proxy address for SMTP"
-            out-logfile -string $address
-
-            if ($address -like "smtp*")
+            if ($address -ne $originalContactConfiguration.targetAddress)
             {
-                out-logfile -string ("Address is smtp address: "+$address)
+                Out-logfile -string "Testing proxy address for SMTP"
+                out-logfile -string $address
 
-                $tempAddress=$address.split("@")
+                if ($address -like "smtp*")
+                {
+                    out-logfile -string ("Address is smtp address: "+$address)
 
-                $originalcontactDomainNames+=$tempAddress[1]
+                    $tempAddress=$address.split("@")
+
+                    $originalcontactDomainNames+=$tempAddress[1]
+                }
+                else 
+                {
+                    out-logfile -string ("Address is not an SMTP Address - skip.")
+                }
             }
             else 
             {
-                out-logfile -string ("Address is not an SMTP Address - skip.")
+                out-logfile -string "Address matches external address - skip."    
             }
-        }
-
-        #It is possible that the contact does not have proxy address but just mail - this is now a supported scenario.
-        #To get this far the object has to have mail.
-
-        out-logfile -string ("The mail address is: "+$originalContactConfiguration.mail)
-        $tempAddress=$originalContactConfiguration.mail.split("@")
-        $originalcontactDomainNames+=$tempAddress[1]
-        
+            
+        }    
 
         $originalcontactDomainNames=$originalcontactDomainNames | select-object -Unique
 
