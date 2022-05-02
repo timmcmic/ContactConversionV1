@@ -286,7 +286,7 @@ Function Start-ContactMigration
     #The following are the cloud parameters we query for to look for dependencies.
 
     [string]$office365AcceptMessagesFrom="AcceptMessagesOnlyFrom"
-    [string]$office365BypassModerationFrom="BypassModerationFromSendersOrMembers"
+    [string]$office365BypassModerationFrom="BypassModerationFrom"
     [string]$office365GrantSendOnBehalfTo="GrantSendOnBehalfTo"
     [string]$office365Members="Members"
     [string]$office365RejectMessagesFrom="RejectMessagesFrom"
