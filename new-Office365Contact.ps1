@@ -68,7 +68,7 @@
         {
             out-logfile -string "Creating the distribution contact in Office 365."
 
-            $functioncontact = new-o365mailcontact -externalEmailAddress $originalDLConfiguration.mail -name $functionName -errorAction STOP 
+            $functioncontact = new-o365mailcontact -externalEmailAddress $originalContactConfiguration.mail -name $functionName -errorAction STOP 
 
             out-logfile -string $functioncontact
         }
