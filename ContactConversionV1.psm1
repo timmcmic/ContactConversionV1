@@ -2573,7 +2573,7 @@ Function Start-ContactMigration
         out-logfile -string ("The number of contacts in Office 365 cloud only that the contact has grant send on behalf to righbypassModeration rights = "+$allOffice365BypassModeration.count)
 
         try {
-            $allOffice365ManagedBy = Get-O365ContactDependency -dn $office365DLConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
+            $allOffice365ManagedBy = Get-O365ContactDependency -dn $office365ContactConfiguration.distinguishedName -attributeType $office365ManagedBy -errorAction STOP
         }
         catch {
             out-logFile -string $_ -isError:$TRUE
