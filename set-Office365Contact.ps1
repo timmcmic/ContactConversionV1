@@ -583,7 +583,7 @@
         {
             out-logfile -string "Setting internet encoding information."
 
-            set-o365MailContact -Identity $functionExternalDirectoryObjectID -macFormat $functionMacFormat -messageFormat $functionMessageFormat -messageBodyFormat $functionMessageBodyFormat -usePreferMessageFormat $functionUsePreferMessageFormat -errorAction STOP        
+            set-o365MailContact -Identity $functionExternalDirectoryObjectID -macFormat $functionMacFormat -messageFormat $functionMessageFormat -messageBodyFormat $functionMessageBodyFormat -usePreferMessageFormat $functionUsePreferMessageFormat -UseMapiRichTextFormat $functionMapiRecipient -errorAction STOP        
         }
         catch 
         {
