@@ -3077,7 +3077,7 @@ Function Start-ContactMigration
 
     do {
         try {
-            $office365contactConfigurationPostMigration=new-office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -contacttypeoverride $contactTypeOverride -errorAction STOP
+            $office365contactConfigurationPostMigration=new-office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -errorAction STOP
 
             #If we made it this far then the contact was created.
 
@@ -3151,7 +3151,7 @@ Function Start-ContactMigration
     
     do {
         try {
-            set-Office365contactMV -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -exchangecontactMembership $exchangecontactMembershipSMTP -exchangeRejectMessage $exchangeRejectMessagesSMTP -exchangeAcceptMessage $exchangeAcceptMessagesSMTP -exchangeModeratedBy $exchangeModeratedBySMTP -exchangeManagedBy $exchangeManagedBySMTP -exchangeBypassMOderation $exchangeBypassModerationSMTP -exchangeGrantSendOnBehalfTo $exchangeGrantSendOnBehalfToSMTP -errorAction STOP -contactTypeOverride $contactTypeOverride -exchangeSendAsSMTP $exchangeSendAsSMTP -mailOnMicrosoftComDomain $mailOnMicrosoftComDomain -allowNonSyncedcontact $allowNonSyncedcontact -allOffice365SendAsAccessOncontact $allOffice365SendAsAccessOncontact 
+            set-Office365contactMV -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -exchangeRejectMessage $exchangeRejectMessagesSMTP -exchangeAcceptMessage $exchangeAcceptMessagesSMTP -exchangeModeratedBy $exchangeModeratedBySMTP -exchangeBypassMOderation $exchangeBypassModerationSMTP -exchangeGrantSendOnBehalfTo $exchangeGrantSendOnBehalfToSMTP -errorAction STOP -mailOnMicrosoftComDomain $mailOnMicrosoftComDomain -allowNonSyncedcontact $allowNonSyncedcontact  
 
             $stopLoop = $TRUE
         }
@@ -3218,7 +3218,7 @@ Function Start-ContactMigration
 
     do {
         try {
-            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -contactTypeOverride $contactTypeOverride -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration
+            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration
             $stopLoop=$TRUE
         }
         catch {
