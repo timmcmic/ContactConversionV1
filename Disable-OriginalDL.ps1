@@ -63,7 +63,6 @@
 
         Out-LogFile -string ("originalContactConfiguration = "+$originalContactConfiguration)
         Out-LogFile -string ("GlobalCatalogServer = "+$globalCatalogServer)
-        out-logfile -string ("Use Exchange On Premises ="+$useOnPremisesExchange)
         out-logfile -string ("DN of object to modify / disable "+$originalContactConfiguration.distinguishedName)
 
         OUt-LogFile -string ("Parameter Set:")
