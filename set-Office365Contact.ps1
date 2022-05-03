@@ -25,7 +25,7 @@
 
     #>
     Function set-Office365contact
-     {
+    {
         [cmdletbinding()]
 
         Param
@@ -38,7 +38,7 @@
             $office365contactConfigurationPostMigration,
             [Parameter(Mandatory = $TRUE)]
             $globalCatalogWithPort,
-            [Parameter](Mandatory = $TRUE)
+            [Parameter(Mandatory = $TRUE)]
             $adCredential
         )
 
@@ -97,11 +97,11 @@
                     ErrorMessage = "Unable to normalize the manager attribute."
                     ErrorMessageDetail = $_
                 }
-    
+            }    
             out-logfile -string $isErrorObject
     
             $functionErrors+=$isErrorObject
-            }
+        }
         else 
         {
             $functionNormalizedManager=$normalizedTest
