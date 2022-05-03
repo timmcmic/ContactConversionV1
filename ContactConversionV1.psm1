@@ -3230,7 +3230,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                set-newContactName -globalCatalogServer $globalCatalogServer -Name $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
+                set-newContactName -globalCatalogServer $globalCatalogServer -ContactName $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop=$TRUE
             }

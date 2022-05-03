@@ -77,7 +77,7 @@
         
         try 
         {
-            set-adcObject -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
+            set-adObject -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
 
         }
         catch 
