@@ -53,9 +53,6 @@
         #Declare function variables.
 
         $functioncontactConfiguration=$NULL #Holds the return information for the contact query.
-        [string]$functionCustomAttribute1="MigratedByScript"
-        [string]$functionCustomAttribute2=$originalContactConfiguration.mail
-
 
 
         #Start function processing.
@@ -78,30 +75,16 @@
             Out-Logfile -string $parameterIncluded
         }
 
-        out-logfile -string ("Disalbed contact Custom Attribute 1 = "+$functionCustomAttribute1)
-        out-logfile -string ("Disabled contact Custom Attribute 2 = "+$functionCustomAttribute2)
-
         #Get the contact using LDAP / AD providers.
         
         try 
         {
-            set-adcontact -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
+            set-adcObject -identity $originalContactConfiguration.distinguishedName -server $globalCatalogServer -clear $parameterSet -credential $adCredential
 
         }
         catch 
         {
             Out-LogFile -string $_ -isError:$TRUE
-        }
-
-        #Now that the contact is disabled - use this oppurtunity to write the custom attributes to show it's been migrated.
-
-        out-logfile -string "The contact has been migrated and is retained - set custom attributes with original information for other migration dependencies."
-        
-        try {
-            set-adcontact -identity $originalContactConfiguration.distinguishedName -add @{extensionAttribute1=$functionCustomAttribute1;extensionAttribute2=$functionCustomAttribute2} -server $globalCatalogServer -credential $adCredential
-        }
-        catch {
-            out-logfile -string $_ -isError:$TRUE
         }
 
         Out-LogFile -string "END Disable-originalContactConfiguration"

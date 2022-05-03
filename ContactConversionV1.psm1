@@ -3032,9 +3032,6 @@ Function Start-ContactMigration
     } while ($stopLoop -eq $FALSE)
 
     
-
-    
-
     #The distribution list has now been created.  There are single value attributes that we're now ready to update.
 
     $stopLoop = $FALSE
@@ -3108,15 +3105,15 @@ Function Start-ContactMigration
 
     if ($retainOriginalContact -eq $TRUE)
     {
-        Out-LogFile -string "Administrator has choosen to retain the original contact."
-        out-logfile -string "Rename the contact by adding the fixed character !"
+        Out-LogFile -string "Administrator has choosen to retain the original group."
+        out-logfile -string "Rename the group by adding the fixed character !"
 
         [int]$loopCounter=0
         [boolean]$stopLoop=$FALSE   
 
         do {
             try {
-                set-newcontactName -globalCatalogServer $globalCatalogServer -contactName $originalContactConfigurationUpdated.Name -contactSAMAccountName $originalContactConfigurationUpdated.SAMAccountName -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
+                set-newContactName -globalCatalogServer $globalCatalogServer -dlName $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop=$TRUE
             }
@@ -3127,7 +3124,7 @@ Function Start-ContactMigration
                 }
                 else 
                 {
-                    start-sleepProgress -sleepString "Uanble to change contact name - try again." -sleepSeconds 5
+                    start-sleepProgress -sleepString "Uanble to change DL name - try again." -sleepSeconds 5
                     $loopCounter = $loopCounter+1    
                 }
             }
@@ -3138,7 +3135,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop=$TRUE
             }
@@ -3149,7 +3146,7 @@ Function Start-ContactMigration
                 }
                 else 
                 {
-                    start-sleepProgress -sleepString "Unable to obtain updated original contact Configuration - try again." -sleepSeconds 5
+                    start-sleepProgress -sleepString "Unable to obtain updated original DL Configuration - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter+1
                 }
@@ -3159,15 +3156,15 @@ Function Start-ContactMigration
         out-logfile -string $originalContactConfigurationUpdated
         out-xmlFile -itemToExport $originalContactConfigurationUpdated -itemNameTOExport $originalContactConfigurationUpdatedXML+$global:unDoStatus
 
-        Out-LogFile -string "Administrator has choosen to regain the original contact."
-        out-logfile -string "Disabling the mail attributes on the contact."
+        Out-LogFile -string "Administrator has choosen to regain the original group."
+        out-logfile -string "Disabling the mail attributes on the group."
 
         [int]$loopCounter=0
         [boolean]$stopLoop=$FALSE
         
         do {
             try{
-                Disable-Originalcontact -originalContactConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $contactPropertySetToClear -adCredential $activeDirectoryCredential -useOnPremisesExchange $useOnPremisesExchange -errorAction STOP
+                Disable-OriginalDL -originalDLConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $dlPropertySetToClear -adCredential $activeDirectoryCredential -useOnPremisesExchange $useOnPremisesExchange -errorAction STOP
 
                 $stopLoop = $TRUE
             }
@@ -3178,7 +3175,7 @@ Function Start-ContactMigration
                 }
                 else 
                 {
-                    start-sleepProgress -sleepString "Unable to disable distribution contact - try again." -sleepSeconds 5
+                    start-sleepProgress -sleepString "Unable to disable distribution group - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter + 1
                 }
@@ -3194,7 +3191,7 @@ Function Start-ContactMigration
         
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $originalContactConfigurationUpdated.distinguishedName -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $originalContactConfigurationUpdated.distinguishedName -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop = $TRUE
             }
@@ -3204,7 +3201,7 @@ Function Start-ContactMigration
                     out-logFile -string $_ -isError:$TRUE
                 }
                 else {
-                    start-sleeProgress -sleepString "Attempt to gather updated contact configuration failed - try again." -sleepSeconds 5
+                    start-sleeProgress -sleepString "Attempt to gather updated DL configuration failed - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter + 1
                 } 
@@ -3215,19 +3212,19 @@ Function Start-ContactMigration
         out-logfile -string $originalContactConfigurationUpdated
         out-xmlFile -itemToExport $originalContactConfigurationUpdated -itemNameTOExport $originalContactConfigurationUpdatedXML+$global:unDoStatus
 
-        Out-LogFile -string "Move the original contact back to the OU it came from.  The contact will no longer be soft matched."
+        Out-LogFile -string "Move the original group back to the OU it came from.  The group will no longer be soft matched."
 
         [int]$loopCounter=0
         [boolean]$stopLoop=$FALSE
 
         do {
             try {
-                #Discovered that it's possible someone used the name "Test contact".  This breaks the following DN search as OU appears in the name - WHOOPS
+                #Discovered that it's possible someone used the name "Test Group".  This breaks the following DN search as OU appears in the name - WHOOPS
                 #So we need to try to make the substring call more unique - as to avoid detecting OU in a name.
                 #To do so - we know that the DN has ,OU= so the first substring we'll search is ,OU=. 
                 #Then we'll do it again - this time for just OU.  And that should give us what we need for the OU.
 
-                $tempOUSubstring = Get-OULocation -originalContactConfiguration $originalContactConfiguration -errorAction STOP
+                $tempOUSubstring = Get-OULocation -originalDLConfiguration $originalContactConfiguration -errorAction STOP
 
                 move-toNonSyncOU -DN $originalContactConfigurationUpdated.distinguishedName -ou $tempOUSubstring -globalCatalogServer $globalCatalogServer -adCredential $activeDirectoryCredential -errorAction STOP
 
@@ -3241,7 +3238,7 @@ Function Start-ContactMigration
                 else {
 
                     out-logfile -string $_
-                    start-sleepProgress -sleepString "Unable to move the contact to a non-sync OU - try again." -sleepSeconds 5
+                    start-sleepProgress -sleepString "Unable to move the DL to a non-sync OU - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter +1
                 }
@@ -3253,10 +3250,10 @@ Function Start-ContactMigration
 
         do {
             try {
-                $tempOU=get-OULocation -originalContactConfiguration $originalContactConfiguration
+                $tempOU=get-OULocation -originalDLConfiguration $originalContactConfiguration
                 $tempNameArray=$originalContactConfigurationUpdated.distinguishedName.split(",")
                 $tempDN=$tempNameArray[0]+","+$tempOU
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $tempDN -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $tempDN -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop = $TRUE
             }
@@ -3266,7 +3263,7 @@ Function Start-ContactMigration
                     out-logFile -string $_ -isError:$TRUE
                 }
                 else {
-                    start-sleepProgress -sleepString "Unable to obtain moved contact configuration - try again." -sleepSeconds 5
+                    start-sleepProgress -sleepString "Unable to obtain moved DL configuration - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter +1
                 }
@@ -3274,73 +3271,8 @@ Function Start-ContactMigration
         } while ($stopLoop = $FALSE)
 
         out-logfile -string $originalContactConfigurationUpdated
-        out-xmlFile -itemToExport $originalContactConfigurationUpdated -itemNameTOExport $originalContactConfigurationUpdatedXML+$global:unDoStatus
-
-        
-
-        
+        out-xmlFile -itemToExport $originalContactConfigurationUpdated -itemNameTOExport $originalContactConfigurationUpdatedXML+$global:unDoStatus        
     }
-
-    $stopLoop = $FALSE
-    [int]$loopCounter = 0
-
-    do {
-        try {
-            <#
-            $tempOU=get-OULocation -originalContactConfiguration $originalContactConfiguration
-            out-logfile -string $tempOU
-            $tempName=$originalContactConfiguration.cn
-            out-logfile -string $tempName
-            $tempName=$tempname.replace(' ','')
-            out-logfile -string $tempname
-            $tempName=$tempName+"-MigratedByScript"
-            out-logfile -string $tempName
-            $tempName="CN="+$tempName
-            out-logfile -string $tempName
-            $tempDN=$tempName+","+$tempOU
-            out-logfile -string $tempDN
-            #>
-
-            $tempMailArray = $originalContactConfiguration.mail.split("@")
-
-            foreach ($member in $tempMailArray)
-            {
-                out-logfile -string ("Temp Mail Address Member: "+$member)
-            }
-
-            $tempMailAddress = $tempMailArray[0]+"-MigratedByScript"
-
-            out-logfile -string ("Temp routing contact address: "+$tempMailAddress)
-
-            $tempMailAddress = $tempMailAddress+"@"+$tempMailArray[1]
-
-            out-logfile -string ("Temp routing contact address: "+$tempMailAddress)
-
-            $routingContactConfiguration = Get-ADObjectConfiguration -contactSMTPAddress $tempMailAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
-
-            $stopLoop=$TRUE
-        }
-        catch 
-        {
-            if ($loopCounter -gt 5)
-            {
-                out-logfile -string "Unable to obtain routing contact information post creation."
-                out-logfile -string $_ -isError:$TRUE
-            }
-            else 
-            {
-                start-sleepProgress -sleepString "Unable to obtain routing contact after creation - sleep try again." -sleepSeconds 10
-                $loopCounter = $loopCounter + 1                
-            }
-        }
-    } while ($stopLoop -eq $FALSE)
-
-    out-logfile -string $routingContactConfiguration
-    out-xmlFile -itemToExport $routingContactConfiguration -itemNameTOExport $routingContactXML
-
-    
-
-    
 
     #At this time the contact is created - issuing a replication of domain controllers and sleeping one minute.
     #We've gotta get the contact pushed out so that cross domain operations function - otherwise reconciling memership fails becuase the contacts not available.
@@ -3377,7 +3309,7 @@ Function Start-ContactMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -3395,7 +3327,7 @@ Function Start-ContactMigration
                     alias = $member.Alias
                     displayName = $member.displayName
                     attribute = "Distribution List AcceptMessagesOnlyFromSendersOrMembers"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution contact.  Manual add required."
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
                     erroMessageDetail = $isTestErrorDetail
                 }
 
@@ -3407,8 +3339,180 @@ Function Start-ContactMigration
     }
     else 
     {
-        out-LogFile -string "There were no Office 365 contacts with accept permissions."    
+        out-LogFile -string "There were no Office 365 groups with accept permissions."    
     }
+
+    
+
+    
+
+    out-logfile -string "Processing Office 365 Reject Messages From"
+
+    if ($allOffice365Reject.count -gt 0)
+    {
+        foreach ($member in $allOffice365Reject)
+        {
+            $isTestError="No" #Reset error tracking.
+
+            if ($forLoopCounter -eq $forLoopTrigger)
+            {
+                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
+                $forLoopCounter = 0
+            }
+            else 
+            {
+                $forLoopCounter++    
+            }
+
+            try{
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            }
+            catch{
+                out-logfile -string $_
+                $isTestErrorDetail = $_
+                $isTestError="Yes"
+            }
+
+            if ($isTestError -eq "Yes")
+            {
+                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
+
+                $isErrorObject = new-Object psObject -property @{
+                    distinguishedName = $member.distinguishedName
+                    primarySMTPAddress = $member.primarySMTPAddress
+                    alias = $member.Alias
+                    displayName = $member.displayName
+                    attribute = "Distribution List RejectMessagesFromSendersOrMembers"
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
+                    erroMessageDetail = $isTestErrorDetail
+                }
+
+                out-logfile -string $isErrorObject
+
+                $office365ReplaceErrors+=$isErrorObject
+            }
+        }
+    }
+    else 
+    {
+        out-LogFile -string "There were no Office 365 groups with reject permissions."    
+    }
+
+    
+
+    
+
+    out-logfile -string "Processing Office 365 Bypass Moderation From Users"
+
+    if ($allOffice365BypassModeration.count -gt 0)
+    {
+        foreach ($member in $allOffice365BypassModeration)
+        {
+            $isTestError="No" #Reset error tracking.
+
+            if ($forLoopCounter -eq $forLoopTrigger)
+            {
+                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
+                $forLoopCounter = 0
+            }
+            else 
+            {
+                $forLoopCounter++    
+            }
+
+            try{
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            }
+            catch{
+                out-logfile -string $_
+                $isTestErrorDetail = $_
+                $isTestError="Yes"
+            }
+
+            if ($isTestError -eq "Yes")
+            {
+                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
+
+                $isErrorObject = new-Object psObject -property @{
+                    distinguishedName = $member.distinguishedName
+                    primarySMTPAddress = $member.primarySMTPAddress
+                    alias = $member.Alias
+                    displayName = $member.displayName
+                    attribute = "Distribution List BypassModerationFromSendersOrMembers"
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
+                    erroMessageDetail = $isTestErrorDetail
+                }
+
+                out-logfile -string $isErrorObject
+
+                $office365ReplaceErrors+=$isErrorObject
+            }
+        }
+    }
+    else 
+    {
+        out-LogFile -string "There were no Office 365 groups with bypass moderation permissions."    
+    }
+
+    
+
+    
+
+    out-logfile -string "Processing Office 365 Grant Send On Behalf To Users"
+
+    if ($allOffice365GrantSendOnBehalfTo.count -gt 0)
+    {
+        foreach ($member in $allOffice365GrantSendOnBehalfTo)
+        {
+            $isTestError="No" #Reset error tracking.
+
+            if ($forLoopCounter -eq $forLoopTrigger)
+            {
+                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
+                $forLoopCounter = 0
+            }
+            else 
+            {
+                $forLoopCounter++    
+            }
+
+            try{
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+            }
+            catch{
+                out-logfile -string $_
+                $isTestErrorDetail = $_
+                $isTestError="Yes"
+            }
+
+            if ($isTestError -eq "Yes")
+            {
+                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
+
+                $isErrorObject = new-Object psObject -property @{
+                    distinguishedName = $member.distinguishedName
+                    primarySMTPAddress = $member.primarySMTPAddress
+                    alias = $member.Alias
+                    displayName = $member.displayName
+                    attribute = "Distribution List GrantSendOnBehalfTo"
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
+                    erroMessageDetail = $isTestErrorDetail
+                }
+
+                out-logfile -string $isErrorObject
+
+                $office365ReplaceErrors+=$isErrorObject
+            }
+        }
+    }
+    else 
+    {
+        out-LogFile -string "There were no Office 365 groups with grant send on behalf to permissions."    
+    }
+
+    
+
+    
 
     out-logfile -string "Processing Office 365 Managed By"
 
@@ -3462,177 +3566,11 @@ Function Start-ContactMigration
         out-LogFile -string "There were no Office 365 managed by permissions."    
     }
 
-    
-
-    
-
-    out-logfile -string "Processing Office 365 Reject Messages From"
-
-    if ($allOffice365Reject.count -gt 0)
-    {
-        foreach ($member in $allOffice365Reject)
-        {
-            $isTestError="No" #Reset error tracking.
-
-            if ($forLoopCounter -eq $forLoopTrigger)
-            {
-                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
-                $forLoopCounter = 0
-            }
-            else 
-            {
-                $forLoopCounter++    
-            }
-
-            try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
-            }
-            catch{
-                out-logfile -string $_
-                $isTestErrorDetail = $_
-                $isTestError="Yes"
-            }
-
-            if ($isTestError -eq "Yes")
-            {
-                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
-
-                $isErrorObject = new-Object psObject -property @{
-                    distinguishedName = $member.distinguishedName
-                    primarySMTPAddress = $member.primarySMTPAddress
-                    alias = $member.Alias
-                    displayName = $member.displayName
-                    attribute = "Distribution List RejectMessagesFromSendersOrMembers"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution contact.  Manual add required."
-                    erroMessageDetail = $isTestErrorDetail
-                }
-
-                out-logfile -string $isErrorObject
-
-                $office365ReplaceErrors+=$isErrorObject
-            }
-        }
-    }
-    else 
-    {
-        out-LogFile -string "There were no Office 365 contacts with reject permissions."    
-    }
-
-    
-
-    
-
-    out-logfile -string "Processing Office 365 Bypass Moderation From Users"
-
-    if ($allOffice365BypassModeration.count -gt 0)
-    {
-        foreach ($member in $allOffice365BypassModeration)
-        {
-            $isTestError="No" #Reset error tracking.
-
-            if ($forLoopCounter -eq $forLoopTrigger)
-            {
-                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
-                $forLoopCounter = 0
-            }
-            else 
-            {
-                $forLoopCounter++    
-            }
-
-            try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
-            }
-            catch{
-                out-logfile -string $_
-                $isTestErrorDetail = $_
-                $isTestError="Yes"
-            }
-
-            if ($isTestError -eq "Yes")
-            {
-                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
-
-                $isErrorObject = new-Object psObject -property @{
-                    distinguishedName = $member.distinguishedName
-                    primarySMTPAddress = $member.primarySMTPAddress
-                    alias = $member.Alias
-                    displayName = $member.displayName
-                    attribute = "Distribution List BypassModerationFromSendersOrMembers"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution contact.  Manual add required."
-                    erroMessageDetail = $isTestErrorDetail
-                }
-
-                out-logfile -string $isErrorObject
-
-                $office365ReplaceErrors+=$isErrorObject
-            }
-        }
-    }
-    else 
-    {
-        out-LogFile -string "There were no Office 365 contacts with bypass moderation permissions."    
-    }
-
-    out-logfile -string "Processing Office 365 Unified Reject From"
-
-    if ($allOffice365UniversalReject.count -gt 0)
-    {
-        foreach ($member in $allOffice365UniversalReject)
-        {
-            $isTestError="No" #Reset error tracking.
-
-            if ($forLoopCounter -eq $forLoopTrigger)
-            {
-                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
-                $forLoopCounter = 0
-            }
-            else 
-            {
-                $forLoopCounter++    
-            }
-
-            try{
-                $isTestError=start-ReplaceOffice365Unified -office365Attribute $office365UnifiedReject -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
-            }
-            catch{
-                out-logfile -string $_
-                $isTestErrorDetail = $_
-                $isTestError="Yes"
-            }
-
-            if ($isTestError -eq "Yes")
-            {
-                out-logfile -string "Error adding routing contact to Office 365 Universal Modern contact resource."
-
-                $isErrorObject = new-Object psObject -property @{
-                    distinguishedName = $member.distinguishedName
-                    primarySMTPAddress = $member.primarySMTPAddress
-                    alias = $member.Alias
-                    displayName = $member.displayName
-                    attribute = "Distribution List RejectMessagesFromSendersOrMembers"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution contact.  Manual add required."
-                    erroMessageDetail = $isTestErrorDetail
-                }
-
-                out-logfile -string $isErrorObject
-
-                $office365ReplaceErrors+=$isErrorObject
-            }
-        }
-    }
-    else 
-    {
-        out-LogFile -string "There were no Office 365 reject from permissions."    
-    }
-
-    #Process any contact memberships to the service.
-
-    out-logfile -string ("Adding migrated contact to any cloud only contacts.")
+    out-logfile -string ("Adding migrated group to any cloud only groups.")
 
     if ($allOffice365MemberOf.count -gt 0)
     {
-        out-logfile -string "Adding cloud only contact member."
+        out-logfile -string "Adding cloud only group member."
 
         foreach ($member in $allOffice365MemberOf )
         {
@@ -3647,9 +3585,9 @@ Function Start-ContactMigration
                 $forLoopCounter++    
             }
 
-            out-logfile -string ("Processing contact = "+$member.primarySMTPAddress)
+            out-logfile -string ("Processing group = "+$member.primarySMTPAddress)
             try {
-                $isTestError=start-replaceOffice365Members -office365contact $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
+                $isTestError=start-replaceOffice365Members -office365Group $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
             }
             catch {
                 out-logfile -string $_
@@ -3667,7 +3605,7 @@ Function Start-ContactMigration
                     alias = $member.Alias
                     displayName = $member.displayName
                     attribute = "Distribution List Membership"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution contact.  Manual add required."
+                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
                     erroMessageDetail = $isTestErrorDetail
                 }
 
@@ -3679,18 +3617,18 @@ Function Start-ContactMigration
     }
     else 
     {
-        out-logfile -string "No cloud only contacts had the migrated contact as a member."
-    }   
-    
-    #If the administrator has selected to not retain the contact - remove it.
+        out-logfile -string "No cloud only groups had the migrated group as a member."
+    }       
+
+    #If the administrator has selected to not retain the group - remove it.
 
     if ($retainOriginalContact -eq $FALSE)
     {
         $isTestError="No"
 
-        out-logfile -string "Deleting the original contact."
+        out-logfile -string "Deleting the original group."
 
-        $isTestError=remove-OnPremcontact -globalCatalogServer $globalCatalogServer -originalContactConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
+        $isTestError=remove-OnPremGroup -globalCatalogServer $globalCatalogServer -originalDLConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
     }
     else
     {
@@ -3701,7 +3639,7 @@ Function Start-ContactMigration
     if ($isTestError -eq "Yes")
     {
         $isErrorObject = new-Object psObject -property @{
-            errorMessage = "Uanble to remove the on premises contact at request of administrator.  contact may need to be manually removed."
+            errorMessage = "Uanble to remove the on premises group at request of administrator.  Group may need to be manually removed."
             erroMessageDetail = $isTestErrorDetail
         }
 

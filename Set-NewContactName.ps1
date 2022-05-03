@@ -43,8 +43,6 @@
             [Parameter(Mandatory = $true)]
             $contactName,
             [Parameter(Mandatory = $true)]
-            $contactSAMAccountName,
-            [Parameter(Mandatory = $true)]
             $DN,
             [Parameter(Mandatory = $true)]
             $adCredential
@@ -77,17 +75,6 @@
         out-logfile -string ("New contact sam account name = "+$functioncontactSAMAccountName)
         
         #Get the specific user using ad providers.
-        
-        try 
-        {
-            Out-LogFile -string "Set the AD contact name."
-
-            set-adcontact -identity $dn -samAccountName $functioncontactSAMAccountName -server $globalCatalogServer -Credential $adCredential
-        }
-        catch 
-        {
-            Out-LogFile -string $_ -isError:$TRUE
-        }
 
         try
         {
