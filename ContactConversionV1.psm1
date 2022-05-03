@@ -3253,7 +3253,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop=$TRUE
             }
