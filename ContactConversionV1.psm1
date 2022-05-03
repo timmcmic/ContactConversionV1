@@ -3113,7 +3113,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                set-newContactName -globalCatalogServer $globalCatalogServer -contactName $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
+                set-newContactName -globalCatalogServer $globalCatalogServer -Name $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop=$TRUE
             }
@@ -3136,7 +3136,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop=$TRUE
             }
@@ -3150,8 +3150,6 @@ Function Start-ContactMigration
                     start-sleepProgress -sleepString "Unable to obtain updated original DL Configuration - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter+1
-
-                    out-logfile -string $_
                 }
             }
         } while ($stopLoop -eq $FALSE)
@@ -3167,7 +3165,7 @@ Function Start-ContactMigration
         
         do {
             try{
-                Disable-originalContact -originalContactConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $dlPropertySetToClear -adCredential $activeDirectoryCredential -errorAction STOP
+                Disable-OriginalDL -originalDLConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $contactPropertySetToClear -adCredential $activeDirectoryCredential -useOnPremisesExchange $useOnPremisesExchange -errorAction STOP
 
                 $stopLoop = $TRUE
             }
@@ -3194,7 +3192,7 @@ Function Start-ContactMigration
         
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $originalContactConfigurationUpdated.distinguishedName -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $originalContactConfigurationUpdated.distinguishedName -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop = $TRUE
             }
@@ -3227,7 +3225,7 @@ Function Start-ContactMigration
                 #To do so - we know that the DN has ,OU= so the first substring we'll search is ,OU=. 
                 #Then we'll do it again - this time for just OU.  And that should give us what we need for the OU.
 
-                $tempOUSubstring = Get-OULocation -originalContactConfiguration $originalContactConfiguration -errorAction STOP
+                $tempOUSubstring = Get-OULocation -originalDLConfiguration $originalContactConfiguration -errorAction STOP
 
                 move-toNonSyncOU -DN $originalContactConfigurationUpdated.distinguishedName -ou $tempOUSubstring -globalCatalogServer $globalCatalogServer -adCredential $activeDirectoryCredential -errorAction STOP
 
@@ -3253,10 +3251,10 @@ Function Start-ContactMigration
 
         do {
             try {
-                $tempOU=get-OULocation -originalContactConfiguration $originalContactConfiguration
+                $tempOU=get-OULocation -originalDLConfiguration $originalContactConfiguration
                 $tempNameArray=$originalContactConfigurationUpdated.distinguishedName.split(",")
                 $tempDN=$tempNameArray[0]+","+$tempOU
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $tempDN -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -dn $tempDN -globalCatalogServer $globalCatalogWithPort -parameterSet $contactPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop = $TRUE
             }
@@ -3581,7 +3579,7 @@ Function Start-ContactMigration
 
         out-logfile -string "Deleting the original group."
 
-        $isTestError=remove-onPremContact -globalCatalogServer $globalCatalogServer -originalContactConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
+        $isTestError=remove-onPremContact -globalCatalogServer $globalCatalogServer -originalDLConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
     }
     else
     {
