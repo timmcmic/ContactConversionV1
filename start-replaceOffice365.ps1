@@ -83,21 +83,21 @@
         {
             out-logfile -string "Recipient is a unified contact."
 
-            $functionCommand="set-o365Unifiedcontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
+            $functionCommand="set-o365UnifiedGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif (($office365Member.recipientType -eq $functionDistributioncontactRecipientType) -or ($office365Member.recipientType -eq $functionSecuritycontactRecipientType))
         {
             out-logfile -string "Recipient is a mail enabled distribution contact or mail enabled security contact."
 
-            $functionCommand="set-o365Distributioncontact -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP "
+            $functionCommand="set-o365DistributionGroup -identity $office365Member -$office365Attribute @{add='$contactSMTPAddress'} -errorAction STOP "
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365Member.recipientType -eq $functionDynamicDistributioncontactRecipientType)
         {
             out-logfile -string "Recipient is a dynamic distribution contact."
 
-            $functionCommand="set-o365DynamicDistributioncontact -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
+            $functionCommand="set-o365DynamicDistributionGroup -identity $office365Member -$office365Attribute '$contactSMTPAddress' -errorAction STOP"
             out-logfile -string ("The command to execute:  "+$functionCommand)
         }
         elseif ($office365member.recipientType -eq $functionMailboxRecipientType)

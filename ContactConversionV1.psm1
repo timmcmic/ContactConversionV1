@@ -3427,7 +3427,7 @@ Function Start-ContactMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedAccept -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -3483,7 +3483,7 @@ Function Start-ContactMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365UnifiedReject -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -3539,7 +3539,7 @@ Function Start-ContactMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365BypassModerationusers -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -3601,7 +3601,7 @@ Function Start-ContactMigration
             }
 
             try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365ManagedBy -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-ReplaceOffice365 -office365Attribute $office365ManagedBy -office365Member $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch{
                 out-logfile -string $_
@@ -3655,7 +3655,7 @@ Function Start-ContactMigration
 
             out-logfile -string ("Processing group = "+$member.primarySMTPAddress)
             try {
-                $isTestError=start-replaceOffice365Members -office365Group $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
+                $isTestError=start-replaceOffice365Members -office365Contact $member -contactSMTPAddress $contactSMTPAddress -errorAction STOP
             }
             catch {
                 out-logfile -string $_
