@@ -35,7 +35,11 @@
             [Parameter(Mandatory = $true)]
             $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
-            $office365contactConfigurationPostMigration
+            $office365contactConfigurationPostMigration,
+            [Parameter(Mandatory = $TRUE)]
+            $globalCatalogWithPort,
+            [Parameter](Mandatory = $TRUE)
+            $adCredential
         )
 
         #Declare function variables.
@@ -44,6 +48,8 @@
         $functionModerationEnabled=$NULL
         $functionHiddenFromAddressList=$NULL
         $functionRequireAuthToSendTo=$NULL
+
+        $functionNormalizedManager = $null
 
         $functionMacFormat = ""
         $functionMessageFormat = ""
@@ -71,6 +77,64 @@
 
         Out-LogFile -string ("originalContactConfiguration = ")
         out-logfile -string $originalContactConfiguration
+
+        out-logfile -string "Normalize the manager."
+
+        if ($originalContactConfiguration.manager -ne $NULL)
+        {
+            $isTestError="No"
+    
+            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.distringuishedName -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$TRUE -errorAction STOP -cn "None"
+    
+            if ($normalizedTest.isError -eq $TRUE)
+            {
+                $isErrorObject = new-Object psObject -property @{
+                    PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                    ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                    Alias = $NULL
+                    Name = $originalContactConfiguration.name
+                    Attribute = "Manager"
+                    ErrorMessage = "Unable to normalize the manager attribute."
+                    ErrorMessageDetail = $_
+                }
+    
+            out-logfile -string $isErrorObject
+    
+            $functionErrors+=$isErrorObject
+            }
+        else 
+        {
+            $functionNormalizedManager=$normalizedTest
+        }
+
+        if ($functionNormalizedManager -ne $NULL)
+        {
+            try{
+                $isTestError=test-O365Recipient -member $functionNormalizedManager
+    
+                if ($isTestError -eq "Yes")
+                {
+                    $isErrorObject = new-Object psObject -property @{
+                        PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                        ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                        Alias = $NULL
+                        Name = $originalContactConfiguration.name
+                        Attribute = "Manager"
+                        ErrorMessage = "Unable to locate the manager in Office 365."
+                        ErrorMessageDetail = $_
+                    }
+    
+                    out-logfile -string $isErrorObject
+
+                    $functionNormalizedManager = $NULL #Intentionally setting this for manager check later.
+    
+                    $functionErrors+=$isErrorObject
+                }
+            }
+            catch{
+                out-logfile -string $_ -isError:$TRUE
+            }
+        }
 
         #There are several flags of a contact that are either calculated hashes <or> booleans not set by default.
         #The exchange commancontactets abstract this by performing a conversion or filling the values in.
@@ -601,6 +665,60 @@
             }
 
             $functionErrors+=$isErrorObject
+        }
+
+        try 
+        {
+            out-logfile -string "Settings settings that can only be set with set-contact."
+
+            set-o365Contact -Identity $functionExternalDirectoryObjectID -postalCode $originalContactConfiguration.postalCode -phone $originalContactConfiguration.telephoneNumber -office $originalContactConfiguration.physicalDeliveryOfficeName -countryOrRegion $originalContactConfiguration.country -otherTelephone $originalContactConfiguration.otherTelephone -pager $originalContactConfiguration.pager -fax $originalContactConfiguration.facsimileTelephoneNumber -postOfficeBox $originalContactConfiguration.postOfficeBox -company $originalContactConfiguration.company -city $originalContactConfiguration.L -title $originalContactConfiguration.title -MobilePhone $originalContactConfiguration.mobile -stateOrProvince $originalContactConfiguration.st -initials $originalContactConfiguration.initials -webPage $originalcontactDN.wwwHomePage -lastName $originalContactConfiguration.surName -HomePhone $originalContactConfiguration.homePhone -otherFax $originalContactConfiguration.otherFacsimileTelephoneNumber -department $originalContactConfiguration.department -otherHomePhone $originalContactConfiguration.otherHomePhone -FirstName $originalContactConfiguration.givenName -streetAddress $originalContactConfiguration.streetAddress  
+        }
+        catch 
+        {
+            out-logfile "Error setting internet encoding settings....."
+
+            out-logfile -string $_
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                Alias = $functionMailNickName
+                Name = $originalContactConfiguration.name
+                Attribute = "Settings included in set-contact (not set-mailContact)"
+                ErrorMessage = "Error setting additonal properties of the contact."
+                ErrorMessageDetail = $_
+            }
+
+            $functionErrors+=$isErrorObject
+        }
+
+        if ($functionNormalizedManager -ne $NULL)
+        {
+            try 
+            {
+                out-logfile -string "Setting the manager on the mail contact.."
+
+                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.externalDirectoryObjectID
+            }
+            catch 
+            {
+                out-logfile "Error setting manager......"
+
+                out-logfile -string $_
+
+                $isErrorObject = new-Object psObject -property @{
+                    PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                    ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                    Alias = $functionMailNickName
+                    Name = $originalContactConfiguration.name
+                    Attribute = "Error setting manager."
+                    ErrorMessage = "Manager was normalized, found in office 365, but attempts to set as manager were unsucessful.  Manual add required."
+                    ErrorMessageDetail = $_
+                }
+
+                $functionErrors+=$isErrorObject
+            }
+
         }
 
         Out-LogFile -string "END SET-Office365contact"
