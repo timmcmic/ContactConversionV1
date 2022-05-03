@@ -44,8 +44,6 @@
             [string]$globalCatalogServer,
             [Parameter(Mandatory = $false)]
             [array]$parameterSet="None",
-            [Parameter(Mandatory = $false)]
-            [boolean]$useOnPremisesExchange=$FALSE,
             [Parameter(Mandatory = $true)]
             $adCredential
         )

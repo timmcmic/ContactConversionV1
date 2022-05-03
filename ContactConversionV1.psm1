@@ -3136,7 +3136,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -groupSMTPAddress $groupSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
+                $originalContactConfigurationUpdated = Get-ADObjectConfiguration -contactSMTPAddress $contactSMTPAddress -globalCatalogServer $globalCatalogWithPort -parameterSet $dlPropertySet -errorAction STOP -adCredential $activeDirectoryCredential 
 
                 $stopLoop=$TRUE
             }
@@ -3165,7 +3165,7 @@ Function Start-ContactMigration
         
         do {
             try{
-                Disable-OriginalDL -originalDLConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $dlPropertySetToClear -adCredential $activeDirectoryCredential -useOnPremisesExchange $useOnPremisesExchange -errorAction STOP
+                Disable-OriginalDL -originalContactConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $dlPropertySetToClear -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop = $TRUE
             }
