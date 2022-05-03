@@ -54,12 +54,12 @@
 
         $functionCommand=$NULL
         $functionMailboxRecipientType = "UserMailbox"
-        $functionDistributioncontactRecipientType = "MailUniversalDistributioncontact"
-        $functionSecuritycontactRecipientType = "MailUniversalSecuritycontact"
+        $functionDistributioncontactRecipientType = "MailUniversalDistributionGroup"
+        $functionSecuritycontactRecipientType = "MailUniversalSecurityGroup"
         $functionMailUserRecipientType = "MailUser"
         $functionMailContactRecipientType = "MailContact"
-        $functionUniveralRecipientDisplayType = "contactMailbox"
-        $functionDynamicDistributioncontactRecipientType = "DynamicDistributioncontact"
+        $functionUniveralRecipientDisplayType = "GroupMailbox"
+        $functionDynamicDistributioncontactRecipientType = "DynamicDistributionGroup"
 
         $functionForwarding = "ForwardingAddress"
 
