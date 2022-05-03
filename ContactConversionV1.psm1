@@ -2082,31 +2082,6 @@ Function Start-ContactMigration
     #It is possible that this contact was a member of - or other contacts have a dependency on this contact.
     #We will implement a function to track those dependen$ocies.
 
-    #At this time we have validated the on premises pre-requisits for contact migration.
-    #If anything is not in order - this code will provide the summary list to the customer and then trigger end.
-
-    if ($preCreateErrors.count -gt 0)
-    {
-        out-logfile -string "+++++"
-        out-logfile -string "Pre-requist checks failed.  Please refer to the following list of items that require addressing for migration to proceed."
-        out-logfile -string "+++++"
-        out-logfile -string ""
-
-        foreach ($preReq in $preCreateErrors)
-        {
-            out-logfile -string "====="
-            out-logfile -string ("Primary Email Address or UPN: " +$preReq.primarySMTPAddressOrUPN)
-            out-logfile -string ("External Directory Object ID: " +$preReq.externalDirectoryObjectID)
-            out-logfile -string ("Name: "+$preReq.name)
-            out-logfile -string ("Alias: "+$preReq.Alias)
-            out-logfile -string ("Attribute in Error: "+$preReq.attribute)
-            out-logfile -string ("Error Message Details: "+$preReq.errorMessage)
-            out-logfile -string "====="
-        }
-
-        out-logfile -string "Pre-requist checks failed.  Please refer to the previous list of items that require addressing for migration to proceed." -isError:$TRUE
-    }
-
     #Exit #Debug Exit
 
     Out-LogFile -string "********************************************************************************"
@@ -2131,6 +2106,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "MemberOf"
+                ErrorMessage = "The contact to be migrated is a member of an on premises group.  The contact must be removed <or> is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2160,6 +2149,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "AlternateRecipient / ForwardingAddress"
+                ErrorMessage = "The contact to be migrated is set as a forwarding address on a mailbox.  The contact must be removed from the mailbox <or> is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2175,11 +2178,11 @@ Function Start-ContactMigration
 
     #Hancontacte all contacts this object has reject permissions on.
 
-    if ($originalContactConfiguration.dlMemRejectPermsBL -ne $NULL)
+    if ($originalContactConfiguration.unAuthOrigBL -ne $NULL)
     {
         out-logfile -string "Calling get-CanonicalName."
 
-        foreach ($DN in $originalContactConfiguration.dlMemRejectPermsBL)
+        foreach ($DN in $originalContactConfiguration.unAuthOrigBL)
         {
             try 
             {
@@ -2189,6 +2192,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "RejectMessagesFromSendersOrmembers"
+                ErrorMessage = "The contact to be migrated has reject permissions on the following object.  The permissions need to be removed <or> the contact is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2204,11 +2221,11 @@ Function Start-ContactMigration
 
     #Hancontacte all contacts this object has accept permissions on.
 
-    if ($originalContactConfiguration.dlMemSubmitPermsBL -ne $NULL)
+    if ($originalContactConfiguration.authOrigBL -ne $NULL)
     {
         out-logfile -string "Calling get-CanonicalName."
 
-        foreach ($DN in $originalContactConfiguration.dlMemSubmitPermsBL)
+        foreach ($DN in $originalContactConfiguration.authOrigBL)
         {
             try 
             {
@@ -2218,6 +2235,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "AcceptMessagesFromSendersOrMembers"
+                ErrorMessage = "The contact has Accept permissions on a group or object.  The permissions must be removed <or> the contact is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2245,6 +2276,20 @@ Function Start-ContactMigration
             catch {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "ManagedBy"
+                ErrorMessage = "The contact to be migrated has managed by rights on the following object.  The rights must be removed <or> the contact is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
     else 
@@ -2264,11 +2309,11 @@ Function Start-ContactMigration
 
     #Hancontacte all contacts this object has bypass moderation permissions on.
 
-    if ($originalContactConfiguration.msExchBypassModerationFromcontactMembersBL -ne $NULL)
+    if ($originalContactConfiguration.msExchBypassModerationBL -ne $NULL)
     {
         out-logfile -string "Calling get-CanonicalName."
 
-        foreach ($DN in $originalContactConfiguration.msExchBypassModerationFromcontactMembersBL)
+        foreach ($DN in $originalContactConfiguration.msExchBypassModerationBL)
         {
             try 
             {
@@ -2279,6 +2324,20 @@ Function Start-ContactMigration
                 out-logfile -string $_ -isError:$TRUE
             }
         }
+
+        $isErrorObject = new-Object psObject -property @{
+            PrimarySMTPAddressorUPN = $NULL
+            ExternalDirectoryObjectID = $NULL
+            Alias = $NULL
+            Name = $NULL
+            Attribute = "BypassModerationFromSendersOrMembers"
+            ErrorMessage = "The contact has bypass permissions on an object.  The permissions must be removed <or> the contact is ineligable for migration."
+            errorMessageDetail = $DN
+        }
+
+        out-logfile -string $isErrorObject
+
+        $preCreateErrors+=$isErrorObject
     }
 
     if ($allcontactsBypassModeration -ne $NULL)
@@ -2307,6 +2366,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "GrantSendOnBehalfTo"
+                ErrorMessage = "The contact has grant send on behalf to rights on an object.  The rights must be removed <or> the contact is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2336,6 +2409,20 @@ Function Start-ContactMigration
             {
                 out-logfile -string $_ -isError:$TRUE
             }
+
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $NULL
+                ExternalDirectoryObjectID = $NULL
+                Alias = $NULL
+                Name = $NULL
+                Attribute = "ManagedBy"
+                ErrorMessage = "The contat has managed by rights on an object.  The rights must be removed <or> the contact is ineligable for migration."
+                errorMessageDetail = $DN
+            }
+
+            out-logfile -string $isErrorObject
+
+            $preCreateErrors+=$isErrorObject
         }
     }
 
@@ -2360,6 +2447,35 @@ Function Start-ContactMigration
     out-logfile -string ("The number of mailboxes forwarding to this contact is = "+$allUsersForwardingAddress.count)
     out-logfile -string ("The number of contacts this contact is a co-manager on = "+$allcontactsCoManagedByBL.Count)
     out-logfile -string "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/"
+
+    #Moved the pre-create errors to this section.
+    #If any of the above attributes are set - this means that there are dependencies that we cannot rebuild in Office 365.
+
+    #At this time we have validated the on premises pre-requisits for contact migration.
+    #If anything is not in order - this code will provide the summary list to the customer and then trigger end.
+
+    if ($preCreateErrors.count -gt 0)
+    {
+        out-logfile -string "+++++"
+        out-logfile -string "Pre-requist checks failed.  Please refer to the following list of items that require addressing for migration to proceed."
+        out-logfile -string "+++++"
+        out-logfile -string ""
+
+        foreach ($preReq in $preCreateErrors)
+        {
+            out-logfile -string "====="
+            out-logfile -string ("Primary Email Address or UPN: " +$preReq.primarySMTPAddressOrUPN)
+            out-logfile -string ("External Directory Object ID: " +$preReq.externalDirectoryObjectID)
+            out-logfile -string ("Name: "+$preReq.name)
+            out-logfile -string ("Alias: "+$preReq.Alias)
+            out-logfile -string ("Attribute in Error: "+$preReq.attribute)
+            out-logfile -string ("Error Message Details: "+$preReq.errorMessage)
+            out-logfile -string "====="
+        }
+
+        out-logfile -string "Pre-requist checks failed.  Please refer to the previous list of items that require addressing for migration to proceed." -isError:$TRUE
+    }
+
 
 
     Out-LogFile -string "********************************************************************************"
