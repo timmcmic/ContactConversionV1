@@ -206,7 +206,7 @@ Function Start-ContactMigration
     
     [string]$acceptMessagesFromcontactMembers="dlMemSubmitPerms" #Attribute for the allow email members.
     [string]$rejectMessagesFromcontactMembers="dlMemRejectPerms"
-    [string]$bypassModerationFromcontact="msExchBypassModerationFromcontactMembersLink"
+    [string]$bypassModerationFromcontact="msExchBypassModerationLink"
     [string]$forwardingAddressForcontact="altRecipient"
     [string]$grantSendOnBehalfTocontact="publicDelegates"
     [array]$contactPropertySet = '*'
@@ -1413,9 +1413,9 @@ Function Start-ContactMigration
 
     Out-LogFile -string "Process BYPASS contactS"
 
-    if ($originalContactConfiguration.msExchBypassModerationFromcontactMembersLink -ne $NULL)
+    if ($originalContactConfiguration.msExchBypassModerationLink -ne $NULL)
     {
-        foreach ($DN in $originalContactConfiguration.msExchBypassModerationFromcontactMembersLink)
+        foreach ($DN in $originalContactConfiguration.msExchBypassModerationLink)
         {
             if ($forLoopCounter -eq $forLoopTrigger)
             {
@@ -1439,7 +1439,7 @@ Function Start-ContactMigration
                         externalDirectoryObjectID = $NULL
                         alias=$normalizedTest.alias
                         name=$normalizedTest.name
-                        attribute = "BypassModerationFromSendersOrMembers (ADAttribute: msExchBypassModerationFromcontactMembersLink"
+                        attribute = "BypassModerationFromSendersOrMembers (ADAttribute: msExchBypassModerationLink"
                         errorMessage = $normalizedTest.isErrorMessage
                         errorMessageDetail = ""
                     }
@@ -1892,7 +1892,7 @@ Function Start-ContactMigration
                         ExternalDirectoryObjectID = $member.ExternalDirectoryObjectID
                         Alias = $member.Alias
                         Name = $member.name
-                        Attribute = "BypassModerationFromSendersorMembers (ADAttributes: msExchBypassModerationLink,msExchBypassModerationFromcontactMembersLink)"
+                        Attribute = "BypassModerationFromSendersorMembers (ADAttributes: msExchBypassModerationLink,msExchBypassModerationLink)"
                         ErrorMessage = "A member of BypassModerationFromSendersorMembers was not found in Office 365."
                         errorMessageDetail = ""
                     }
