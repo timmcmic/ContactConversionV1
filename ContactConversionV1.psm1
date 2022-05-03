@@ -3282,7 +3282,7 @@ Function Start-ContactMigration
         
         do {
             try{
-                Disable-originalContact -originalContactConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $contactPropertySetToClear -adCredential $activeDirectoryCredential -useOnPremisesExchange $useOnPremisesExchange -errorAction STOP
+                Disable-originalContact -originalContactConfiguration $originalContactConfigurationUpdated -globalCatalogServer $globalCatalogServer -parameterSet $contactPropertySetToClear -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop = $TRUE
             }
