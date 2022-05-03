@@ -3150,6 +3150,8 @@ Function Start-ContactMigration
                     start-sleepProgress -sleepString "Unable to obtain updated original DL Configuration - try again." -sleepSeconds 5
 
                     $loopCounter = $loopCounter+1
+
+                    out-logfile -string $_
                 }
             }
         } while ($stopLoop -eq $FALSE)
