@@ -3113,7 +3113,7 @@ Function Start-ContactMigration
 
         do {
             try {
-                set-newContactName -globalCatalogServer $globalCatalogServer -dlName $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
+                set-newContactName -globalCatalogServer $globalCatalogServer -contactName $originalContactConfigurationUpdated.Name -dn $originalContactConfigurationUpdated.distinguishedName -adCredential $activeDirectoryCredential -errorAction STOP
 
                 $stopLoop=$TRUE
             }
@@ -3124,6 +3124,7 @@ Function Start-ContactMigration
                 }
                 else 
                 {
+                    out-logfile -string $_ 
                     start-sleepProgress -sleepString "Uanble to change DL name - try again." -sleepSeconds 5
                     $loopCounter = $loopCounter+1    
                 }
