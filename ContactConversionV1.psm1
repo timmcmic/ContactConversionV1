@@ -2469,7 +2469,8 @@ Function Start-ContactMigration
             out-logfile -string ("Name: "+$preReq.name)
             out-logfile -string ("Alias: "+$preReq.Alias)
             out-logfile -string ("Attribute in Error: "+$preReq.attribute)
-            out-logfile -string ("Error Message Details: "+$preReq.errorMessage)
+            out-logfile -string ("Error Message: "+$preReq.errorMessage)
+            out-logfile -string ("Error Message Details: "+$preReq.errorMessageDetail)
             out-logfile -string "====="
         }
 
