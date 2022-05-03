@@ -586,32 +586,7 @@
         }
         catch 
         {
-            out-logfile "Error encountered setting custom and extension attributes of the contact...."
-
-            out-logfile -string $_
-
-            $isErrorObject = new-Object psObject -property @{
-                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                Alias = $functionMailNickName
-                Name = $originalContactConfiguration.name
-                Attribute = "Cloud contact list:  Internet encoding information / macFormat / messageFormat / MessageBodyFormat"
-                ErrorMessage = "Error setting custom or extension attributes."
-                ErrorMessageDetail = $_
-            }
-
-            $functionErrors+=$isErrorObject
-        }
-
-        try 
-        {
-            out-logfile -string "Setting internet encoding information."
-
-            set-o365MailContact -Identity $functionExternalDirectoryObjectID -macFormat $functionMacFormat -messageFormat $functionMessageFormat -messageBodyFormat $functionMessageBodyFormat -errorAction STOP        
-        }
-        catch 
-        {
-            out-logfile "Error encountered setting custom and extension attributes of the contact...."
+            out-logfile "Error setting internet encoding settings....."
 
             out-logfile -string $_
 
