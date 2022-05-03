@@ -3458,57 +3458,7 @@ Function Start-ContactMigration
 
     
 
-    out-logfile -string "Processing Office 365 Grant Send On Behalf To Users"
-
-    if ($allOffice365GrantSendOnBehalfTo.count -gt 0)
-    {
-        foreach ($member in $allOffice365GrantSendOnBehalfTo)
-        {
-            $isTestError="No" #Reset error tracking.
-
-            if ($forLoopCounter -eq $forLoopTrigger)
-            {
-                start-sleepProgress -sleepString "Throttling for 5 seconds...." -sleepSeconds 5
-                $forLoopCounter = 0
-            }
-            else 
-            {
-                $forLoopCounter++    
-            }
-
-            try{
-                $isTestError=start-ReplaceOffice365 -office365Attribute $office365GrantSendOnBehalfTo -office365Member $member -groupSMTPAddress $groupSMTPAddress -errorAction STOP
-            }
-            catch{
-                out-logfile -string $_
-                $isTestErrorDetail = $_
-                $isTestError="Yes"
-            }
-
-            if ($isTestError -eq "Yes")
-            {
-                out-logfile -string "Error adding migrated distribution list to Office 365 Resource."
-
-                $isErrorObject = new-Object psObject -property @{
-                    distinguishedName = $member.distinguishedName
-                    primarySMTPAddress = $member.primarySMTPAddress
-                    alias = $member.Alias
-                    displayName = $member.displayName
-                    attribute = "Distribution List GrantSendOnBehalfTo"
-                    errorMessage = "Unable to add the migrated distribution list to Office 365 distribution group.  Manual add required."
-                    erroMessageDetail = $isTestErrorDetail
-                }
-
-                out-logfile -string $isErrorObject
-
-                $office365ReplaceErrors+=$isErrorObject
-            }
-        }
-    }
-    else 
-    {
-        out-LogFile -string "There were no Office 365 groups with grant send on behalf to permissions."    
-    }
+    
 
     
 
@@ -3628,7 +3578,7 @@ Function Start-ContactMigration
 
         out-logfile -string "Deleting the original group."
 
-        $isTestError=remove-OnPremGroup -globalCatalogServer $globalCatalogServer -originalDLConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
+        $isTestError=remove-onPremContact -globalCatalogServer $globalCatalogServer -originalDLConfiguration $originalContactConfigurationUpdated -adCredential $activeDirectoryCredential -errorAction STOP
     }
     else
     {
