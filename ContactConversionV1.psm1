@@ -1682,7 +1682,7 @@ Function Start-ContactMigration
 
     out-logfile -string "Test manager presence in Office 365."
     
-    if ($normalizedManager -ne $null)
+    if ($normalizedManager -ne "None")
     {
         out-logfile -string "Ensuring manager is present in Office 365."
 
