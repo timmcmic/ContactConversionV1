@@ -630,38 +630,34 @@
             $functionErrors+=$isErrorObject
         }
 
-        if ($functionNormalizedManager -ne $NULL)
+        try 
         {
-            try 
-            {
-                out-logfile -string "Setting the manager on the mail contact.."
+            out-logfile -string "Setting the manager on the mail contact.."
 
-                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.primarySMTPAddressOrUPN
-            }
-            catch 
-            {
-                out-logfile "Error setting manager......"
+            set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.primarySMTPAddressOrUPN
+        }
+        catch 
+        {
+            out-logfile "Error setting manager......"
 
-                out-logfile -string $_
+            out-logfile -string $_
 
-                $isErrorObject = new-Object psObject -property @{
-                    PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                    ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                    Alias = $functionMailNickName
-                    Name = $originalContactConfiguration.name
-                    Attribute = "Error setting manager."
-                    ErrorMessage = "Manager was normalized, found in office 365, but attempts to set as manager were unsucessful.  Manual add required."
-                    ErrorMessageDetail = $_
-                }
-
-                $functionErrors+=$isErrorObject
+            $isErrorObject = new-Object psObject -property @{
+                PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                Alias = $functionMailNickName
+                Name = $originalContactConfiguration.name
+                Attribute = "Error setting manager."
+                ErrorMessage = "Manager was normalized, found in office 365, but attempts to set as manager were unsucessful.  Manual add required."
+                ErrorMessageDetail = $_
             }
 
+            $functionErrors+=$isErrorObject
         }
 
-        Out-LogFile -string "END SET-Office365contact"
-        Out-LogFile -string "********************************************************************************"
+    Out-LogFile -string "END SET-Office365contact"
+    Out-LogFile -string "********************************************************************************"
 
-        out-logfile -string ("The number of function errors is: "+$functionerrors.count )
-        $global:postCreateErrors += $functionErrors
+    out-logfile -string ("The number of function errors is: "+$functionerrors.count )
+    $global:postCreateErrors += $functionErrors
     }
