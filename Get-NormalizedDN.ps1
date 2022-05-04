@@ -39,7 +39,7 @@
             [Parameter(Mandatory = $TRUE)]
             $adCredential,
             [Parameter(Mandatory = $TRUE)]
-            [string]$originalGroupDN,
+            [string]$originalContactDN,
             [Parameter(Mandatory = $false)]
             [boolean]$isMember=$FALSE
 
@@ -64,7 +64,7 @@
         OUt-LogFile -string ("DN Set = "+$DN)
         out-logfile -string ("CN Set = "+$CN)
         out-logfile -string ("Credential user name = "+$adCredential.UserName)
-        out-logfile -string ("Original Group DN = "+$originalGroupDN)
+        out-logfile -string ("Original Group DN = "+$originalContactDN)
         
         #Get the specific user using ad providers.
 
@@ -273,7 +273,7 @@
                 out-logfile -string "The recipient is a group."
                 #It is possible that the group has permissions to itself.
 
-                if (($functionTest.distinguishedname -eq $originalGroupDN) -and ($isMember -eq $FALSE))
+                if (($functionTest.distinguishedname -eq $originalContactDN) -and ($isMember -eq $FALSE))
                 {
                     out-logFile -string "The group has permissions to itself - this is permissable - adding to array."
                     #The group has permissions to itself and this is permissiable.
