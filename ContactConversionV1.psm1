@@ -207,7 +207,7 @@ Function Start-ContactMigration
     [string]$acceptMessagesFromcontactMembers="dlMemSubmitPerms" #Attribute for the allow email members.
     [string]$rejectMessagesFromcontactMembers="dlMemRejectPerms"
     [string]$bypassModerationFromcontact="msExchBypassModerationLink"
-    [string]$bypassModerationFromDLMembers"msExchBypassModerationFromDLMembersLink"
+    [string]$bypassModerationFromDLMembers="msExchBypassModerationFromDLMembersLink"
     [string]$forwardingAddressForcontact="altRecipient"
     [string]$grantSendOnBehalfTocontact="publicDelegates"
     [array]$contactPropertySet = '*'
