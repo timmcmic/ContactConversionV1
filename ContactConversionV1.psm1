@@ -3156,7 +3156,7 @@ Function Start-ContactMigration
 
     do {
         try {
-            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -globalCatalogServerWithPort $globalCatalogWithPort -adCredential $activeDirectoryCredential
+            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -globalcatalogwithport $globalCatalogWithPort -adCredential $activeDirectoryCredential
             $stopLoop=$TRUE
         }
         catch {
