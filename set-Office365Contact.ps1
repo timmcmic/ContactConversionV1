@@ -118,41 +118,6 @@
 
         out-logfile -string $functionNormalizedManager
 
-        $isTestError="No"
-        
-        if ($functionNormalizedManager -ne $NULL)
-        {
-            try{
-                $isTestError=test-O365Recipient -member $functionNormalizedManager
-    
-                if ($isTestError -eq "Yes")
-                {
-                    $isErrorObject = new-Object psObject -property @{
-                        PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                        ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                        Alias = $NULL
-                        Name = $originalContactConfiguration.name
-                        Attribute = "Manager"
-                        ErrorMessage = "Unable to locate the manager in Office 365."
-                        ErrorMessageDetail = $_
-                    }
-    
-                    out-logfile -string $isErrorObject
-
-                    $functionNormalizedManager = $NULL #Intentionally setting this for manager check later.
-    
-                    $functionErrors+=$isErrorObject
-                }
-            }
-            catch{
-                out-logfile -string $_ -isError:$TRUE
-            }
-        }
-        else
-        {
-            out-logfile -string "No valiadtion occured - no manager present."
-        }
-
         #There are several flags of a contact that are either calculated hashes <or> booleans not set by default.
         #The exchange commancontactets abstract this by performing a conversion or filling the values in.
         #Since we use ldap to get these values now - we must reverse engineer these and / or set them.
@@ -715,7 +680,7 @@
             {
                 out-logfile -string "Setting the manager on the mail contact.."
 
-                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.externalDirectoryObjectID
+                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.primarySMTPAddressOrUPN
             }
             catch 
             {
