@@ -881,6 +881,10 @@ Function Start-ContactMigration
             out-logfile -string $_ -isError:$TRUE
         }
     }
+    else
+    {
+        $normalizedManager="None"
+    }
 
     Out-LogFile -string "Invoke get-NormalizedDN to normalize the members DN to Office 365 identifier."
 
