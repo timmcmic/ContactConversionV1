@@ -84,7 +84,7 @@
         {
             $isTestError="No"
     
-            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.distringuishedName -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$TRUE -errorAction STOP -cn "None"
+            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$TRUE -errorAction STOP -cn "None"
     
             if ($normalizedTest.isError -eq $TRUE)
             {
