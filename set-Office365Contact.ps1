@@ -82,9 +82,10 @@
 
         if ($originalContactConfiguration.manager -ne $NULL)
         {
+            out-logfile -string $originalContactConfiguration.manager
             $isTestError="No"
     
-            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$TRUE -errorAction STOP -cn "None"
+            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$False -errorAction STOP -cn "None"
     
             if ($normalizedTest.isError -eq $TRUE)
             {
@@ -97,15 +98,23 @@
                     ErrorMessage = "Unable to normalize the manager attribute."
                     ErrorMessageDetail = $_
                 }
-            }    
-            out-logfile -string $isErrorObject
+
+                out-logfile -string $isErrorObject
     
-            $functionErrors+=$isErrorObject
+                $functionErrors+=$isErrorObject
+
+                $functionNormalizedManager=$NULL
+            }
+            else 
+            {
+                $functionNormalizedManager=$normalizedTest
+            }   
         }
-        else 
+        else
         {
-            $functionNormalizedManager=$normalizedTest
+            out-logfile -string "The contact does not have a manager to normalize."
         }
+        
 
         if ($functionNormalizedManager -ne $NULL)
         {
@@ -134,6 +143,10 @@
             catch{
                 out-logfile -string $_ -isError:$TRUE
             }
+        }
+        else
+        {
+            out-logfile -string "No valiadtion occured - no manager present."
         }
 
         #There are several flags of a contact that are either calculated hashes <or> booleans not set by default.
