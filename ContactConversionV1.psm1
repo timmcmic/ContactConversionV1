@@ -343,6 +343,10 @@ Function Start-ContactMigration
     [array]$generalErrors=@()
     [string]$isTestError="No"
 
+    #Define variables specific to contact migration.
+
+    $normalizedManager=$NULL
+
 
     [int]$forLoopTrigger=1000
 
@@ -837,6 +841,45 @@ Function Start-ContactMigration
     Out-LogFile -string "********************************************************************************"
     Out-LogFile -string "BEGIN NORMALIZE DNS FOR ALL ATTRIBUTES"
     Out-LogFile -string "********************************************************************************"
+
+    out-logfile -string "Invoke get-normalizedDN to normalize the manager."
+
+    if ($originalContactConfiguration.manager -ne $NULL)
+    {
+        $isTestError="No"
+
+        try 
+        {
+            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$FALSE -errorAction STOP -cn "None"
+
+            if ($normalizedTest.isError -eq $TRUE)
+            {
+                $isErrorObject = new-Object psObject -property @{
+                    primarySMTPAddressOrUPN = $normalizedTest.name
+                    externalDirectoryObjectID = $NULL
+                    alias=$normalizedTest.alias
+                    name=$normalizedTest.name
+                    attribute = "Mail contact manager error."
+                    errorMessage = $normalizedTest.isErrorMessage
+                }
+
+                out-logfile -string $isErrorObject
+
+                $preCreateErrors+=$isErrorObject
+
+                $normalizedManager=$NULL
+            }
+            else 
+            {
+                $normalizedManager=$normalizedTest
+            }
+                
+        }
+        catch 
+        {
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
 
     Out-LogFile -string "Invoke get-NormalizedDN to normalize the members DN to Office 365 identifier."
 
@@ -1580,6 +1623,47 @@ Function Start-ContactMigration
     catch {
         out-logfile -string $_
         out-logfile -string "Unable to obtain the onmicrosoft.com domain." -errorAction STOP    
+    }
+
+    out-logfile -string "Test manager presence in Office 365."
+
+    out-logfile -string "Being validating all distribution list members."
+    
+    if ($normalizedManager -ne $null)
+    {
+        out-logfile -string "Ensuring manager is present in Office 365."
+
+        $isTestError="No"
+
+        out-LogFile -string ("Testing = "+$normalizedManager.primarySMTPAddressOrUPN)
+
+        try{
+            $isTestError=test-O365Recipient -member $member
+
+            if ($isTestError -eq "Yes")
+            {
+                $isErrorObject = new-Object psObject -property @{
+                    PrimarySMTPAddressorUPN = $member.PrimarySMTPAddressorUPN
+                    ExternalDirectoryObjectID = $member.ExternalDirectoryObjectID
+                    Alias = $member.Alias
+                    Name = $member.name
+                    Attribute = "Mail contact manager."
+                    ErrorMessage = "The manager of the mail contact is not present in Office 365."
+                    errorMessageDetail = ""
+                }
+
+                out-logfile -string $isErrorObject
+
+                $preCreateErrors+=$isErrorObject
+            }
+        }
+        catch{
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+    else 
+    {
+        out-logfile -string "There is no manager to test."    
     }
 
     out-logfile -string "Being validating all distribution list members."
@@ -3156,7 +3240,7 @@ Function Start-ContactMigration
 
     do {
         try {
-            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -globalcatalogwithport $globalCatalogWithPort -adCredential $activeDirectoryCredential
+            set-Office365contact -originalContactConfiguration $originalContactConfiguration -office365contactConfiguration $office365contactConfiguration -office365contactConfigurationPostMigration $office365contactConfigurationPostMigration -manager $normalizedManager
             $stopLoop=$TRUE
         }
         catch {

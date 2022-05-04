@@ -36,10 +36,8 @@
             $office365contactConfiguration,
             [Parameter(Mandatory = $true)]
             $office365contactConfigurationPostMigration,
-            [Parameter(Mandatory = $TRUE)]
-            $globalCatalogWithPort,
-            [Parameter(Mandatory = $TRUE)]
-            $adCredential
+            [Parameter(Mandatory = $true)]
+            $manager
         )
 
         #Declare function variables.
@@ -48,8 +46,6 @@
         $functionModerationEnabled=$NULL
         $functionHiddenFromAddressList=$NULL
         $functionRequireAuthToSendTo=$NULL
-
-        $functionNormalizedManager = $null
 
         $functionMacFormat = ""
         $functionMessageFormat = ""
@@ -77,46 +73,6 @@
 
         Out-LogFile -string ("originalContactConfiguration = ")
         out-logfile -string $originalContactConfiguration
-
-        out-logfile -string "Normalize the manager."
-
-        $isTestError="No"
-
-        if ($originalContactConfiguration.manager -ne $NULL)
-        {
-            out-logfile -string $originalContactConfiguration.manager
-    
-            $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$False -errorAction STOP -cn "None"
-    
-            if ($normalizedTest.isError -eq $TRUE)
-            {
-                $isErrorObject = new-Object psObject -property @{
-                    PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
-                    ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
-                    Alias = $NULL
-                    Name = $originalContactConfiguration.name
-                    Attribute = "Manager"
-                    ErrorMessage = "Unable to normalize the manager attribute."
-                    ErrorMessageDetail = $_
-                }
-
-                out-logfile -string $isErrorObject
-    
-                $functionErrors+=$isErrorObject
-
-                $functionNormalizedManager=$NULL
-            }
-            else 
-            {
-                $functionNormalizedManager=$normalizedTest
-            }   
-        }
-        else
-        {
-            out-logfile -string "The contact does not have a manager to normalize."
-        }
-
-        out-logfile -string $functionNormalizedManager
 
         #There are several flags of a contact that are either calculated hashes <or> booleans not set by default.
         #The exchange commancontactets abstract this by performing a conversion or filling the values in.
