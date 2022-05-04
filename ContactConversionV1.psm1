@@ -207,12 +207,13 @@ Function Start-ContactMigration
     [string]$acceptMessagesFromcontactMembers="dlMemSubmitPerms" #Attribute for the allow email members.
     [string]$rejectMessagesFromcontactMembers="dlMemRejectPerms"
     [string]$bypassModerationFromcontact="msExchBypassModerationLink"
+    [string]$bypassModerationFromDLMembers"msExchBypassModerationFromDLMembersLink"
     [string]$forwardingAddressForcontact="altRecipient"
     [string]$grantSendOnBehalfTocontact="publicDelegates"
     [array]$contactPropertySet = '*'
     [array]$contactPropertySetToClear = @()
-    [array]$contactPropertiesToClearModern='mapiRecipient','internetEncoding','authOrig','DisplayName','DisplayNamePrintable',$rejectMessagesFromContactMembers,$acceptMessagesFromContactMembers,'extensionAttribute1','extensionAttribute10','extensionAttribute11','extensionAttribute12','extensionAttribute13','extensionAttribute14','extensionAttribute15','extensionAttribute2','extensionAttribute3','extensionAttribute4','extensionAttribute5','extensionAttribute6','extensionAttribute7','extensionAttribute8','extensionAttribute9','legacyExchangeDN','mail','mailNickName','msExchRecipientDisplayType','msExchRecipientTypeDetails','msExchRemoteRecipientType',$bypassModerationFromContact,'msExchBypassModerationLink','msExchCoManagedByLink','msExchEnableModeration','msExchExtensionCustomAttribute1','msExchExtensionCustomAttribute2','msExchExtensionCustomAttribute3','msExchExtensionCustomAttribute4','msExchExtensionCustomAttribute5','msExchGroupDepartRestriction','msExchGroupJoinRestriction','msExchHideFromAddressLists','msExchModeratedByLink','msExchModerationFlags','msExchRequireAuthToSendTo','msExchSenderHintTranslations','oofReplyToOriginator','proxyAddresses',$grantSendOnBehalfToContact,'reportToOriginator','reportToOwner','unAuthOrig','msExchArbitrationMailbox','msExchPoliciesIncluded','msExchUMDtmfMap','msExchVersion','showInAddressBook','msExchAddressBookFlags','msExchBypassAudit','msExchGroupExternalMemberCount','msExchGroupMemberCount','msExchGroupSecurityFlags','msExchLocalizationFlags','msExchMailboxAuditEnable','msExchMailboxAuditLogAgeLimit','msExchMailboxFolderSet','msExchMDBRulesQuota','msExchPoliciesIncluded','msExchProvisioningFlags','msExchRecipientSoftDeletedStatus','msExchRoleGroupType','msExchTransportRecipientSettingsFlags','msExchUMDtmfMap','msExchUserAccountControl','msExchVersion'
-    [array]$contactPropertiesToClearLegacy='mapiRecipient','internetEncoding','authOrig','DisplayName','DisplayNamePrintable',$rejectMessagesFromContactMembers,$acceptMessagesFromContactMembers,'extensionAttribute1','extensionAttribute10','extensionAttribute11','extensionAttribute12','extensionAttribute13','extensionAttribute14','extensionAttribute15','extensionAttribute2','extensionAttribute3','extensionAttribute4','extensionAttribute5','extensionAttribute6','extensionAttribute7','extensionAttribute8','extensionAttribute9','legacyExchangeDN','mail','mailNickName','msExchRecipientDisplayType','msExchRecipientTypeDetails','msExchRemoteRecipientType',$bypassModerationFromContact,'msExchBypassModerationLink','msExchCoManagedByLink','msExchEnableModeration','msExchExtensionCustomAttribute1','msExchExtensionCustomAttribute2','msExchExtensionCustomAttribute3','msExchExtensionCustomAttribute4','msExchExtensionCustomAttribute5','msExchGroupDepartRestriction','msExchGroupJoinRestriction','msExchHideFromAddressLists','msExchModeratedByLink','msExchModerationFlags','msExchRequireAuthToSendTo','msExchSenderHintTranslations','oofReplyToOriginator','proxyAddresses',$grantSendOnBehalfTocontact,'reportToOriginator','reportToOwner','unAuthOrig','msExchArbitrationMailbox','msExchPoliciesIncluded','msExchUMDtmfMap','msExchVersion','showInAddressBook','msExchAddressBookFlags','msExchBypassAudit','msExchGroupExternalMemberCount','msExchGroupMemberCount','msExchLocalizationFlags','msExchMailboxAuditEnable','msExchMailboxAuditLogAgeLimit','msExchMailboxFolderSet','msExchMDBRulesQuota','msExchPoliciesIncluded','msExchProvisioningFlags','msExchRecipientSoftDeletedStatus','msExchRoleGroupType','msExchTransportRecipientSettingsFlags','msExchUMDtmfMap','msExchUserAccountControl','msExchVersion'
+    [array]$contactPropertiesToClearModern='mapiRecipient','internetEncoding','authOrig','DisplayName','DisplayNamePrintable',$rejectMessagesFromContactMembers,$acceptMessagesFromContactMembers,'extensionAttribute1','extensionAttribute10','extensionAttribute11','extensionAttribute12','extensionAttribute13','extensionAttribute14','extensionAttribute15','extensionAttribute2','extensionAttribute3','extensionAttribute4','extensionAttribute5','extensionAttribute6','extensionAttribute7','extensionAttribute8','extensionAttribute9','legacyExchangeDN','mail','mailNickName','msExchRecipientDisplayType','msExchRecipientTypeDetails','msExchRemoteRecipientType',$bypassModerationFromContact,$bypassModerationFromDLMembers,'msExchBypassModerationLink','msExchCoManagedByLink','msExchEnableModeration','msExchExtensionCustomAttribute1','msExchExtensionCustomAttribute2','msExchExtensionCustomAttribute3','msExchExtensionCustomAttribute4','msExchExtensionCustomAttribute5','msExchGroupDepartRestriction','msExchGroupJoinRestriction','msExchHideFromAddressLists','msExchModeratedByLink','msExchModerationFlags','msExchRequireAuthToSendTo','msExchSenderHintTranslations','oofReplyToOriginator','proxyAddresses',$grantSendOnBehalfToContact,'reportToOriginator','reportToOwner','unAuthOrig','msExchArbitrationMailbox','msExchPoliciesIncluded','msExchUMDtmfMap','msExchVersion','showInAddressBook','msExchAddressBookFlags','msExchBypassAudit','msExchGroupExternalMemberCount','msExchGroupMemberCount','msExchGroupSecurityFlags','msExchLocalizationFlags','msExchMailboxAuditEnable','msExchMailboxAuditLogAgeLimit','msExchMailboxFolderSet','msExchMDBRulesQuota','msExchPoliciesIncluded','msExchProvisioningFlags','msExchRecipientSoftDeletedStatus','msExchRoleGroupType','msExchTransportRecipientSettingsFlags','msExchUMDtmfMap','msExchUserAccountControl','msExchVersion'
+    [array]$contactPropertiesToClearLegacy='mapiRecipient','internetEncoding','authOrig','DisplayName','DisplayNamePrintable',$rejectMessagesFromContactMembers,$acceptMessagesFromContactMembers,'extensionAttribute1','extensionAttribute10','extensionAttribute11','extensionAttribute12','extensionAttribute13','extensionAttribute14','extensionAttribute15','extensionAttribute2','extensionAttribute3','extensionAttribute4','extensionAttribute5','extensionAttribute6','extensionAttribute7','extensionAttribute8','extensionAttribute9','legacyExchangeDN','mail','mailNickName','msExchRecipientDisplayType','msExchRecipientTypeDetails','msExchRemoteRecipientType',$bypassModerationFromContact,$bypassModerationFromDLMembers,'msExchBypassModerationLink','msExchCoManagedByLink','msExchEnableModeration','msExchExtensionCustomAttribute1','msExchExtensionCustomAttribute2','msExchExtensionCustomAttribute3','msExchExtensionCustomAttribute4','msExchExtensionCustomAttribute5','msExchGroupDepartRestriction','msExchGroupJoinRestriction','msExchHideFromAddressLists','msExchModeratedByLink','msExchModerationFlags','msExchRequireAuthToSendTo','msExchSenderHintTranslations','oofReplyToOriginator','proxyAddresses',$grantSendOnBehalfTocontact,'reportToOriginator','reportToOwner','unAuthOrig','msExchArbitrationMailbox','msExchPoliciesIncluded','msExchUMDtmfMap','msExchVersion','showInAddressBook','msExchAddressBookFlags','msExchBypassAudit','msExchGroupExternalMemberCount','msExchGroupMemberCount','msExchLocalizationFlags','msExchMailboxAuditEnable','msExchMailboxAuditLogAgeLimit','msExchMailboxFolderSet','msExchMDBRulesQuota','msExchPoliciesIncluded','msExchProvisioningFlags','msExchRecipientSoftDeletedStatus','msExchRoleGroupType','msExchTransportRecipientSettingsFlags','msExchUMDtmfMap','msExchUserAccountControl','msExchVersion'
 
     #On premises variables for the distribution list to be migrated.
 
@@ -1451,6 +1452,56 @@ Function Start-ContactMigration
             }
         }
     }
+
+    Out-LogFile -string "Process BYPASS USERS that are LISTS"
+
+    if ($originalContactConfiguration.msExchBypassModerationFromDLMembersLink -ne $NULL)
+    {
+        foreach ($DN in $originalContactConfiguration.msExchBypassModerationFromDLMembersLink)
+        {
+            if ($forLoopCounter -eq $forLoopTrigger)
+            {
+                start-sleepProgress -sleepString "Throttling for 5 seconds..." -sleepSeconds 5
+
+                $forLoopCounter = 0
+            }
+            else 
+            {
+                $forLoopCounter++    
+            }
+
+            try 
+            {
+                $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $DN -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -errorAction STOP -cn "None"
+
+                if ($normalizedTest.isError -eq $TRUE)
+                {
+                    $isErrorObject = new-Object psObject -property @{
+                        primarySMTPAddressOrUPN = $normalizedTest.name
+                        externalDirectoryObjectID = $NULL
+                        alias=$normalizedTest.alias
+                        name=$normalizedTest.name
+                        attribute = "BypassModerationFromSendersOrMembers (ADAttribute: msExchBypassModerationLink)"
+                        errorMessage = $normalizedTest.isErrorMessage
+                        errorMessageDetail = ""
+                    }
+
+                    out-logfile -string $isErrorObject
+
+                    $preCreateErrors+=$isErrorObject
+                }
+                else 
+                {
+                    $exchangeBypassModerationSMTP+=$normalizedTest
+                }
+            }
+            catch 
+            {
+                out-logFile -string $_ -isError:$TRUE
+            }
+        }
+    }
+
 
     Out-LogFile -string "Invoke get-NormalizedDN to normalize the bypass moderation contacts members DN to Office 365 identifier."
 
