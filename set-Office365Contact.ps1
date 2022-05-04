@@ -80,10 +80,11 @@
 
         out-logfile -string "Normalize the manager."
 
+        $isTestError="No"
+
         if ($originalContactConfiguration.manager -ne $NULL)
         {
             out-logfile -string $originalContactConfiguration.manager
-            $isTestError="No"
     
             $normalizedTest = get-normalizedDN -globalCatalogServer $globalCatalogWithPort -DN $originalContactConfiguration.manager -adCredential $activeDirectoryCredential -originalcontactDN $originalContactConfiguration.distinguishedName -isMember:$False -errorAction STOP -cn "None"
     
@@ -114,8 +115,11 @@
         {
             out-logfile -string "The contact does not have a manager to normalize."
         }
-        
 
+        out-logfile -string $functionNormalizedManager
+
+        $isTestError="No"
+        
         if ($functionNormalizedManager -ne $NULL)
         {
             try{
