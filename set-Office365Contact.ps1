@@ -632,6 +632,8 @@
 
         if ($manager -ne "None")
         {
+            out-logfile -string "Manager attribute is present."
+            
             try 
             {
                 out-logfile -string "Setting the manager on the mail contact.."
@@ -656,6 +658,10 @@
 
                 $functionErrors+=$isErrorObject
             }
+        }
+        else
+        {
+            out-logfile -string "There is no manager set."
         }
 
         try 
