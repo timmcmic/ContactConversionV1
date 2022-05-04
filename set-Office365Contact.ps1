@@ -636,7 +636,7 @@
             {
                 out-logfile -string "Setting the manager on the mail contact.."
 
-                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $normalizedManager.primarySMTPAddressOrUPN
+                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager Manager.primarySMTPAddressOrUPN
             }
             catch 
             {
