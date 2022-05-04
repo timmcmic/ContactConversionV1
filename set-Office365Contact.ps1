@@ -609,7 +609,7 @@
         {
             out-logfile -string "Settings settings that can only be set with set-contact."
 
-            set-o365Contact -Identity $functionExternalDirectoryObjectID -notes $originalContactConfiguration.info -postalCode $originalContactConfiguration.postalCode -phone $originalContactConfiguration.telephoneNumber -office $originalContactConfiguration.physicalDeliveryOfficeName -countryOrRegion $originalContactConfiguration.c -otherTelephone $originalContactConfiguration.otherTelephone -pager $originalContactConfiguration.pager -fax $originalContactConfiguration.facsimileTelephoneNumber -postOfficeBox $originalContactConfiguration.postOfficeBox -company $originalContactConfiguration.company -city $originalContactConfiguration.L -title $originalContactConfiguration.title -MobilePhone $originalContactConfiguration.mobile -stateOrProvince $originalContactConfiguration.st -initials $originalContactConfiguration.initials -webPage $originalcontactDN.wwwHomePage -lastName $originalContactConfiguration.surName -HomePhone $originalContactConfiguration.homePhone -otherFax $originalContactConfiguration.otherFacsimileTelephoneNumber -department $originalContactConfiguration.department -otherHomePhone $originalContactConfiguration.otherHomePhone -FirstName $originalContactConfiguration.givenName -streetAddress $originalContactConfiguration.streetAddress  
+            set-o365Contact -Identity $functionExternalDirectoryObjectID -notes $originalContactConfiguration.info -postalCode $originalContactConfiguration.postalCode -phone $originalContactConfiguration.telephoneNumber -office $originalContactConfiguration.physicalDeliveryOfficeName -countryOrRegion $originalContactConfiguration.c -otherTelephone $originalContactConfiguration.otherTelephone -pager $originalContactConfiguration.pager -fax $originalContactConfiguration.facsimileTelephoneNumber -postOfficeBox $originalContactConfiguration.postOfficeBox -company $originalContactConfiguration.company -city $originalContactConfiguration.L -title $originalContactConfiguration.title -MobilePhone $originalContactConfiguration.mobile -stateOrProvince $originalContactConfiguration.st -initials $originalContactConfiguration.initials -webPage $originalContactConfiguration.wwwHomePage -lastName $originalContactConfiguration.sn -HomePhone $originalContactConfiguration.homePhone -otherFax $originalContactConfiguration.otherFacsimileTelephoneNumber -department $originalContactConfiguration.department -otherHomePhone $originalContactConfiguration.otherHomePhone -FirstName $originalContactConfiguration.givenName -streetAddress $originalContactConfiguration.streetAddress  
         }
         catch 
         {
@@ -634,7 +634,7 @@
         {
             out-logfile -string "Setting the manager on the mail contact.."
 
-            set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $functionNormalizedManager.primarySMTPAddressOrUPN
+            set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $normalizedManager.primarySMTPAddressOrUPN
         }
         catch 
         {
