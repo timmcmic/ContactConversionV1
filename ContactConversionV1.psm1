@@ -1626,8 +1626,6 @@ Function Start-ContactMigration
     }
 
     out-logfile -string "Test manager presence in Office 365."
-
-    out-logfile -string "Being validating all distribution list members."
     
     if ($normalizedManager -ne $null)
     {
@@ -1638,7 +1636,7 @@ Function Start-ContactMigration
         out-LogFile -string ("Testing = "+$normalizedManager.primarySMTPAddressOrUPN)
 
         try{
-            $isTestError=test-O365Recipient -member $member
+            $isTestError=test-O365Recipient -member $normalizedManager
 
             if ($isTestError -eq "Yes")
             {
