@@ -868,7 +868,7 @@ Function Start-ContactMigration
 
                 $preCreateErrors+=$isErrorObject
 
-                $normalizedManager=$NULL
+                $normalizedManager="None"
             }
             else 
             {

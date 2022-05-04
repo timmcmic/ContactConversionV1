@@ -630,6 +630,34 @@
             $functionErrors+=$isErrorObject
         }
 
+        if ($manager -ne "None")
+        {
+            try 
+            {
+                out-logfile -string "Setting the manager on the mail contact.."
+
+                set-o365Contact -Identity $functionExternalDirectoryObjectID -manager $normalizedManager.primarySMTPAddressOrUPN
+            }
+            catch 
+            {
+                out-logfile "Error setting manager......"
+
+                out-logfile -string $_
+
+                $isErrorObject = new-Object psObject -property @{
+                    PrimarySMTPAddressorUPN = $originalContactConfiguration.mail
+                    ExternalDirectoryObjectID = $originalContactConfiguration.'msDS-ExternalDirectoryObjectId'
+                    Alias = $functionMailNickName
+                    Name = $originalContactConfiguration.name
+                    Attribute = "Error setting manager."
+                    ErrorMessage = "Manager was normalized, found in office 365, but attempts to set as manager were unsucessful.  Manual add required."
+                    ErrorMessageDetail = $_
+                }
+
+                $functionErrors+=$isErrorObject
+            }
+        }
+
         try 
         {
             out-logfile -string "Setting the manager on the mail contact.."
